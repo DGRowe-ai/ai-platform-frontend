@@ -4,14 +4,7 @@
         Admin Panel
     </button>
 
-    <div id="chat-container">
-        <div id="messages"></div>
-
-        <div id="input-area">
-            <input id="user-input" type="text" placeholder="Type your message..." />
-            <button id="send-btn">Send</button>
-        </div>
-    </div>
+    <!-- Removed the entire chat-container block so the top-left bar disappears -->
 
     <iframe id="loki-widget" src="widget-frame.html" style="
         position: fixed;
@@ -25,7 +18,6 @@
 
     <script src="/script.js"></script>
 
-    <!-- ⭐ ADD THIS SCRIPT AT THE BOTTOM ⭐ -->
     <script>
         const role = localStorage.getItem("role");
 
