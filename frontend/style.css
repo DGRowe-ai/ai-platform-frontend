@@ -1,0 +1,150 @@
+/* -----------------------------
+   Chat Widget PRO Styling (Loki Animated)
+------------------------------*/
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: transparent;
+}
+
+/* ⭐ FIXED: Position the entire widget */
+#chat-widget-wrapper {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 350px;
+    height: 520px;
+    z-index: 999999;
+    display: flex;
+    flex-direction: column;
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    background: #ffffff;
+    border: 2px solid #009688;
+}
+
+/* Loki header */
+#loki-header {
+    width: 100%;
+    padding: 10px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #e0f7f4;
+    border-bottom: 1px solid #b2dfdb;
+}
+
+#loki-avatar {
+    width: 70px;
+    height: 70px;
+}
+
+/* -----------------------------
+   Chat container (FIXED)
+------------------------------*/
+#chat-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+    overflow: hidden; /* prevents layout break */
+}
+
+/* -----------------------------
+   Messages area (SCROLL FIX)
+------------------------------*/
+#messages {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;      /* ⭐ enables scrolling */
+    overflow-x: hidden;
+    background: #f2fdfc;
+    box-sizing: border-box;
+}
+
+/* Optional: scrollbar styling */
+#messages::-webkit-scrollbar {
+    width: 8px;
+}
+
+#messages::-webkit-scrollbar-thumb {
+    background: #b2dfdb;
+    border-radius: 4px;
+}
+
+#messages::-webkit-scrollbar-track {
+    background: #e0f7f4;
+}
+
+/* -----------------------------
+   Message bubbles
+------------------------------*/
+.message {
+    max-width: 80%;
+    padding: 10px 14px;
+    margin-bottom: 10px;
+    border-radius: 14px;
+    font-size: 15px;
+    line-height: 1.4;
+}
+
+.message.bot {
+    background: #e0f7f4;
+    color: #004d40;
+    margin-right: auto;
+    border-bottom-left-radius: 4px;
+}
+
+.message.user {
+    background: #009688;
+    color: white;
+    margin-left: auto;
+    border-bottom-right-radius: 4px;
+}
+
+/* -----------------------------
+   Input area
+------------------------------*/
+#input-area {
+    display: flex;
+    padding: 10px;
+    background: #ffffff;
+    border-top: 1px solid #ccc;
+}
+
+#user-input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #aaa;
+    border-radius: 6px;
+    font-size: 15px;
+}
+
+#send-btn {
+    margin-left: 10px;
+    padding: 10px 16px;
+    background: #009688;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+#send-btn:hover {
+    background: #00796b;
+}
+
+/* -----------------------------
+   Branding badge
+------------------------------*/
+#branding {
+    text-align: center;
+    font-size: 12px;
+    padding: 6px;
+    color: #004d40;
+    background: #e0f7f4;
+    border-top: 1px solid #b2dfdb;
+}

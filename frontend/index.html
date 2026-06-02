@@ -1,0 +1,42 @@
+<body>
+
+    <button id="admin-btn" style="display:none; position:fixed; top:20px; right:20px; z-index:999999;">
+        Admin Panel
+    </button>
+
+    <div id="chat-container">
+        <div id="messages"></div>
+
+        <div id="input-area">
+            <input id="user-input" type="text" placeholder="Type your message..." />
+            <button id="send-btn">Send</button>
+        </div>
+    </div>
+
+    <iframe id="loki-widget" src="widget-frame.html" style="
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 380px;
+        height: 600px;
+        border: none;
+        z-index: 999999;
+    "></iframe>
+
+    <script src="/script.js"></script>
+
+    <!-- ⭐ ADD THIS SCRIPT AT THE BOTTOM ⭐ -->
+    <script>
+        const role = localStorage.getItem("role");
+
+        if (role === "admin") {
+            document.getElementById("admin-btn").style.display = "inline-block";
+        }
+
+        document.getElementById("admin-btn").addEventListener("click", () => {
+            window.location.href = "../admin.html";
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Business Chatbot</title>
+    <style>
+        body { font-family: Arial; max-width: 600px; margin: auto; padding: 20px; }
+        #messages { border: 1px solid #ccc; padding: 10px; height: 400px; overflow-y: scroll; margin-bottom: 10px; }
+        .user { color: #0066ff; margin: 5px 0; }
+        .bot { color: #009933; margin: 5px 0; }
+        input { padding: 10px; width: 75%; }
+        button { padding: 10px; }
+    </style>
+</head>
+<body>
+
+<h2 id="businessName">Chatbot</h2>
+
+<div id="messages"></div>
+
+<input id="msg" placeholder="Type your message...">
+<button onclick="sendMessage()">Send</button>
+
+<script>
+    // Get business ID from URL: chat.html?b=sunrise_dental
+    const urlParams = new URLSearchParams(window.location.search);
+    const businessId = urlParams.get("b");
+
+    if (!businessId) {
+        alert("Missing business ID in URL. Example: chat.html?b=sunrise_dental");
+    }
+
+    async function sendMessage() {
+        const text = document.getElementById("msg").value.trim();
+        if (!text) return;
+
+        document.getElementById("msg").value = "";
+        addMessage("user", text);
+
+        const res = await fetch("https://ai-platform-backend-ulqs.onrender.com/business/chat", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                // Public chat does NOT require login — remove token
+            },
+            body: JSON.stringify({
+                business_id: businessId,
+                message: text
+            })
+        });
+
+        const data = await res.json();
+        addMessage("bot", data.response);
+    }
+
+    function addMessage(role, text) {
+        const div = document.getElementById("messages");
+        const p = document.createElement("p");
+        p.className = role;
+        p.textContent = text;
+        div.appendChild(p);
+        div.scrollTop = div.scrollHeight;
+    }
+</script>
+
+</body>
+</html>

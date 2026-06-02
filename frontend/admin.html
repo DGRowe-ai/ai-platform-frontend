@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Control Panel</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <h1>Admin Control Panel</h1>
+
+  <!-- Add Customer -->
+  <section>
+    <h2>Add Customer</h2>
+    <input id="email" placeholder="Customer Email">
+    <input id="password" placeholder="Password" type="password">
+    <input id="business-name" placeholder="Business Name">
+    <button id="add-btn">Create Customer + Business</button>
+  </section>
+
+  <!-- List Businesses -->
+  <section>
+    <h2>All Businesses</h2>
+    <table id="business-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Business Name</th>
+          <th>Folder</th>
+          <th>Owner Email</th>
+          <th>Status</th>
+          <th>Disable</th>
+          <th>Delete</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </section>
+
+  <script src="admin.js"></script>
+</body>
+</html>

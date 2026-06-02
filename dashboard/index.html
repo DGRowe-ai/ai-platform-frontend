@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Business Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="container">
+  <h1>Business Dashboard</h1>
+
+  <div id="section">
+    <h2>Profile</h2>
+    <input id="name" placeholder="Business Name">
+    <input id="industry" placeholder="Industry">
+    <input id="email" placeholder="Contact Email">
+    <input id="website" placeholder="Website">
+  </div>
+
+  <div id="section">
+    <h2>Chatbot Settings</h2>
+    <input id="greeting" placeholder="Greeting Message">
+    <input id="tone" placeholder="Tone (friendly, professional, etc)">
+    <input id="maxlen" placeholder="Max Response Length">
+  </div>
+
+  <div id="section">
+    <h2>Knowledge Base</h2>
+    <textarea id="knowledge" rows="10"></textarea>
+  </div>
+
+  <button id="save-btn">Save Changes</button>
+
+  <div id="section">
+    <h2>Test Chatbot</h2>
+    <input id="test-input" placeholder="Ask something ...">
+    <button id="test-btn">Send</button>
+    <div id="test-output"></div>
+  </div>
+</div>
+  <div id="section">
+    <h2>Export Conversations</h2>
+
+    <button id="export-single">Export Selected Conversation</button>
+    <button id="export-all">Export All Conversations</button>
+    <button id="export-filtered">Export Filtered Conversations</button>
+  </div>
+
+<script src="script.js"></script>
+</body>
+</html>
