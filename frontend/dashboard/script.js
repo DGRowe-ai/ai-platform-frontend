@@ -102,7 +102,6 @@ async function testChat() {
             "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify({
-            business_id: BUSINESS_ID,
             message: msg
         })
     });
