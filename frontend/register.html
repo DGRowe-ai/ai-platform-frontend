@@ -5,27 +5,33 @@
 </head>
 <body>
     <h2>Create Account</h2>
+
     <input id="email" type="email" placeholder="Email"><br>
     <input id="password" type="password" placeholder="Password"><br>
+    <input id="business_name" type="text" placeholder="Business Name"><br>
+
     <button id="register-btn">Register</button>
 
     <script>
         const API_URL = "https://ai-platform-backend-ulqs.onrender.com";
+
         document.getElementById("register-btn").onclick = async () => {
             const email = document.getElementById("email").value;
             const password = document.getElementById("password").value;
+            const business_name = document.getElementById("business_name").value;
 
-            const res = await fetch(`${API_URL}/register`, {
+            const res = await fetch(`${API_URL}/signup`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password })
+                body: JSON.stringify({ email, password, business_name })
             });
 
             if (res.ok) {
                 alert("Account created! Now log in.");
                 window.location.href = "login.html";
             } else {
-                alert("Registration failed.");
+                const data = await res.json();
+                alert("Registration failed: " + data.detail);
             }
         };
     </script>
