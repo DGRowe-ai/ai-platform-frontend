@@ -3,7 +3,10 @@ const userInput = document.getElementById("user-input");
 const messagesDiv = document.getElementById("messages");
 
 // Set the business ID for this widget
-const BUSINESS_ID = "sunrise_dental";
+const BUSINESS_ID = "test_business";
+
+// Use Render backend
+const API_URL = "https://ai-platform-backend-ulqs.onrender.com";
 
 function addMessage(text, sender) {
     const msg = document.createElement("div");
@@ -20,7 +23,7 @@ async function sendMessage() {
     addMessage(text, "user");
     userInput.value = "";
 
-    const response = await fetch("http://127.0.0.1:8000/chat", {
+    const response = await fetch(`${API_URL}/chat`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -40,6 +43,7 @@ sendBtn.addEventListener("click", sendMessage);
 userInput.addEventListener("keypress", (e) => {
     if (e.key === "Enter") sendMessage();
 });
+
 // TEMP: hardcode you as admin so the button always shows
 const role = "admin";
 
@@ -50,4 +54,3 @@ if (role === "admin") {
 document.getElementById("admin-btn").addEventListener("click", () => {
     window.location.href = "../admin.html";
 });
-
