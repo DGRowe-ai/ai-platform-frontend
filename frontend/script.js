@@ -1,12 +1,20 @@
+/* -----------------------------
+   DOM Elements
+------------------------------*/
+
 const sendBtn = document.getElementById("send-btn");
 const userInput = document.getElementById("user-input");
 const messagesDiv = document.getElementById("messages");
 
-// Set the business ID for this widget
-const BUSINESS_ID = "test_business";
+// Business ID for dashboard + widget
+const BUSINESS_ID = "rowe_ai";
 
-// Use Render backend
+// Render backend
 const API_URL = "https://ai-platform-backend-ulqs.onrender.com";
+
+/* -----------------------------
+   Chat UI Helpers
+------------------------------*/
 
 function addMessage(text, sender) {
     const msg = document.createElement("div");
@@ -16,6 +24,10 @@ function addMessage(text, sender) {
     messagesDiv.scrollTop = messagesDiv.scrollHeight;
 }
 
+/* -----------------------------
+   Main Chat (NOT the test button)
+------------------------------*/
+
 async function sendMessage() {
     const text = userInput.value.trim();
     if (!text) return;
@@ -23,13 +35,14 @@ async function sendMessage() {
     addMessage(text, "user");
     userInput.value = "";
 
-    const response = await fetch(`${API_URL}/chat`, {
+    const response = await fetch(`${API_URL}/business/chat`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
             "Authorization": "Bearer " + localStorage.getItem("token")
         },
         body: JSON.stringify({
+            business_id: BUSINESS_ID,
             message: text
         })
     });
@@ -44,7 +57,10 @@ userInput.addEventListener("keypress", (e) => {
     if (e.key === "Enter") sendMessage();
 });
 
-// TEMP: hardcode you as admin so the button always shows
+/* -----------------------------
+   Admin Button
+------------------------------*/
+
 const role = "admin";
 
 if (role === "admin") {
@@ -55,16 +71,22 @@ document.getElementById("admin-btn").addEventListener("click", () => {
     window.location.href = "../admin.html";
 });
 
+/* -----------------------------
+   TEST CHATBOT BUTTON (FIXED)
+------------------------------*/
+
 document.getElementById("test-btn").addEventListener("click", async () => {
-  const message = document.getElementById("test-input").value;
-  const businessId = "rowe_ai"; // or whatever folder_name your business uses
+    const message = document.getElementById("test-input").value;
 
-  const res = await fetch("https://ai-platform-backend-ulqs.onrender.com/business/chat", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ business_id: businessId, message })
-  });
+    const res = await fetch(`${API_URL}/business/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            business_id: BUSINESS_ID,
+            message
+        })
+    });
 
-  const data = await res.json();
-  document.getElementById("test-output").innerText = data.response;
+    const data = await res.json();
+    document.getElementById("test-output").innerText = data.response;
 });
