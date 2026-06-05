@@ -54,3 +54,17 @@ if (role === "admin") {
 document.getElementById("admin-btn").addEventListener("click", () => {
     window.location.href = "../admin.html";
 });
+
+document.getElementById("test-btn").addEventListener("click", async () => {
+  const message = document.getElementById("test-input").value;
+  const businessId = "rowe_ai"; // or whatever folder_name your business uses
+
+  const res = await fetch("https://ai-platform-backend-ulqs.onrender.com/business/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ business_id: businessId, message })
+  });
+
+  const data = await res.json();
+  document.getElementById("test-output").innerText = data.response;
+});
