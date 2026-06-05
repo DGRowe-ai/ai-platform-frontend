@@ -2,8 +2,9 @@
    URL + API Setup
 ------------------------------*/
 
-const API_URL = "http://127.0.0.1:8000";
-const BUSINESS_ID = "sunrise_dental"; // <-- your real folder name
+const API_URL = "https://ai-platform-backend-ulqs.onrender.com";
+const BUSINESS_ID = "rowe_ai"; // your real folder name
+
 
 /* -----------------------------
    DOM Elements
