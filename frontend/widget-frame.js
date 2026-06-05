@@ -113,7 +113,7 @@ async function sendMessage() {
     setLokiState("thinking");
 
     try {
-        const response = await fetch(`${API_URL}/chat`, {
+        const response = await fetch(`${API_URL}/business/chat`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
