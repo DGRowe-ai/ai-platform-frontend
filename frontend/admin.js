@@ -36,3 +36,40 @@ async function addCustomer() {
   alert("Customer + business created!");
   // later: refresh business list here
 }
+
+// -----------------------------
+// NEW: Add Business to Existing User
+// -----------------------------
+document.getElementById("add-business-btn").addEventListener("click", addBusinessToExisting);
+
+async function addBusinessToExisting() {
+  const email = document.getElementById("existing-email").value;
+  const businessName = document.getElementById("existing-business-name").value;
+
+  if (!email || !businessName) {
+    alert("Fill in both fields.");
+    return;
+  }
+
+  const res = await fetch(`${API_URL}/admin/create_business_for_existing_user`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { "Authorization": `Bearer ${token}` } : {})
+    },
+    body: JSON.stringify({
+      email,
+      business_name: businessName
+    })
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    alert(data.detail || "Error creating business");
+    return;
+  }
+
+  alert("Business created for existing user!");
+  // later: refresh business list here
+}
