@@ -102,6 +102,7 @@ async function testChat() {
             "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify({
+            business_id: BUSINESS_ID,
             message: msg
         })
     });
@@ -109,6 +110,7 @@ async function testChat() {
     const data = await res.json();
     document.getElementById("test-output").innerText = data.response;
 }
+
 
 // -----------------------------
 // Button listeners
