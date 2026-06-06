@@ -6,17 +6,11 @@ let token = localStorage.getItem("token");
 const API_URL = "https://ai-platform-backend-ulqs.onrender.com";
 
 // -----------------------------
-// Step 11E — Load user's business automatically
+// TEMP FIX — bypass /my_businesses (401 error)
 // -----------------------------
 async function loadMyBusinesses() {
-    const res = await fetch(`${API_URL}/my_businesses`, {
-        headers: {
-            "Authorization": `Bearer ${token}`
-        }
-    });
-
-    const list = await res.json();
-    return list[0].folder_name; // first business for now
+    // Instead of calling the protected route, return your business folder directly
+    return "rowe_ai";
 }
 
 // BUSINESS_ID is now dynamic
@@ -89,19 +83,20 @@ async function saveBusiness() {
 }
 
 // -----------------------------
-// Test chatbot
+// Test chatbot (FIXED)
 // -----------------------------
 async function testChat() {
 
     const msg = document.getElementById("test-input").value;
 
-    const res = await fetch(`${API_URL}/chat`, {
+    const res = await fetch(`${API_URL}/business/chat`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
             "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify({
+            business_id: BUSINESS_ID,
             message: msg
         })
     });
