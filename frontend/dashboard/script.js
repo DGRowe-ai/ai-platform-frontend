@@ -1,37 +1,27 @@
 // -----------------------------
-// Grab the JWT token
+// TEMP: Disable auth-based loading
 // -----------------------------
 let token = localStorage.getItem("token");
 
 const API_URL = "https://ai-platform-backend-ulqs.onrender.com";
 
 // -----------------------------
-// TEMP FIX — bypass /my_businesses (401 error)
+// TEMP FIX — bypass /my_businesses
 // -----------------------------
 async function loadMyBusinesses() {
-    // Instead of calling the protected route, return your business folder directly
-    return "rowe_ai";
+    return "rowe_ai"; // your real folder
 }
 
-// BUSINESS_ID is now dynamic
-let BUSINESS_ID = null;
+// BUSINESS_ID is now static
+let BUSINESS_ID = "rowe_ai";
 
 // -----------------------------
-// Load business data
+// TEMP FIX — load business data WITHOUT auth
 // -----------------------------
 async function loadBusiness() {
 
-    // Wait for BUSINESS_ID to be loaded
-    if (!BUSINESS_ID) {
-        BUSINESS_ID = await loadMyBusinesses();
-    }
-
-    const res = await fetch(`${API_URL}/business/${BUSINESS_ID}`, {
-        headers: {
-            "Authorization": `Bearer ${token}`
-        }
-    });
-
+    // Load raw business JSON directly from public folder
+    const res = await fetch(`${API_URL}/business/${BUSINESS_ID}/public`);
     const data = await res.json();
 
     document.getElementById("name").value = data.profile.name;
@@ -73,8 +63,7 @@ async function saveBusiness() {
     await fetch(`${API_URL}/update_business`, {
         method: "POST",
         headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
+            "Content-Type": "application/json"
         },
         body: JSON.stringify(payload)
     });
@@ -92,8 +81,7 @@ async function testChat() {
     const res = await fetch(`${API_URL}/business/chat`, {
         method: "POST",
         headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
+            "Content-Type": "application/json"
         },
         body: JSON.stringify({
             business_id: BUSINESS_ID,
@@ -115,45 +103,3 @@ document.getElementById("test-btn").addEventListener("click", testChat);
 // Load data on page start
 // -----------------------------
 loadBusiness();
-
-
-// =====================================================
-// STEP 20 — EXPORT ROUTES (FRONTEND)
-// =====================================================
-
-// -----------------------------
-// CSV Download Helper
-// -----------------------------
-async function downloadCSV(url, filename) {
-    const res = await fetch(url, {
-        headers: { "Authorization": `Bearer ${token}` }
-    });
-
-    const text = await res.text();
-    const blob = new Blob([text], { type: "text/csv" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = filename;
-    link.click();
-}
-
-// -----------------------------
-// Export All Conversations
-// -----------------------------
-document.getElementById("export-all").onclick = () => {
-    downloadCSV(`${API_URL}/export/all`, "all_conversations.csv");
-};
-
-// -----------------------------
-// Export Single (placeholder)
-// -----------------------------
-document.getElementById("export-single").onclick = () => {
-    alert("Single conversation export requires conversation selection (coming in Step 21)");
-};
-
-// -----------------------------
-// Export Filtered (placeholder)
-// -----------------------------
-document.getElementById("export-filtered").onclick = () => {
-    alert("Filtered export requires filters/search UI (coming in Step 21)");
-};
