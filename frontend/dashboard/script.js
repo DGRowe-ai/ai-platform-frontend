@@ -95,7 +95,7 @@ async function testChat() {
 
     const msg = document.getElementById("test-input").value;
 
-    const res = await fetch(`${API_URL}/chat`, {
+    const res = await fetch(`${API_URL}/business/chat`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
