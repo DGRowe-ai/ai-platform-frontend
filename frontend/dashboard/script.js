@@ -16,7 +16,7 @@ async function loadMyBusinesses() {
     });
 
     const list = await res.json();
-    return list[0].folder_name; // first business for now
+    return list.businesses[0].folder_name; // first business for now
 }
 
 // BUSINESS_ID is now dynamic
