@@ -1,0 +1,41 @@
+<h2>All Businesses</h2>
+
+<table id="bizTable">
+    <thead>
+        <tr>
+            <th>Business ID</th>
+            <th>Name</th>
+            <th>Owner Email</th>
+            <th>Subscription</th>
+            <th>Created</th>
+            <th>Last Payment</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<script>
+    const token = localStorage.getItem("token");
+
+    fetch("https://ai-platform-backend-ulqs.onrender.com", {
+        headers: { "Authorization": "Bearer " + token }
+    })
+    .then(res => res.json())
+    .then(data => {
+        const tbody = document.querySelector("#bizTable tbody");
+        data.forEach(b => {
+            const row = document.createElement("tr");
+
+            row.innerHTML = `
+                <td>${b.business_id}</td>
+                <td>${b.business_name}</td>
+                <td>${b.owner_email}</td>
+                <td>${b.subscription_active ? 'Active' : 'Inactive'}</td>
+                <td>${b.created_at || '—'}</td>
+                <td>${b.last_payment || '—'}</td>
+            `;
+
+            tbody.appendChild(row);
+        });
+    });
+</script>
