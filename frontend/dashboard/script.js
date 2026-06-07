@@ -16,6 +16,9 @@ async function loadMyBusinesses() {
     });
 
     const list = await res.json();
+
+    console.log("MY BUSINESSES RESPONSE:", list);  // ✅ THIS IS THE CORRECT SPOT
+
     return list.businesses[0].folder_name; // first business for now
 }
 
