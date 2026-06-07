@@ -1,12 +1,12 @@
 // -----------------------------
 // Grab the JWT token
 // -----------------------------
-let token = localStorage.getItem("token");   // BACK TO ORIGINAL
+let token = localStorage.getItem("token");
 
-const API_URL = "https://ai-platform-backend-uaaa.onrender.com";  // NEW BACKEND, KEEP THIS
+const API_URL = "https://ai-platform-backend-ulqs.onrender.com";
 
 // -----------------------------
-// Load user's business automatically
+// Step 11E — Load user's business automatically
 // -----------------------------
 async function loadMyBusinesses() {
     const res = await fetch(`${API_URL}/my_businesses`, {
@@ -15,10 +15,8 @@ async function loadMyBusinesses() {
         }
     });
 
-    const data = await res.json();
-
-    // NEW RESPONSE SHAPE: { businesses: [ ... ] }
-    return data.businesses[0].folder_name; // first business for now
+    const list = await res.json();
+    return list[0].folder_name; // first business for now
 }
 
 // BUSINESS_ID is now dynamic
@@ -78,7 +76,7 @@ async function saveBusiness() {
         knowledge: document.getElementById("knowledge").value
     };
 
-    await fetch(`${API_URL}/business/update`, {   // FIXED ROUTE
+    await fetch(`${API_URL}/update_business`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
