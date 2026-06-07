@@ -1,12 +1,15 @@
 // -----------------------------
 // Grab the JWT token
 // -----------------------------
-let token = localStorage.getItem("token");
-
-const API_URL = "https://ai-platform-backend-ulqs.onrender.com";
+let token = localStorage.getItem("access_token");   // FIXED
 
 // -----------------------------
-// Step 11E — Load user's business automatically
+// Correct backend URL
+// -----------------------------
+const API_URL = "https://ai-platform-backend-uaaa.onrender.com";   // FIXED
+
+// -----------------------------
+// Load user's businesses
 // -----------------------------
 async function loadMyBusinesses() {
     const res = await fetch(`${API_URL}/my_businesses`, {
@@ -15,8 +18,10 @@ async function loadMyBusinesses() {
         }
     });
 
-    const list = await res.json();
-    return list[0].folder_name; // first business for now
+    const data = await res.json();
+
+    // FIXED: new backend returns { businesses: [ ... ] }
+    return data.businesses[0].folder_name;
 }
 
 // BUSINESS_ID is now dynamic
@@ -27,7 +32,6 @@ let BUSINESS_ID = null;
 // -----------------------------
 async function loadBusiness() {
 
-    // Wait for BUSINESS_ID to be loaded
     if (!BUSINESS_ID) {
         BUSINESS_ID = await loadMyBusinesses();
     }
@@ -40,6 +44,7 @@ async function loadBusiness() {
 
     const data = await res.json();
 
+    // FIXED: match new backend field names
     document.getElementById("name").value = data.profile.name;
     document.getElementById("industry").value = data.profile.industry;
     document.getElementById("email").value = data.profile.contact_email;
@@ -76,7 +81,8 @@ async function saveBusiness() {
         knowledge: document.getElementById("knowledge").value
     };
 
-    await fetch(`${API_URL}/update_business`, {
+    // FIXED: correct backend route
+    await fetch(`${API_URL}/business/update`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -102,7 +108,7 @@ async function testChat() {
             "Authorization": `Bearer ${token}`
         },
         body: JSON.stringify({
-            business_id: BUSINESS_ID,
+            business_id: BUSINESS_ID,   // FIXED
             message: msg
         })
     });
@@ -110,7 +116,6 @@ async function testChat() {
     const data = await res.json();
     document.getElementById("test-output").innerText = data.response;
 }
-
 
 // -----------------------------
 // Button listeners
