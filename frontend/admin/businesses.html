@@ -1,36 +1,87 @@
-<script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Businesses</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 40px;
+      background-color: #f9f9f9;
+    }
+    h2 {
+      margin-bottom: 10px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background-color: white;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #eee;
+    }
+  </style>
+</head>
+<body>
+  <h2>All Businesses</h2>
+
+  <table id="bizTable">
+    <thead>
+      <tr>
+        <th>Business ID</th>
+        <th>Name</th>
+        <th>Owner Email</th>
+        <th>Subscription</th>
+        <th>Created</th>
+        <th>Last Payment</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <script>
     const token = localStorage.getItem("token");
 
-    fetch("https://ai-platform-backend-ulqs.onrender.com/admin/businesses", {
-        headers: { 
-            "Authorization": "Bearer " + token 
-        }
+    fetch("https://ai-platform-backend-ulqs.onrender.com/my_businesses", {
+      headers: { 
+        "Authorization": "Bearer " + token 
+      }
     })
     .then(res => {
-        if (!res.ok) {
-            console.error("Failed to load businesses");
-            return [];
-        }
-        return res.json();
+      if (!res.ok) {
+        console.error("Failed to load businesses");
+        return [];
+      }
+      return res.json();
     })
     .then(data => {
-        const tbody = document.querySelector("#bizTable tbody");
-        tbody.innerHTML = "";
+      const tbody = document.querySelector("#bizTable tbody");
+      if (!tbody) {
+        console.error("Table body not found");
+        return;
+      }
 
-        data.forEach(b => {
-            const row = document.createElement("tr");
+      tbody.innerHTML = "";
 
-            row.innerHTML = `
-                <td>${b.id}</td>
-                <td>${b.name}</td>
-                <td>${b.owner_email}</td>
-                <td>${b.subscription_active ? 'Active' : 'Inactive'}</td>
-                <td>${b.created_at || '—'}</td>
-                <td>${b.last_payment || '—'}</td>
-            `;
-
-            tbody.appendChild(row);
-        });
+      data.forEach(b => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${b.id}</td>
+          <td>${b.name}</td>
+          <td>${b.owner_email || "—"}</td>
+          <td>${b.subscription_active ? "Active" : "Inactive"}</td>
+          <td>${b.created_at || "—"}</td>
+          <td>${b.last_payment || "—"}</td>
+        `;
+        tbody.appendChild(row);
+      });
     })
     .catch(err => console.error("Error:", err));
-</script>
+  </script>
+</body>
+</html>
