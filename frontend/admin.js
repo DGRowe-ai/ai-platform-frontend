@@ -73,3 +73,31 @@ async function addBusinessToExisting() {
   alert("Business created for existing user!");
   // later: refresh business list here
 }
+
+// -----------------------------
+// Load all businesses
+// -----------------------------
+async function loadBusinesses() {
+  const res = await fetch(`${API_URL}/my_businesses`, {
+    headers: {
+      ...(token ? { "Authorization": `Bearer ${token}` } : {})
+    }
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    console.error("Failed to load businesses", data.detail);
+    return;
+  }
+
+  const tableBody = document.querySelector("#business-table tbody");
+  if (!tableBody) return;
+
+  tableBody.innerHTML = data
+    .map(b => `<tr><td>${b.id}</td><td>${b.name}</td><td>${b.folder_name}</td></tr>`)
+    .join("");
+}
+
+// Call it when the page loads
+loadBusinesses();

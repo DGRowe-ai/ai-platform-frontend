@@ -10,11 +10,10 @@ async function loadBusinesses() {
     const tableBody = document.getElementById("business-table-body");
 
     try {
-        const res = await fetch(`${API_URL}/admin/businesses`, {
-            headers: {
-                "Authorization": `Bearer ${token}`
-            }
-        });
+fetch(`${API_URL}/my_businesses`, {
+  headers: { Authorization: `Bearer ${token}` }
+})
+
 
         if (!res.ok) {
             console.error("Failed to load businesses");
