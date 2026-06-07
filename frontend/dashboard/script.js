@@ -3,7 +3,7 @@
 // -----------------------------
 let token = localStorage.getItem("token");
 
-const API_URL = "https://ai-platform-backend-ulqs.onrender.com";
+const API_URL = "https://ai-platform-backend-uaaa.onrender.com";
 
 // -----------------------------
 // Step 11E — Load user's business automatically

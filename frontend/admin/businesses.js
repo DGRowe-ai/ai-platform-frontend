@@ -1,4 +1,4 @@
-const API_URL = "https://ai-platform-backend-ulqs.onrender.com";
+const API_URL = "https://ai-platform-backend-uaaa.onrender.com";
 
 async function loadBusinesses() {
     const token = localStorage.getItem("token");

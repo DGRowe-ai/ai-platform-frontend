@@ -1,4 +1,4 @@
-const API_URL = "https://ai-platform-backend-ulqs.onrender.com"; // change to your backend URL when deployed
+const API_URL = "https://ai-platform-backend-uaaa.onrender.com"; // change to your backend URL when deployed
 const token = localStorage.getItem("token"); // your admin JWT from login
 
 document.getElementById("add-btn").addEventListener("click", addCustomer);
