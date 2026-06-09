@@ -46,7 +46,7 @@
 </div>
 
 <script>
-const API_URL = "https://ai-platform-backend-uaaa.onrender.com";
+const API_URL = "https://ai-platform-backend-ulqs.onrender.com";
 
 async function login() {
     const email = document.getElementById("email").value;
@@ -64,7 +64,7 @@ async function login() {
     const data = await res.json();
 
     if (res.ok) {
-localStorage.setItem("token", data.access_token);
+        localStorage.setItem("token", data.access_token);
         alert("Login successful!");
         window.location.href = "admin/businesses.html";
     } else {
