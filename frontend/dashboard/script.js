@@ -1,169 +1,123 @@
-// -----------------------------
-// Grab the JWT token
-// -----------------------------
-let token = localStorage.getItem("token");
+import { API_URL, apiJson, requireAuth } from "../api.js";
 
-const API_URL = "https://ai-platform-backend-uaaa.onrender.com";
-
-// -----------------------------
-// Step 11E — Load user's business automatically
-// -----------------------------
-async function loadMyBusinesses() {
-    const res = await fetch(`${API_URL}/my_businesses`, {
-        headers: {
-            "Authorization": `Bearer ${token}`
-        }
-    });
-
-    const list = await res.json();
-
-    console.log("MY BUSINESSES RESPONSE:", list);  // ✅ THIS IS THE CORRECT SPOT
-
-    return list.businesses[0].folder_name; // first business for now
+if (!requireAuth("/login.html")) {
+  throw new Error("Not authenticated");
 }
 
-// BUSINESS_ID is now dynamic
 let BUSINESS_ID = null;
 
-// -----------------------------
-// Load business data
-// -----------------------------
-async function loadBusiness() {
+async function loadMyBusinesses() {
+  const list = await apiJson("/my_businesses");
 
-    // Wait for BUSINESS_ID to be loaded
+  if (!Array.isArray(list) || list.length === 0) {
+    throw new Error("No businesses found for this account.");
+  }
+
+  return list[0].folder_name;
+}
+
+async function loadBusiness() {
+  try {
     if (!BUSINESS_ID) {
-        BUSINESS_ID = await loadMyBusinesses();
+      BUSINESS_ID = await loadMyBusinesses();
     }
 
-    const res = await fetch(`${API_URL}/business/${BUSINESS_ID}`, {
-        headers: {
-            "Authorization": `Bearer ${token}`
-        }
-    });
+    const data = await apiJson(`/business/${BUSINESS_ID}`);
 
-    const data = await res.json();
+    document.getElementById("name").value = data.profile?.name || "";
+    document.getElementById("industry").value = data.profile?.industry || "";
+    document.getElementById("email").value = data.profile?.contact_email || "";
+    document.getElementById("website").value = data.profile?.website || "";
 
-    document.getElementById("name").value = data.profile.name;
-    document.getElementById("industry").value = data.profile.industry;
-    document.getElementById("email").value = data.profile.contact_email;
-    document.getElementById("website").value = data.profile.website;
+    document.getElementById("greeting").value = data.settings?.greeting || "";
+    document.getElementById("tone").value = data.settings?.tone || "";
+    document.getElementById("maxlen").value = data.settings?.max_response_length || "";
 
-    document.getElementById("greeting").value = data.settings.greeting;
-    document.getElementById("tone").value = data.settings.tone;
-    document.getElementById("maxlen").value = data.settings.max_response_length;
-
-    document.getElementById("knowledge").value = data.knowledge;
+    document.getElementById("knowledge").value = data.knowledge || "";
+  } catch (err) {
+    console.error("Failed to load business:", err);
+    alert(err.message || "Could not load your dashboard. Please log in again.");
+    window.location.href = "/login.html";
+  }
 }
 
-// -----------------------------
-// Save business changes
-// -----------------------------
 async function saveBusiness() {
+  const payload = {
+    business_id: BUSINESS_ID,
+    profile: {
+      name: document.getElementById("name").value,
+      industry: document.getElementById("industry").value,
+      contact_email: document.getElementById("email").value,
+      website: document.getElementById("website").value,
+    },
+    settings: {
+      greeting: document.getElementById("greeting").value,
+      tone: document.getElementById("tone").value,
+      max_response_length: parseInt(document.getElementById("maxlen").value, 10) || 0,
+    },
+    knowledge: document.getElementById("knowledge").value,
+  };
 
-    const payload = {
-        business_id: BUSINESS_ID,
-
-        profile: {
-            name: document.getElementById("name").value,
-            industry: document.getElementById("industry").value,
-            contact_email: document.getElementById("email").value,
-            website: document.getElementById("website").value
-        },
-
-        settings: {
-            greeting: document.getElementById("greeting").value,
-            tone: document.getElementById("tone").value,
-            max_response_length: parseInt(document.getElementById("maxlen").value)
-        },
-
-        knowledge: document.getElementById("knowledge").value
-    };
-
-    await fetch(`${API_URL}/update_business`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify(payload)
-    });
-
+  try {
+    await apiJson("/update_business", { method: "POST", body: payload });
     alert("Saved!");
+  } catch (err) {
+    console.error("Save failed:", err);
+    alert(err.message || "Failed to save changes.");
+  }
 }
 
-// -----------------------------
-// Test chatbot
-// -----------------------------
 async function testChat() {
+  const msg = document.getElementById("test-input").value.trim();
+  if (!msg) return;
 
-    const msg = document.getElementById("test-input").value;
-
-    const res = await fetch(`${API_URL}/business/chat`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({
-            business_id: BUSINESS_ID,
-            message: msg
-        })
+  try {
+    const data = await apiJson("/business/chat", {
+      method: "POST",
+      auth: false,
+      body: { business_id: BUSINESS_ID, message: msg },
     });
-
-    const data = await res.json();
     document.getElementById("test-output").innerText = data.response;
+  } catch (err) {
+    console.error("Chat test failed:", err);
+    document.getElementById("test-output").innerText = err.message || "Chat failed.";
+  }
 }
 
+async function downloadCSV(url, filename) {
+  const res = await fetch(url, {
+    headers: { Authorization: `Bearer ${localStorage.getItem("token") || localStorage.getItem("access_token")}` },
+  });
 
-// -----------------------------
-// Button listeners
-// -----------------------------
+  if (!res.ok) {
+    throw new Error(`Export failed (${res.status})`);
+  }
+
+  const text = await res.text();
+  const blob = new Blob([text], { type: "text/csv" });
+  const link = document.createElement("a");
+  link.href = URL.createObjectURL(blob);
+  link.download = filename;
+  link.click();
+}
+
 document.getElementById("save-btn").addEventListener("click", saveBusiness);
 document.getElementById("test-btn").addEventListener("click", testChat);
 
-// -----------------------------
-// Load data on page start
-// -----------------------------
-loadBusiness();
-
-
-// =====================================================
-// STEP 20 — EXPORT ROUTES (FRONTEND)
-// =====================================================
-
-// -----------------------------
-// CSV Download Helper
-// -----------------------------
-async function downloadCSV(url, filename) {
-    const res = await fetch(url, {
-        headers: { "Authorization": `Bearer ${token}` }
-    });
-
-    const text = await res.text();
-    const blob = new Blob([text], { type: "text/csv" });
-    const link = document.createElement("a");
-    link.href = URL.createObjectURL(blob);
-    link.download = filename;
-    link.click();
-}
-
-// -----------------------------
-// Export All Conversations
-// -----------------------------
-document.getElementById("export-all").onclick = () => {
-    downloadCSV(`${API_URL}/export/all`, "all_conversations.csv");
+document.getElementById("export-all").onclick = async () => {
+  try {
+    await downloadCSV(`${API_URL}/export/all`, "all_conversations.csv");
+  } catch (err) {
+    alert(err.message || "Export failed.");
+  }
 };
 
-// -----------------------------
-// Export Single (placeholder)
-// -----------------------------
 document.getElementById("export-single").onclick = () => {
-    alert("Single conversation export requires conversation selection (coming in Step 21)");
+  alert("Single conversation export requires conversation selection (coming in Step 21)");
 };
 
-// -----------------------------
-// Export Filtered (placeholder)
-// -----------------------------
 document.getElementById("export-filtered").onclick = () => {
-    alert("Filtered export requires filters/search UI (coming in Step 21)");
+  alert("Filtered export requires filters/search UI (coming in Step 21)");
 };
+
+loadBusiness();

@@ -11,27 +11,29 @@
     <input id="business_name" type="text" placeholder="Business Name"><br>
 
     <button id="register-btn">Register</button>
+    <p id="error" style="color:#c00"></p>
 
-    <script>
-        const API_URL = "https://ai-platform-backend-uaaa.onrender.com";
+    <script type="module">
+        import { apiJson } from "./api.js";
+
+        const errorEl = document.getElementById("error");
 
         document.getElementById("register-btn").onclick = async () => {
-            const email = document.getElementById("email").value;
+            errorEl.textContent = "";
+            const email = document.getElementById("email").value.trim();
             const password = document.getElementById("password").value;
-            const business_name = document.getElementById("business_name").value;
+            const business_name = document.getElementById("business_name").value.trim();
 
-            const res = await fetch(`${API_URL}/signup`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password, business_name })
-            });
-
-            if (res.ok) {
+            try {
+                await apiJson("/signup", {
+                    method: "POST",
+                    auth: false,
+                    body: { email, password, business_name },
+                });
                 alert("Account created! Now log in.");
                 window.location.href = "login.html";
-            } else {
-                const data = await res.json();
-                alert("Registration failed: " + data.detail);
+            } catch (err) {
+                errorEl.textContent = err.message || "Registration failed.";
             }
         };
     </script>

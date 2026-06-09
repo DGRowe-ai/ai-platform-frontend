@@ -21,6 +21,7 @@
             width: 100%;
             padding: 10px;
             margin-top: 10px;
+            box-sizing: border-box;
         }
         button {
             width: 100%;
@@ -31,6 +32,13 @@
             border: none;
             border-radius: 5px;
             font-size: 16px;
+            cursor: pointer;
+        }
+        .error {
+            color: #c00;
+            margin-top: 12px;
+            font-size: 14px;
+            min-height: 1.2em;
         }
     </style>
 </head>
@@ -39,40 +47,53 @@
 <div class="box">
     <h2>Create Your Account</h2>
 
-    <input id="email" type="email" placeholder="Email">
-    <input id="password" type="password" placeholder="Password">
+    <input id="email" type="email" placeholder="Email" autocomplete="email">
+    <input id="password" type="password" placeholder="Password" autocomplete="new-password">
     <input id="business" type="text" placeholder="Business Name">
 
-    <button onclick="signup()">Sign Up</button>
+    <button id="signup-btn" type="button">Sign Up</button>
+    <p id="error" class="error" role="alert"></p>
 </div>
 
-<script>
-const API_URL = "https://ai-platform-backend-uaaa.onrender.com";
+<script type="module">
+import { apiJson } from "./api.js";
+
+const errorEl = document.getElementById("error");
+const signupBtn = document.getElementById("signup-btn");
 
 async function signup() {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    const business = document.getElementById("business").value;
+  errorEl.textContent = "";
 
-    const res = await fetch(`${API_URL}/signup`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            email: email,
-            password: password,
-            business_name: business
-        })
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+  const business = document.getElementById("business").value.trim();
+
+  if (!email || !password || !business) {
+    errorEl.textContent = "Please fill in all fields.";
+    return;
+  }
+
+  signupBtn.disabled = true;
+  signupBtn.textContent = "Creating account...";
+
+  try {
+    await apiJson("/signup", {
+      method: "POST",
+      auth: false,
+      body: { email, password, business_name: business },
     });
-
-    const data = await res.json();
-
-    if (res.ok) {
-        alert("Signup successful! Now log in.");
-        window.location.href = "login.html";
-    } else {
-        alert(data.detail);
-    }
+    alert("Signup successful! Now log in.");
+    window.location.href = "login.html";
+  } catch (err) {
+    console.error("Signup failed:", err);
+    errorEl.textContent = err.message || "Signup failed. Please try again.";
+  } finally {
+    signupBtn.disabled = false;
+    signupBtn.textContent = "Sign Up";
+  }
 }
+
+signupBtn.addEventListener("click", signup);
 </script>
 
 </body>
