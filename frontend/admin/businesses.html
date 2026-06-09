@@ -44,44 +44,36 @@
     <tbody></tbody>
   </table>
 
-  <script>
-    const token = localStorage.getItem("token");
+  <script type="module">
+    import { apiJson, requireAuth } from "../api.js";
 
-    fetch("https://ai-platform-backend-ulqs.onrender.com/my_businesses", {
-      headers: { 
-        "Authorization": "Bearer " + token 
-      }
-    })
-    .then(res => {
-      if (!res.ok) {
-        console.error("Failed to load businesses");
-        return [];
-      }
-      return res.json();
-    })
-    .then(data => {
+    if (!requireAuth("/login.html")) {
+      throw new Error("Not authenticated");
+    }
+
+    try {
+      const data = await apiJson("/my_businesses");
+      const businesses = Array.isArray(data) ? data : data.businesses || [];
       const tbody = document.querySelector("#bizTable tbody");
-      if (!tbody) {
-        console.error("Table body not found");
-        return;
-      }
 
       tbody.innerHTML = "";
 
-      data.forEach(b => {
+      businesses.forEach((b) => {
         const row = document.createElement("tr");
         row.innerHTML = `
-          <td>${b.id}</td>
-          <td>${b.name}</td>
+          <td>${b.id ?? ""}</td>
+          <td>${b.name ?? ""}</td>
           <td>${b.owner_email || "—"}</td>
-          <td>${b.subscription_active ? "Active" : "Inactive"}</td>
+          <td>${b.subscription_active ? "Active" : b.subscription_status || "Inactive"}</td>
           <td>${b.created_at || "—"}</td>
           <td>${b.last_payment || "—"}</td>
         `;
         tbody.appendChild(row);
       });
-    })
-    .catch(err => console.error("Error:", err));
+    } catch (err) {
+      console.error("Error loading businesses:", err);
+      alert(err.message || "Failed to load businesses.");
+    }
   </script>
 </body>
 </html>

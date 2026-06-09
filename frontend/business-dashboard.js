@@ -1,49 +1,42 @@
-const API_URL = "https://ai-platform-backend-uaaa.onrender.com";
-const token = localStorage.getItem("token");
+import { apiJson, requireAuth } from "./api.js";
 
-// Load current business info
-async function loadBusiness() {
-  const res = await fetch(`${API_URL}/my_businesses`, {
-    headers: { "Authorization": "Bearer " + token }
-  });
-
-  if (!res.ok) {
-    console.error("Failed to load business:", res.status);
-    return;
-  }
-
-  const data = await res.json();
-  const business = data[0]; // first business for now
-
-  // Example: fill dashboard fields
-  document.getElementById("business-name").value = business.name || "";
-  document.getElementById("folder-name").value = business.folder_name || "";
+if (!requireAuth("/login.html")) {
+  throw new Error("Not authenticated");
 }
 
-// Save business changes
+async function loadBusiness() {
+  try {
+    const data = await apiJson("/my_businesses");
+    const businesses = Array.isArray(data) ? data : data.businesses || [];
+    const business = businesses[0];
+
+    if (!business) return;
+
+    const nameEl = document.getElementById("business-name");
+    const folderEl = document.getElementById("folder-name");
+    if (nameEl) nameEl.value = business.name || "";
+    if (folderEl) folderEl.value = business.folder_name || "";
+  } catch (err) {
+    console.error("Failed to load business:", err);
+  }
+}
+
 async function saveBusiness() {
   const name = document.getElementById("business-name").value;
   const folder = document.getElementById("folder-name").value;
 
-  const res = await fetch(`${API_URL}/business/${folder}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": "Bearer " + token
-    },
-    body: JSON.stringify({ name })
-  });
-
-  if (!res.ok) {
-    alert("Failed to save business");
-    return;
+  try {
+    await apiJson(`/business/${folder}`, {
+      method: "PUT",
+      body: { name },
+    });
+    alert("Business saved!");
+  } catch (err) {
+    alert(err.message || "Failed to save business");
   }
-
-  alert("Business saved!");
 }
 
-// Hook up buttons
-document.getElementById("save-btn").addEventListener("click", saveBusiness);
+const saveBtn = document.getElementById("save-btn");
+if (saveBtn) saveBtn.addEventListener("click", saveBusiness);
 
-// Load data when page opens
 loadBusiness();

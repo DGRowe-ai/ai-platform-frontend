@@ -39,9 +39,14 @@ There are no project-level lint or test scripts. Use:
 
 ### API URLs and environments
 
-Most frontend files hardcode `https://ai-platform-backend-uaaa.onrender.com` (currently **down**). A working hosted backend is `https://ai-platform-backend-ulqs.onrender.com` (used in `index.js`, `chat.html`, some admin pages).
+All frontend API calls go through `frontend/api.js`, which auto-selects:
 
-For local full-stack development, point `API_URL` at `http://localhost:8000` across frontend files, or use pages that already target the `ulqs` host.
+- `http://localhost:8000` when running on localhost
+- `https://ai-platform-backend-ulqs.onrender.com` in production
+
+The old `uaaa` Render host is **down** and must not be used.
+
+Auth tokens are stored under both `token` and `access_token` in `localStorage` for compatibility.
 
 ### Required secrets (local backend chat)
 

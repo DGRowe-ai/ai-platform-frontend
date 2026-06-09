@@ -21,6 +21,7 @@
             width: 100%;
             padding: 10px;
             margin-top: 10px;
+            box-sizing: border-box;
         }
         button {
             width: 100%;
@@ -31,6 +32,18 @@
             border: none;
             border-radius: 5px;
             font-size: 16px;
+            cursor: pointer;
+        }
+        .error {
+            color: #c00;
+            margin-top: 12px;
+            font-size: 14px;
+            min-height: 1.2em;
+        }
+        .signup-link {
+            margin-top: 16px;
+            text-align: center;
+            font-size: 14px;
         }
     </style>
 </head>
@@ -39,38 +52,57 @@
 <div class="box">
     <h2>Login</h2>
 
-    <input id="email" type="email" placeholder="Email">
-    <input id="password" type="password" placeholder="Password">
+    <input id="email" type="email" placeholder="Email" autocomplete="email">
+    <input id="password" type="password" placeholder="Password" autocomplete="current-password">
 
-    <button onclick="login()">Login</button>
+    <button id="login-btn" type="button">Login</button>
+    <p id="error" class="error" role="alert"></p>
+
+    <p class="signup-link">No account? <a href="signup.html">Sign up</a></p>
 </div>
 
-<script>
-const API_URL = "https://ai-platform-backend-uaaa.onrender.com";
+<script type="module">
+import { apiJson, setToken } from "./api.js";
+
+const errorEl = document.getElementById("error");
+const loginBtn = document.getElementById("login-btn");
 
 async function login() {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+  errorEl.textContent = "";
 
-    const res = await fetch(`${API_URL}/login`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            email: email,
-            password: password
-        })
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+
+  if (!email || !password) {
+    errorEl.textContent = "Please enter your email and password.";
+    return;
+  }
+
+  loginBtn.disabled = true;
+  loginBtn.textContent = "Logging in...";
+
+  try {
+    const data = await apiJson("/login", {
+      method: "POST",
+      auth: false,
+      body: { email, password },
     });
 
-    const data = await res.json();
-
-    if (res.ok) {
-localStorage.setItem("token", data.access_token);
-        alert("Login successful!");
-        window.location.href = "admin/businesses.html";
-    } else {
-        alert(data.detail);
-    }
+    setToken(data.access_token);
+    window.location.href = "dashboard/index.html";
+  } catch (err) {
+    console.error("Login failed:", err);
+    errorEl.textContent = err.message || "Login failed. Please try again.";
+  } finally {
+    loginBtn.disabled = false;
+    loginBtn.textContent = "Login";
+  }
 }
+
+loginBtn.addEventListener("click", login);
+document.getElementById("password").addEventListener("keydown", (e) => {
+  if (e.key === "Enter") login();
+});
 </script>
 
 </body>

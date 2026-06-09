@@ -1,4 +1,4 @@
-// index.js — REAL CHATBOT SCRIPT
+import { apiJson } from "./api.js";
 
 console.log("Business Chat Widget loaded");
 
@@ -7,31 +7,26 @@ const sendBtn = document.getElementById("send-btn");
 const messages = document.getElementById("messages");
 
 async function sendMessage() {
-    const text = input.value.trim();
-    if (!text) return;
+  const text = input.value.trim();
+  if (!text) return;
 
-    // Show user message
-    messages.innerHTML += `<div class="user-msg">${text}</div>`;
-    input.value = "";
+  messages.innerHTML += `<div class="user-msg">${text}</div>`;
+  input.value = "";
 
-    // Send to backend
-    const res = await fetch("https://ai-platform-backend-ulqs.onrender.com/business/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-            business_id: "rowe_ai",
-            message: text
-        })
+  try {
+    const data = await apiJson("/business/chat", {
+      method: "POST",
+      auth: false,
+      body: { business_id: "rowe_ai", message: text },
     });
-
-    const data = await res.json();
-
-    // Show bot reply
     messages.innerHTML += `<div class="bot-msg">${data.response}</div>`;
+  } catch (err) {
+    messages.innerHTML += `<div class="bot-msg">Sorry, something went wrong.</div>`;
+    console.error(err);
+  }
 }
 
 sendBtn.addEventListener("click", sendMessage);
-
 input.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") sendMessage();
+  if (e.key === "Enter") sendMessage();
 });
