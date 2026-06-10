@@ -1,5 +1,4 @@
-const API_URL = "https://ai-platform-backend-uaaa.onrender.com";
-
+const API_URL = "https://ai-platform-backend-ulqs.onrender.com";
 
 export async function apiGet(path) {
   const res = await fetch(API_URL + path, { credentials: "include" });

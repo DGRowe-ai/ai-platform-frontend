@@ -8,7 +8,7 @@ const token = localStorage.getItem("access_token");
     }
 
     try {
-        const response = await fetch("https://ai-platform-backend-uaaa.onrender.com/my_businesses", {
+        const response = await fetch("https://ai-platform-backend-ulqs.onrender.com/my_businesses", {
             headers: {
                 "Authorization": `Bearer ${token}`
             }

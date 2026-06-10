@@ -2,7 +2,7 @@
    URL + API Setup
 ------------------------------*/
 
-const API_URL = "https://ai-platform-backend-uaaa.onrender.com";
+const API_URL = "https://ai-platform-backend-ulqs.onrender.com";
 const BUSINESS_ID = "rowe_ai"; // your real folder name
 
 /* -----------------------------

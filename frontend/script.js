@@ -10,7 +10,7 @@ const messagesDiv = document.getElementById("messages");
 const BUSINESS_ID = "rowe_ai";
 
 // Render backend
-const API_URL = "https://ai-platform-backend-uaaa.onrender.com";
+const API_URL = "https://ai-platform-backend-ulqs.onrender.com";
 
 /* -----------------------------
    Chat UI Helpers
