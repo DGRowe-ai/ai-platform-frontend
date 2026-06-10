@@ -32,7 +32,7 @@ function getToken() {
 function redirectToLogin() {
   localStorage.removeItem("token");
   localStorage.removeItem("access_token");
-  window.location.href = "../login.html";
+  window.location.href = "login.html";
 }
 
 function setStatus(message, type = "") {

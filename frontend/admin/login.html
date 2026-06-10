@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Login</title>
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --text: #172033;
+      --muted: #667085;
+      --border: #d9e2ef;
+      --primary: #0f9488;
+      --primary-dark: #0f766e;
+      --danger: #dc2626;
+      --shadow: 0 18px 45px rgba(15, 118, 110, 0.18);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      align-items: center;
+      background:
+        radial-gradient(circle at top right, rgba(153, 246, 228, 0.34), transparent 34%),
+        linear-gradient(135deg, #ecfeff 0%, var(--bg) 58%, #ccfbf1 100%);
+      color: var(--text);
+      display: flex;
+      font-family: Arial, sans-serif;
+      justify-content: center;
+      margin: 0;
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    .login-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      max-width: 430px;
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .login-header {
+      background: linear-gradient(135deg, #0f766e 0%, #0f9488 55%, #115e59 100%);
+      color: #ffffff;
+      padding: 28px;
+    }
+
+    .login-header h1 {
+      font-size: 31px;
+      letter-spacing: -0.03em;
+      margin: 0 0 8px;
+    }
+
+    .login-header p {
+      color: #d7fffa;
+      margin: 0;
+    }
+
+    form {
+      padding: 28px;
+    }
+
+    label {
+      color: var(--muted);
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      margin: 14px 0 6px;
+    }
+
+    input {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font: inherit;
+      padding: 12px;
+      width: 100%;
+    }
+
+    button {
+      background: var(--primary);
+      border: 0;
+      border-radius: 10px;
+      color: #ffffff;
+      cursor: pointer;
+      font: inherit;
+      font-weight: 700;
+      margin-top: 18px;
+      padding: 12px 14px;
+      width: 100%;
+    }
+
+    button:hover {
+      background: var(--primary-dark);
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.65;
+    }
+
+    .status {
+      color: var(--muted);
+      font-size: 14px;
+      margin-top: 14px;
+      min-height: 20px;
+    }
+
+    .status.error {
+      color: var(--danger);
+    }
+
+    .help {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+      margin-top: 16px;
+    }
+
+    .help a {
+      color: var(--primary-dark);
+    }
+  </style>
+</head>
+<body>
+  <section class="login-card">
+    <div class="login-header">
+      <h1>Admin Login</h1>
+      <p>Sign in with an admin account to manage client businesses.</p>
+    </div>
+
+    <form id="admin-login-form">
+      <label for="email">Admin email</label>
+      <input id="email" type="email" autocomplete="email" required>
+
+      <label for="password">Password</label>
+      <input id="password" type="password" autocomplete="current-password" required>
+
+      <button id="login-btn" type="submit">Log in to Admin Dashboard</button>
+      <div class="status" id="status"></div>
+
+      <div class="help">
+        Client users should use the regular <a href="../login.html">client login</a>.
+        This page only opens the admin dashboard after admin API access is verified.
+      </div>
+    </form>
+  </section>
+
+  <script>
+    const API_URL = "https://ai-platform-backend-ulqs.onrender.com";
+    const form = document.getElementById("admin-login-form");
+    const statusEl = document.getElementById("status");
+    const loginBtn = document.getElementById("login-btn");
+
+    function setStatus(message, type = "") {
+      statusEl.textContent = message || "";
+      statusEl.className = `status ${type}`.trim();
+    }
+
+    function clearSession() {
+      localStorage.removeItem("token");
+      localStorage.removeItem("access_token");
+      localStorage.removeItem("user_role");
+      localStorage.removeItem("businesses");
+    }
+
+    async function verifyAdminToken(token) {
+      const response = await fetch(`${API_URL}/admin/businesses`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+
+      if (response.status === 401 || response.status === 403) {
+        throw new Error("This account does not have admin access.");
+      }
+
+      if (!response.ok) {
+        throw new Error(`Unable to verify admin access (${response.status}).`);
+      }
+    }
+
+    form.addEventListener("submit", async event => {
+      event.preventDefault();
+      setStatus("Signing in...");
+      loginBtn.disabled = true;
+
+      try {
+        clearSession();
+
+        const response = await fetch(`${API_URL}/login`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: document.getElementById("email").value.trim(),
+            password: document.getElementById("password").value
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.detail || "Login failed.");
+        }
+
+        const token = data.access_token || data.token;
+        if (!token) {
+          throw new Error("Login response did not include an access token.");
+        }
+
+        await verifyAdminToken(token);
+
+        localStorage.setItem("token", token);
+        localStorage.setItem("access_token", token);
+        localStorage.setItem("user_role", "admin");
+        window.location.href = "businesses.html";
+      } catch (err) {
+        console.error("Admin login error:", err);
+        clearSession();
+        setStatus(err.message || "Unable to log in.", "error");
+      } finally {
+        loginBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
