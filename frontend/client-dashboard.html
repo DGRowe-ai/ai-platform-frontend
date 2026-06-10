@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Client Dashboard</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --text: #172033;
+      --muted: #667085;
+      --border: #d9e2ef;
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --danger: #dc2626;
+      --danger-bg: #fef2f2;
+      --success: #047857;
+      --shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    header {
+      background: #0f172a;
+      color: #ffffff;
+      padding: 24px clamp(16px, 5vw, 56px);
+    }
+
+    header h1 {
+      margin: 0 0 6px;
+      font-size: clamp(28px, 4vw, 40px);
+    }
+
+    header p {
+      margin: 0;
+      color: #cbd5e1;
+    }
+
+    main {
+      width: min(1180px, calc(100% - 32px));
+      margin: 28px auto 48px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .business-name {
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 22px;
+    }
+
+    .card h2 {
+      margin: 0 0 16px;
+      font-size: 21px;
+    }
+
+    .analytics {
+      grid-column: span 12;
+    }
+
+    .history {
+      grid-column: span 7;
+    }
+
+    .settings {
+      grid-column: span 5;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .stat {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      background: #f8fafc;
+    }
+
+    .stat .label {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .stat .value {
+      font-size: 26px;
+      font-weight: 700;
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .chat-list {
+      display: grid;
+      gap: 12px;
+      max-height: 620px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .chat-item {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      background: #ffffff;
+    }
+
+    .chat-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    .chat-row {
+      margin: 8px 0;
+      line-height: 1.45;
+    }
+
+    .chat-row strong {
+      display: inline-block;
+      min-width: 74px;
+    }
+
+    .chat-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    label {
+      display: block;
+      font-weight: 700;
+      margin: 14px 0 6px;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 11px 12px;
+      font: inherit;
+      color: var(--text);
+      background: #ffffff;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 96px;
+    }
+
+    .help-text {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 6px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-weight: 700;
+      cursor: pointer;
+      background: var(--primary);
+      color: #ffffff;
+    }
+
+    button:hover {
+      background: var(--primary-dark);
+    }
+
+    button.secondary {
+      background: #e2e8f0;
+      color: #172033;
+    }
+
+    button.secondary:hover {
+      background: #cbd5e1;
+    }
+
+    button.danger {
+      background: var(--danger-bg);
+      color: var(--danger);
+      border: 1px solid #fecaca;
+    }
+
+    button.danger:hover {
+      background: #fee2e2;
+    }
+
+    .status {
+      min-height: 20px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .status.success {
+      color: var(--success);
+    }
+
+    .status.error {
+      color: var(--danger);
+    }
+
+    .empty {
+      color: var(--muted);
+      border: 1px dashed var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      text-align: center;
+    }
+
+    @media (max-width: 900px) {
+      .history,
+      .settings {
+        grid-column: span 12;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 560px) {
+      .topbar,
+      .toolbar {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Client Dashboard</h1>
+    <p>Review chatbot performance, manage conversations, and tune the customer chat experience.</p>
+  </header>
+
+  <main>
+    <div class="topbar">
+      <div>
+        <div class="business-name" id="business-name">Loading business...</div>
+        <div class="status" id="page-status"></div>
+      </div>
+      <button class="secondary" id="logout-btn" type="button">Log out</button>
+    </div>
+
+    <div class="grid">
+      <section class="card analytics">
+        <div class="toolbar">
+          <h2>Analytics</h2>
+          <button class="secondary" id="refresh-btn" type="button">Refresh</button>
+        </div>
+        <div class="stats-grid" id="analytics-cards"></div>
+      </section>
+
+      <section class="card history">
+        <div class="toolbar">
+          <h2>Chat History</h2>
+          <span class="status" id="history-status"></span>
+        </div>
+        <div class="chat-list" id="chat-history"></div>
+      </section>
+
+      <section class="card settings">
+        <h2>Chatbot Settings</h2>
+        <form id="settings-form">
+          <label for="welcome-message">Welcome Message</label>
+          <textarea id="welcome-message" name="welcome_message" placeholder="Hello! How can I help you today?"></textarea>
+
+          <label for="tone">Tone</label>
+          <select id="tone" name="tone">
+            <option value="">Select a tone</option>
+            <option value="friendly">Friendly</option>
+            <option value="professional">Professional</option>
+            <option value="casual">Casual</option>
+            <option value="concise">Concise</option>
+            <option value="enthusiastic">Enthusiastic</option>
+          </select>
+
+          <label for="chat-length">Chat Length</label>
+          <input id="chat-length" name="chat_length" type="number" min="50" step="25" placeholder="250">
+          <div class="help-text">Maximum response length or token budget, depending on backend configuration.</div>
+
+          <label for="custom-instructions">Custom Instructions</label>
+          <textarea id="custom-instructions" name="custom_instructions" placeholder="Tell the chatbot how to answer, what to avoid, and when to escalate."></textarea>
+
+          <label for="faqs">FAQs</label>
+          <textarea id="faqs" name="faqs" placeholder="Question? | Answer&#10;Another question? | Another answer"></textarea>
+          <div class="help-text">Use one FAQ per line. Separate question and answer with a pipe character.</div>
+
+          <button id="save-settings-btn" type="submit">Save Settings</button>
+          <div class="status" id="settings-status"></div>
+        </form>
+      </section>
+    </div>
+  </main>
+
+  <script src="client-dashboard.js"></script>
+</body>
+</html>
