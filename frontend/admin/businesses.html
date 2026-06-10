@@ -2,86 +2,99 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Businesses</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 40px;
-      background-color: #f9f9f9;
-    }
-    h2 {
-      margin-bottom: 10px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      background-color: white;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 8px;
-      text-align: left;
-    }
-    th {
-      background-color: #eee;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard</title>
+  <link rel="stylesheet" href="admin-dashboard.css">
 </head>
 <body>
-  <h2>All Businesses</h2>
+  <header>
+    <h1>Admin Dashboard</h1>
+    <p>Manage businesses, monitor platform analytics, and track payment renewals.</p>
+  </header>
 
-  <table id="bizTable">
-    <thead>
-      <tr>
-        <th>Business ID</th>
-        <th>Name</th>
-        <th>Owner Email</th>
-        <th>Subscription</th>
-        <th>Created</th>
-        <th>Last Payment</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+  <main>
+    <div class="topbar">
+      <div>
+        <div class="status" id="page-status">Loading admin dashboard...</div>
+      </div>
+      <div class="button-row">
+        <button class="secondary" id="refresh-btn" type="button">Refresh</button>
+        <button class="secondary" id="logout-btn" type="button">Log out</button>
+      </div>
+    </div>
 
-  <script>
-    const token = localStorage.getItem("token");
+    <section class="card span-12">
+      <div class="toolbar">
+        <h2>Platform Analytics</h2>
+        <span class="muted">Live admin summary</span>
+      </div>
+      <div class="stats-grid" id="analytics-cards"></div>
+    </section>
 
-    fetch("https://ai-platform-backend-ulqs.onrender.com/my_businesses", {
-      headers: { 
-        "Authorization": "Bearer " + token 
-      }
-    })
-    .then(res => {
-      if (!res.ok) {
-        console.error("Failed to load businesses");
-        return [];
-      }
-      return res.json();
-    })
-    .then(data => {
-      const tbody = document.querySelector("#bizTable tbody");
-      if (!tbody) {
-        console.error("Table body not found");
-        return;
-      }
+    <section class="card span-12">
+      <div class="toolbar">
+        <div>
+          <h2>Business Management</h2>
+          <div class="muted" id="business-count">0 businesses</div>
+        </div>
+        <button class="warning" id="overdue-filter-btn" type="button">View Overdue Businesses</button>
+      </div>
 
-      tbody.innerHTML = "";
+      <div class="filters">
+        <div>
+          <label for="search-input">Search businesses</label>
+          <input id="search-input" type="search" placeholder="Search by business or owner email">
+        </div>
+        <div>
+          <label for="status-filter">Status</label>
+          <select id="status-filter">
+            <option value="all">All statuses</option>
+            <option value="active">Active</option>
+            <option value="disabled">Disabled</option>
+          </select>
+        </div>
+        <div>
+          <label for="payment-filter">Payment</label>
+          <select id="payment-filter">
+            <option value="all">All payments</option>
+            <option value="paid">Paid / up to date</option>
+            <option value="overdue">Overdue</option>
+            <option value="none">No payments recorded</option>
+          </select>
+        </div>
+        <div>
+          <label>&nbsp;</label>
+          <button class="secondary" id="clear-filters-btn" type="button">Clear Filters</button>
+        </div>
+      </div>
 
-      data.forEach(b => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${b.id}</td>
-          <td>${b.name}</td>
-          <td>${b.owner_email || "—"}</td>
-          <td>${b.subscription_active ? "Active" : "Inactive"}</td>
-          <td>${b.created_at || "—"}</td>
-          <td>${b.last_payment || "—"}</td>
-        `;
-        tbody.appendChild(row);
-      });
-    })
-    .catch(err => console.error("Error:", err));
-  </script>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Business</th>
+              <th>Owner Email</th>
+              <th>Created</th>
+              <th>Status</th>
+              <th>Payment</th>
+              <th>Renewal</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="business-table-body"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <div class="modal-backdrop" id="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal">
+      <h2 id="modal-title">Confirm action</h2>
+      <div id="modal-body"></div>
+      <div class="modal-actions" id="modal-actions"></div>
+    </div>
+  </div>
+
+  <script src="businesses.js?v=20260610-admin-dashboard"></script>
 </body>
 </html>
