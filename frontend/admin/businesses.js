@@ -156,7 +156,7 @@ function normalizeBusiness(raw) {
     ...raw,
     id,
     folderName,
-    detailId: folderName || id,
+    businessKey: folderName || id,
     name,
     ownerEmail: firstValue(raw, ["owner_email", "ownerEmail", "email", "owner"]),
     createdAt: firstValue(raw, ["created_at", "created", "createdDate"]),
@@ -309,12 +309,6 @@ function renderActionsCell(business) {
   const actions = document.createElement("div");
   actions.className = "actions";
 
-  const view = document.createElement("a");
-  view.className = "button-link secondary";
-  view.href = `business-detail.html?id=${encodeURIComponent(business.detailId)}`;
-  view.textContent = "View";
-  actions.appendChild(view);
-
   const history = document.createElement("button");
   history.className = "secondary";
   history.type = "button";
@@ -355,7 +349,11 @@ function renderBusinesses() {
     const row = document.createElement("tr");
     const cell = document.createElement("td");
     cell.colSpan = 7;
-    cell.appendChild(createEmpty("No businesses match the current filters."));
+    cell.appendChild(createEmpty(
+      state.businesses.length === 0
+        ? "No clients have been added yet. When a business signs up, it will appear in this list."
+        : "No businesses match the current filters."
+    ));
     row.appendChild(cell);
     els.tableBody.appendChild(row);
     return;
@@ -363,9 +361,6 @@ function renderBusinesses() {
 
   state.filteredBusinesses.forEach(business => {
     const row = document.createElement("tr");
-    row.addEventListener("click", () => {
-      window.location.href = `business-detail.html?id=${encodeURIComponent(business.detailId)}`;
-    });
 
     appendCell(row, business.name);
     appendCell(row, business.ownerEmail || "-");
@@ -444,7 +439,7 @@ function messageNode(message) {
 }
 
 async function recordPayment(business, payload) {
-  const businessId = encodeURIComponent(business.detailId);
+  const businessId = encodeURIComponent(business.businessKey);
   return tryApi([
     `/admin/businesses/${businessId}/payments`,
     `/admin/payments/${businessId}`,
@@ -453,7 +448,7 @@ async function recordPayment(business, payload) {
   ], {
     method: "POST",
     body: JSON.stringify({
-      business_id: business.detailId,
+      business_id: business.businessKey,
       ...payload,
     }),
   });
@@ -529,7 +524,7 @@ function confirmMarkPaid(business) {
 }
 
 async function showPaymentHistory(business) {
-  const businessId = encodeURIComponent(business.detailId);
+  const businessId = encodeURIComponent(business.businessKey);
 
   try {
     const payload = await tryApi([
