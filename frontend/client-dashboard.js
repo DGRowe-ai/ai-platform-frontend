@@ -1,10 +1,16 @@
 const API_URL = "https://ai-platform-backend-ulqs.onrender.com";
+const FRONTEND_URL = "https://ai-platform-frontend-uaaa.onrender.com";
 
 const els = {
   analyticsCards: document.getElementById("analytics-cards"),
   businessName: document.getElementById("business-name"),
   chatHistory: document.getElementById("chat-history"),
+  chatbotUrl: document.getElementById("chatbot-url"),
   historyStatus: document.getElementById("history-status"),
+  copyEmbedBtn: document.getElementById("copy-embed-btn"),
+  copyUrlBtn: document.getElementById("copy-url-btn"),
+  copyUrlStatus: document.getElementById("copy-url-status"),
+  embedCode: document.getElementById("embed-code"),
   logoutBtn: document.getElementById("logout-btn"),
   pageStatus: document.getElementById("page-status"),
   refreshBtn: document.getElementById("refresh-btn"),
@@ -184,6 +190,43 @@ function renderBusinessName(data) {
   const name = getFirstValue(business, ["name", "business_name", "businessName", "folder_name"]);
 
   els.businessName.textContent = name ? `Business: ${name}` : "Business dashboard";
+}
+
+function getBusinessId(data) {
+  const business = data?.business || data?.business_info || data?.businesses?.[0] || data || {};
+  const dashboardBusinessId = getFirstValue(business, ["folder_name", "business_id", "businessId", "id"]);
+
+  if (dashboardBusinessId) {
+    return dashboardBusinessId;
+  }
+
+  const savedBusinesses = localStorage.getItem("businesses");
+  if (!savedBusinesses) {
+    return "YOUR_BUSINESS_ID";
+  }
+
+  try {
+    const parsed = JSON.parse(savedBusinesses);
+    const savedBusiness = normalizeList(parsed, ["businesses", "items", "data"])[0];
+    return getFirstValue(savedBusiness, ["folder_name", "business_id", "businessId", "id"]) || "YOUR_BUSINESS_ID";
+  } catch (err) {
+    console.warn("Unable to read saved businesses from localStorage", err);
+    return "YOUR_BUSINESS_ID";
+  }
+}
+
+function renderInstallInfo(data) {
+  const businessId = getBusinessId(data);
+  const widgetUrl = `${FRONTEND_URL}/widget.js`;
+
+  els.chatbotUrl.value = widgetUrl;
+  els.embedCode.value = [
+    "<script",
+    `  src="${widgetUrl}"`,
+    `  data-business="${businessId}"`,
+    "  defer",
+    "></script>",
+  ].join("\n");
 }
 
 function renderAnalytics(data) {
@@ -408,6 +451,7 @@ async function loadDashboard() {
   setStatus(els.pageStatus, "Loading dashboard...");
   const data = await apiRequest("/client/dashboard");
   renderBusinessName(data);
+  renderInstallInfo(data);
   renderAnalytics(data);
   setStatus(els.pageStatus, "");
 }
@@ -536,6 +580,19 @@ function logout() {
   redirectToLogin();
 }
 
+async function copyToClipboard(text) {
+  try {
+    await navigator.clipboard.writeText(text);
+    setStatus(els.copyUrlStatus, "Copied!", "success");
+    setTimeout(() => {
+      setStatus(els.copyUrlStatus, "");
+    }, 2000);
+  } catch (err) {
+    console.error("Clipboard copy failed:", err);
+    setStatus(els.copyUrlStatus, "Unable to copy. Please select and copy manually.", "error");
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   if (!getToken()) {
     redirectToLogin();
@@ -544,6 +601,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   els.logoutBtn.addEventListener("click", logout);
   els.refreshBtn.addEventListener("click", reloadDashboard);
+  els.copyUrlBtn.addEventListener("click", () => copyToClipboard(els.chatbotUrl.value));
+  els.copyEmbedBtn.addEventListener("click", () => copyToClipboard(els.embedCode.value));
   els.settingsForm.addEventListener("submit", saveSettings);
   els.passwordForm.addEventListener("submit", changePassword);
 
