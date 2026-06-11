@@ -10,6 +10,11 @@ const els = {
   refreshBtn: document.getElementById("refresh-btn"),
   settingsForm: document.getElementById("settings-form"),
   settingsStatus: document.getElementById("settings-status"),
+  passwordForm: document.getElementById("password-form"),
+  passwordStatus: document.getElementById("password-status"),
+  currentPassword: document.getElementById("current-password"),
+  newPassword: document.getElementById("new-password"),
+  confirmPassword: document.getElementById("confirm-password"),
   welcomeMessage: document.getElementById("welcome-message"),
   tone: document.getElementById("tone"),
   chatLength: document.getElementById("chat-length"),
@@ -461,6 +466,40 @@ async function deleteConversation(conversationId) {
   }
 }
 
+async function changePassword(event) {
+  event.preventDefault();
+
+  const currentPassword = els.currentPassword.value;
+  const newPassword = els.newPassword.value;
+  const confirmPassword = els.confirmPassword.value;
+
+  if (newPassword.length < 8) {
+    setStatus(els.passwordStatus, "New password must be at least 8 characters.", "error");
+    return;
+  }
+
+  if (newPassword !== confirmPassword) {
+    setStatus(els.passwordStatus, "New passwords do not match.", "error");
+    return;
+  }
+
+  try {
+    setStatus(els.passwordStatus, "Updating password...");
+    await apiRequest("/client/change_password", {
+      method: "POST",
+      body: JSON.stringify({
+        current_password: currentPassword,
+        new_password: newPassword,
+      }),
+    });
+    els.passwordForm.reset();
+    setStatus(els.passwordStatus, "Password updated successfully.", "success");
+  } catch (err) {
+    console.error(err);
+    setStatus(els.passwordStatus, err.message || "Unable to update password.", "error");
+  }
+}
+
 async function saveSettings(event) {
   event.preventDefault();
 
@@ -506,6 +545,7 @@ document.addEventListener("DOMContentLoaded", () => {
   els.logoutBtn.addEventListener("click", logout);
   els.refreshBtn.addEventListener("click", reloadDashboard);
   els.settingsForm.addEventListener("submit", saveSettings);
+  els.passwordForm.addEventListener("submit", changePassword);
 
   reloadDashboard();
 });

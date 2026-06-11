@@ -96,6 +96,10 @@
       grid-column: span 5;
     }
 
+    .account {
+      grid-column: span 12;
+    }
+
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -307,6 +311,24 @@
           <span class="status" id="history-status"></span>
         </div>
         <div class="chat-list" id="chat-history"></div>
+      </section>
+
+      <section class="card account">
+        <h2>Account Security</h2>
+        <p class="help-text">Update your password after signing in with a temporary starter password.</p>
+        <form id="password-form">
+          <label for="current-password">Current Password</label>
+          <input id="current-password" name="current_password" type="password" autocomplete="current-password" required>
+
+          <label for="new-password">New Password</label>
+          <input id="new-password" name="new_password" type="password" autocomplete="new-password" minlength="8" required>
+
+          <label for="confirm-password">Confirm New Password</label>
+          <input id="confirm-password" name="confirm_password" type="password" autocomplete="new-password" minlength="8" required>
+
+          <button id="change-password-btn" type="submit">Change Password</button>
+          <div class="status" id="password-status"></div>
+        </form>
       </section>
 
       <section class="card settings">

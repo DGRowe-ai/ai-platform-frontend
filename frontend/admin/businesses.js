@@ -338,6 +338,16 @@ function renderActionsCell(business) {
   });
   actions.appendChild(paid);
 
+  const deleteClient = document.createElement("button");
+  deleteClient.className = "danger";
+  deleteClient.type = "button";
+  deleteClient.textContent = "Delete Client";
+  deleteClient.addEventListener("click", event => {
+    event.stopPropagation();
+    confirmDeleteClient(business);
+  });
+  actions.appendChild(deleteClient);
+
   return actions;
 }
 
@@ -495,6 +505,51 @@ function showRecordPaymentModal(business) {
     modalButton("Cancel", "secondary", closeModal),
     save,
   ]);
+}
+
+async function deleteClientBusiness(business) {
+  const businessKey = encodeURIComponent(business.businessKey);
+  return apiRequest(`/admin/businesses/${businessKey}`, {
+    method: "DELETE",
+  });
+}
+
+function confirmDeleteClient(business) {
+  const warning = document.createElement("div");
+  warning.innerHTML = `
+    <p>This permanently deletes <strong>${business.name}</strong>, removes its chatbot files, and deletes the owner account if they have no other businesses.</p>
+    <p class="muted">Type <strong>${business.name}</strong> to confirm.</p>
+    <input id="delete-confirm-input" type="text" placeholder="Business name">
+  `;
+
+  openModal(
+    "Delete client business?",
+    warning,
+    [
+      modalButton("Cancel", "secondary", closeModal),
+      modalButton("Delete Client", "danger", async () => {
+        const typed = document.getElementById("delete-confirm-input").value.trim();
+        if (typed !== business.name) {
+          openModal("Confirmation required", messageNode("Enter the exact business name to delete this client."), [
+            modalButton("Close", "secondary", closeModal),
+          ]);
+          return;
+        }
+
+        try {
+          await deleteClientBusiness(business);
+          closeModal();
+          await loadDashboard();
+          setStatus(`${business.name} deleted.`, "success");
+        } catch (err) {
+          console.error(err);
+          openModal("Unable to delete client", messageNode(err.message), [
+            modalButton("Close", "secondary", closeModal),
+          ]);
+        }
+      }),
+    ],
+  );
 }
 
 function confirmMarkPaid(business) {
