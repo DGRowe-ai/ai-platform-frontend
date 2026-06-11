@@ -87,18 +87,15 @@ function getUserRole(data, tokenPayload) {
 }
 
 function isAdminUser(data, tokenPayload) {
-    const role = getUserRole(data, tokenPayload);
-
     return Boolean(
         data.is_admin ||
-        data.admin ||
+        data.is_platform_admin ||
         data.user?.is_admin ||
+        data.user?.is_platform_admin ||
         data.current_user?.is_admin ||
+        data.current_user?.is_platform_admin ||
         tokenPayload.is_admin ||
-        tokenPayload.admin ||
-        role === "admin" ||
-        role === "super_admin" ||
-        role === "superuser"
+        tokenPayload.is_platform_admin
     );
 }
 
