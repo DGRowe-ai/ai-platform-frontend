@@ -37,6 +37,25 @@
       padding: 24px clamp(16px, 5vw, 56px);
     }
 
+    .header-brand {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .brand-logo-wrap {
+      background: #ffffff;
+      border-radius: 12px;
+      padding: 8px 14px;
+      flex-shrink: 0;
+    }
+
+    .brand-logo {
+      display: block;
+      height: 48px;
+      width: auto;
+    }
+
     header h1 {
       margin: 0 0 6px;
       font-size: clamp(28px, 4vw, 40px);
@@ -319,8 +338,15 @@
 </head>
 <body>
   <header>
-    <h1>Client Dashboard</h1>
-    <p>Review chatbot performance, manage conversations, and tune the customer chat experience.</p>
+    <div class="header-brand">
+      <div class="brand-logo-wrap">
+        <img class="brand-logo" src="images/loki/Logo/rowe-ai-logo.png" alt="Rowe AI">
+      </div>
+      <div>
+        <h1>Client Dashboard</h1>
+        <p>Review chatbot performance, manage conversations, and tune the customer chat experience.</p>
+      </div>
+    </div>
   </header>
 
   <main>

@@ -37,6 +37,25 @@ header {
   box-shadow: 0 18px 45px rgba(15, 118, 110, 0.22);
 }
 
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.brand-logo-wrap {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 8px 14px;
+  flex-shrink: 0;
+}
+
+.brand-logo {
+  display: block;
+  height: 48px;
+  width: auto;
+}
+
 header h1 {
   margin: 0 0 6px;
   font-size: clamp(30px, 4vw, 44px);
