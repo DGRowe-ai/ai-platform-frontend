@@ -100,6 +100,49 @@
       grid-column: span 12;
     }
 
+    .install {
+      grid-column: span 12;
+    }
+
+    .install-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .install-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .copy-row {
+      align-items: stretch;
+      display: grid;
+      gap: 10px;
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .embed-code {
+      font-family: "Courier New", monospace;
+      min-height: 74px;
+    }
+
+    .pdf-link {
+      align-items: center;
+      background: var(--primary);
+      border-radius: 10px;
+      color: #ffffff;
+      display: inline-flex;
+      font-weight: 700;
+      padding: 10px 14px;
+      text-decoration: none;
+    }
+
+    .pdf-link:hover {
+      background: var(--primary-dark);
+    }
+
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -275,6 +318,10 @@
         flex-direction: column;
       }
 
+      .copy-row {
+        grid-template-columns: 1fr;
+      }
+
       .stats-grid {
         grid-template-columns: 1fr;
       }
@@ -303,6 +350,35 @@
           <button class="secondary" id="refresh-btn" type="button">Refresh</button>
         </div>
         <div class="stats-grid" id="analytics-cards"></div>
+      </section>
+
+      <section class="card install">
+        <div class="toolbar">
+          <div>
+            <h2>Frontend URL and PDF</h2>
+            <p class="help-text">Download the Rowe AI Chatbot installation guide or copy the chatbot URL for your website.</p>
+          </div>
+          <a class="pdf-link" href="assets/rowe-ai-chatbot-installation-guide.pdf" target="_blank" rel="noreferrer">Open Installation PDF</a>
+        </div>
+
+        <div class="install-grid">
+          <div>
+            <label for="chatbot-url">Chatbot URL</label>
+            <div class="copy-row">
+              <input id="chatbot-url" type="text" readonly value="Loading chatbot URL...">
+              <button id="copy-url-btn" type="button">Copy URL</button>
+            </div>
+            <div class="status" id="copy-url-status"></div>
+          </div>
+
+          <div>
+            <label for="embed-code">Embed Code</label>
+            <div class="copy-row">
+              <textarea class="embed-code" id="embed-code" readonly>Loading embed code...</textarea>
+              <button class="secondary" id="copy-embed-btn" type="button">Copy Embed Code</button>
+            </div>
+          </div>
+        </div>
       </section>
 
       <section class="card history">
