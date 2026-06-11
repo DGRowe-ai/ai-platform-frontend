@@ -233,7 +233,18 @@
       color: #ffffff;
     }
 
-    button:hover {
+    .download-guide-link {
+      background: var(--primary);
+      border-radius: 10px;
+      color: #ffffff;
+      display: inline-block;
+      font-weight: 700;
+      padding: 10px 14px;
+      text-decoration: none;
+    }
+
+    button:hover,
+    .download-guide-link:hover {
       background: var(--primary-dark);
     }
 
@@ -336,6 +347,7 @@
             <h2>Frontend URL</h2>
             <p class="help-text">Copy the chatbot URL or embed code for your website.</p>
           </div>
+          <a class="download-guide-link" href="static/docs/chatbot_installation_guide.pdf" download>Download Installation Guide (PDF)</a>
         </div>
 
         <div class="install-grid">
