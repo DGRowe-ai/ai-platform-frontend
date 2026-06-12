@@ -119,6 +119,10 @@
       grid-column: span 12;
     }
 
+    .knowledge {
+      grid-column: span 12;
+    }
+
     .install {
       grid-column: span 12;
     }
@@ -308,6 +312,60 @@
       text-align: center;
     }
 
+    .kb-upload-row {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .kb-upload-row input[type="file"] {
+      flex: 1 1 260px;
+      padding: 8px;
+    }
+
+    .kb-spinner {
+      color: var(--muted);
+      display: none;
+      font-size: 14px;
+    }
+
+    .kb-spinner.visible {
+      display: block;
+    }
+
+    .kb-file-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .kb-file-item {
+      align-items: center;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: flex;
+      gap: 12px;
+      justify-content: space-between;
+      padding: 12px 14px;
+    }
+
+    .kb-file-meta {
+      min-width: 0;
+    }
+
+    .kb-file-name {
+      font-weight: 700;
+      word-break: break-word;
+    }
+
+    .kb-file-details {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
     @media (max-width: 900px) {
       .history,
       .settings {
@@ -452,6 +510,24 @@
           <button id="save-settings-btn" type="submit">Save Settings</button>
           <div class="status" id="settings-status"></div>
         </form>
+      </section>
+
+      <section class="card knowledge">
+        <h2>Knowledge Base</h2>
+        <p class="help-text">Upload business documents so your chatbot can answer questions using your files.</p>
+
+        <div class="kb-upload-row">
+          <input
+            type="file"
+            id="kb-file"
+            accept=".pdf,.txt,.doc,.docx,.csv,.md,.json"
+          >
+          <button id="kb-upload-btn" type="button">Upload File</button>
+        </div>
+
+        <div class="kb-spinner" id="kb-spinner">Uploading and indexing file...</div>
+        <div class="status" id="kb-status"></div>
+        <div class="kb-file-list" id="kb-file-list"></div>
       </section>
     </div>
   </main>

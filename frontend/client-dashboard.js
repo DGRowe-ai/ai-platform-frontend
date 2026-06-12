@@ -26,6 +26,11 @@ const els = {
   chatLength: document.getElementById("chat-length"),
   customInstructions: document.getElementById("custom-instructions"),
   faqs: document.getElementById("faqs"),
+  kbFileInput: document.getElementById("kb-file"),
+  kbUploadBtn: document.getElementById("kb-upload-btn"),
+  kbFileList: document.getElementById("kb-file-list"),
+  kbStatus: document.getElementById("kb-status"),
+  kbSpinner: document.getElementById("kb-spinner"),
 };
 
 function getToken() {
@@ -469,9 +474,165 @@ async function loadSettings() {
   setStatus(els.settingsStatus, "");
 }
 
+async function loadSettings() {
+  setStatus(els.settingsStatus, "Loading settings...");
+  const data = await apiRequest("/client/chatbot_settings");
+  renderSettings(data);
+  setStatus(els.settingsStatus, "");
+}
+
+function formatFileSize(bytes) {
+  const size = Number(bytes || 0);
+  if (!Number.isFinite(size) || size <= 0) {
+    return "0 B";
+  }
+  if (size < 1024) {
+    return `${size} B`;
+  }
+  if (size < 1024 * 1024) {
+    return `${(size / 1024).toFixed(1)} KB`;
+  }
+  return `${(size / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function formatUploadedAt(value) {
+  if (!value) {
+    return "-";
+  }
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? String(value) : date.toLocaleString();
+}
+
+function renderKnowledgeFiles(files) {
+  els.kbFileList.innerHTML = "";
+
+  if (!files.length) {
+    const empty = document.createElement("div");
+    empty.className = "empty";
+    empty.textContent = "No knowledge files uploaded yet.";
+    els.kbFileList.appendChild(empty);
+    return;
+  }
+
+  files.forEach(file => {
+    const item = document.createElement("div");
+    item.className = "kb-file-item";
+
+    const meta = document.createElement("div");
+    meta.className = "kb-file-meta";
+
+    const name = document.createElement("div");
+    name.className = "kb-file-name";
+    name.textContent = file.file_name || "Untitled file";
+
+    const details = document.createElement("div");
+    details.className = "kb-file-details";
+    details.textContent = `${file.file_type || "file"} • ${formatFileSize(file.file_size)} • Uploaded ${formatUploadedAt(file.uploaded_at)}`;
+
+    meta.appendChild(name);
+    meta.appendChild(details);
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.className = "danger";
+    deleteBtn.type = "button";
+    deleteBtn.textContent = "Delete";
+    deleteBtn.addEventListener("click", () => deleteKnowledgeFile(file.id, file.file_name));
+
+    item.appendChild(meta);
+    item.appendChild(deleteBtn);
+    els.kbFileList.appendChild(item);
+  });
+}
+
+async function loadKnowledgeFiles() {
+  setStatus(els.kbStatus, "Loading knowledge files...");
+  try {
+    const data = await apiRequest("/api/knowledge/list");
+    const files = Array.isArray(data?.files) ? data.files : [];
+    renderKnowledgeFiles(files);
+    setStatus(els.kbStatus, "");
+  } catch (err) {
+    console.error(err);
+    renderKnowledgeFiles([]);
+    setStatus(els.kbStatus, err.message || "Unable to load knowledge files.", "error");
+  }
+}
+
+async function uploadKnowledgeFile() {
+  const file = els.kbFileInput.files && els.kbFileInput.files[0];
+  if (!file) {
+    setStatus(els.kbStatus, "Choose a file before uploading.", "error");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("file", file);
+
+  els.kbUploadBtn.disabled = true;
+  els.kbSpinner.classList.add("visible");
+  setStatus(els.kbStatus, "");
+
+  try {
+    const token = getToken();
+    const response = await fetch(`${API_URL}/api/knowledge/upload`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: formData,
+    });
+
+    const text = await response.text();
+    let data = null;
+    if (text) {
+      try {
+        data = JSON.parse(text);
+      } catch (err) {
+        data = text;
+      }
+    }
+
+    if (response.status === 401 || response.status === 403) {
+      redirectToLogin();
+      return;
+    }
+
+    if (!response.ok) {
+      const detail = data && typeof data === "object" ? data.detail || data.message : data;
+      throw new Error(detail || "Upload failed.");
+    }
+
+    els.kbFileInput.value = "";
+    await loadKnowledgeFiles();
+    setStatus(els.kbStatus, data?.message || "File uploaded successfully.", "success");
+  } catch (err) {
+    console.error(err);
+    setStatus(els.kbStatus, err.message || "Unable to upload file.", "error");
+  } finally {
+    els.kbUploadBtn.disabled = false;
+    els.kbSpinner.classList.remove("visible");
+  }
+}
+
+async function deleteKnowledgeFile(fileId, fileName) {
+  if (!confirm(`Delete "${fileName}" from your knowledge base?`)) {
+    return;
+  }
+
+  setStatus(els.kbStatus, "Deleting file...");
+  try {
+    await apiRequest(`/api/knowledge/delete/${encodeURIComponent(fileId)}`, { method: "DELETE" });
+    await loadKnowledgeFiles();
+    setStatus(els.kbStatus, "File deleted.", "success");
+  } catch (err) {
+    console.error(err);
+    setStatus(els.kbStatus, err.message || "Unable to delete file.", "error");
+  }
+}
+
 async function reloadDashboard() {
   try {
-    await Promise.all([loadDashboard(), loadHistory(), loadSettings()]);
+    await Promise.all([loadDashboard(), loadHistory(), loadSettings(), loadKnowledgeFiles()]);
   } catch (err) {
     console.error(err);
     setStatus(els.pageStatus, err.message || "Unable to load dashboard.", "error");
@@ -605,6 +766,7 @@ document.addEventListener("DOMContentLoaded", () => {
   els.copyEmbedBtn.addEventListener("click", () => copyToClipboard(els.embedCode.value));
   els.settingsForm.addEventListener("submit", saveSettings);
   els.passwordForm.addEventListener("submit", changePassword);
+  els.kbUploadBtn.addEventListener("click", uploadKnowledgeFile);
 
   reloadDashboard();
 });
