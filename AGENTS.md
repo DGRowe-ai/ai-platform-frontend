@@ -56,7 +56,7 @@ Optional: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, SMTP variables.
 |------|---------|
 | `frontend/index.html` | Widget demo (iframe) |
 | `frontend/chat.html?b=<business_id>` | Standalone public chat |
-| `frontend/login.html` / `signup.html` | Auth |
+| `frontend/login.html` / `register.html` | Auth |
 | `frontend/dashboard/index.html` | Business owner dashboard |
 | `frontend/admin.html` | Admin panel |
 
