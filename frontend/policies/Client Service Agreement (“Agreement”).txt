@@ -1,0 +1,250 @@
+﻿This Client Service Agreement (“Agreement”) is entered into between:
+
+
+Rowe AI, operated by Daryl Rowe, located in Ontario, Canada (“Service Provider”),  
+and  
+The subscribing business or individual (“Client”).
+
+
+By subscribing to Rowe AI, the Client agrees to the terms outlined below.
+
+
+---
+
+
+1. Scope of Services
+
+
+Rowe AI provides the following services (“Services”):
+
+
+- AI‑powered chatbot for customer interaction  
+- Business‑specific knowledge integration  
+- Dashboard access for managing business data  
+- Chat logs and analytics (if applicable)  
+- Technical support  
+- Optional website installation assistance  
+
+
+Rowe AI does not provide legal, medical, financial, or regulated professional advice.
+
+
+---
+
+
+2. Client Responsibilities
+
+
+The Client agrees to:
+
+
+- Provide accurate business information  
+- Supply menus, FAQs, policies, and other content  
+- Ensure the chatbot is used ethically and legally  
+- Inform their customers that a chatbot is in use  
+- Maintain secure login credentials  
+- Pay subscription fees on time  
+
+
+The Client is responsible for all content they upload or provide.
+
+
+---
+
+
+3. Fees & Payment Terms
+
+
+- Subscription fees are billed monthly or annually in advance  
+- Payments are processed automatically  
+- All fees are non‑refundable, except in rare cases outlined in the Refund Policy  
+- Failure to pay may result in suspension or termination  
+
+
+Pricing may be updated with notice.
+
+
+---
+
+
+4. Term & Termination
+
+
+4.1 Term
+This Agreement begins on the subscription start date and continues until cancelled.
+
+
+4.2 Client‑Initiated Termination
+The Client may cancel at any time.  
+Service remains active until the end of the paid billing period.
+
+
+4.3 Termination by Rowe AI
+Rowe AI may suspend or terminate the Client’s account immediately if:
+
+
+- The Client violates the Acceptable Use Policy  
+- The Client engages in illegal or harmful activity  
+- Payment fails repeatedly  
+- The Client misuses the AI system  
+
+
+No refunds will be issued for terminated accounts.
+
+
+---
+
+
+5. Data Ownership & Rights
+
+
+5.1 Client Data
+The Client retains ownership of:
+
+
+- Business information  
+- Menus  
+- FAQs  
+- Uploaded content  
+- Chat logs (if applicable)  
+
+
+Rowe AI acts as a service provider, not the data owner.
+
+
+5.2 AI Output
+AI‑generated responses are produced dynamically and are not stored permanently unless the Client’s plan includes chat history.
+
+
+5.3 Use of Data
+Rowe AI may use anonymized, aggregated data to:
+
+
+- Improve system performance  
+- Enhance security  
+- Monitor abuse  
+
+
+Rowe AI does not sell or share personal data with third parties.
+
+
+---
+
+
+6. Service Availability & Support
+
+
+Rowe AI aims to provide reliable uptime but does not guarantee uninterrupted service.
+
+
+Support is available via:
+
+
+rowe-ai@outlook.com
+
+
+Maintenance, updates, and improvements may occur periodically.
+
+
+---
+
+
+7. Limitations of Liability
+
+
+To the fullest extent permitted by Canadian law:
+
+
+- Rowe AI is not liable for indirect, incidental, or consequential damages  
+- Rowe AI is not liable for business losses, lost revenue, or lost customers  
+- Rowe AI is not liable for incorrect or inappropriate AI responses  
+- The Client is responsible for reviewing and approving all business data  
+
+
+Maximum liability is limited to the amount paid by the Client in the last 30 days.
+
+
+---
+
+
+8. No Professional Advice
+
+
+The AI may generate responses that resemble advice.  
+The Client agrees that:
+
+
+- The AI is not a lawyer  
+- The AI is not a doctor  
+- The AI is not a financial advisor  
+- The AI is not a regulated professional  
+
+
+The Client must ensure the AI does not provide prohibited advice.
+
+
+---
+
+
+9. Confidentiality
+
+
+Both parties agree to keep confidential:
+
+
+- Business data  
+- Login credentials  
+- Internal documents  
+- Non‑public information  
+
+
+Rowe AI will not disclose Client information except as required by law.
+
+
+---
+
+
+10. Compliance With Laws
+
+
+The Client agrees to comply with:
+
+
+- Canadian law  
+- PIPEDA  
+- Anti‑spam laws  
+- Sanctions restrictions  
+- Rowe AI’s Acceptable Use Policy  
+
+
+Rowe AI may suspend accounts involved in illegal or high‑risk activity.
+
+
+---
+
+
+11. Amendments
+
+
+Rowe AI may update this Agreement at any time.  
+Clients will be notified of material changes.
+
+
+Continued use of the service constitutes acceptance.
+
+
+---
+
+
+
+
+12. Governing Law
+
+
+This Agreement is governed by the laws of Ontario, Canada.
+
+
+---
+
+
+By creating an account and activating this service, you acknowledge that you have read, understood, and agree to be bound by the Client Service Agreement and all associated policies, including the Terms of Service, Privacy Policy, Acceptance Use Policy, Data Handling & Security Notice, Sanctions Compliance Statement, Onboarding Disclosure, Refund & Cancellation Policy, and Liability Waiver.
