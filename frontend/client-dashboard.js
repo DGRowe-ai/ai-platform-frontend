@@ -1,6 +1,8 @@
 const API_URL = "https://ai-platform-backend-ulqs.onrender.com";
 const FRONTEND_URL = "https://ai-platform-frontend-uaaa.onrender.com";
 
+let clientBusinessId = null;
+
 const els = {
   analyticsCards: document.getElementById("analytics-cards"),
   businessName: document.getElementById("business-name"),
@@ -31,6 +33,10 @@ const els = {
   kbFileList: document.getElementById("kb-file-list"),
   kbStatus: document.getElementById("kb-status"),
   kbSpinner: document.getElementById("kb-spinner"),
+  chatbotMessages: document.getElementById("chatbot-messages"),
+  chatbotInput: document.getElementById("chatbot-input"),
+  chatbotSendBtn: document.getElementById("chatbot-send-btn"),
+  chatbotTestStatus: document.getElementById("chatbot-test-status"),
 };
 
 function getToken() {
@@ -455,6 +461,8 @@ function renderSettings(payload) {
 async function loadDashboard() {
   setStatus(els.pageStatus, "Loading dashboard...");
   const data = await apiRequest("/client/dashboard");
+  const business = data?.business || data?.business_info || data?.businesses?.[0] || {};
+  clientBusinessId = getFirstValue(business, ["id", "business_id", "businessId"]) || null;
   renderBusinessName(data);
   renderInstallInfo(data);
   renderAnalytics(data);
@@ -630,6 +638,65 @@ async function deleteKnowledgeFile(fileId, fileName) {
   }
 }
 
+function appendChatbotMessage(text, role) {
+  const message = document.createElement("div");
+  message.className = `chatbot-message ${role}`;
+  message.textContent = text;
+  els.chatbotMessages.appendChild(message);
+  els.chatbotMessages.scrollTop = els.chatbotMessages.scrollHeight;
+  return message;
+}
+
+function scrollChatbotToBottom() {
+  els.chatbotMessages.scrollTop = els.chatbotMessages.scrollHeight;
+}
+
+async function sendTestChatMessage() {
+  const userMessage = els.chatbotInput.value.trim();
+  if (!userMessage) {
+    setStatus(els.chatbotTestStatus, "Enter a message before sending.", "error");
+    return;
+  }
+
+  if (userMessage.length > 2000) {
+    setStatus(els.chatbotTestStatus, "Message exceeds the 2000 character limit.", "error");
+    return;
+  }
+
+  appendChatbotMessage(userMessage, "user");
+  els.chatbotInput.value = "";
+  els.chatbotSendBtn.disabled = true;
+  setStatus(els.chatbotTestStatus, "");
+
+  const loadingMessage = appendChatbotMessage("Thinking...", "loading");
+
+  try {
+    const payload = {
+      message: userMessage,
+    };
+
+    if (clientBusinessId) {
+      payload.client_id = clientBusinessId;
+    }
+
+    const data = await apiRequest("/api/chat", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+
+    loadingMessage.remove();
+    appendChatbotMessage(data?.reply || "No response received.", "bot");
+  } catch (err) {
+    console.error(err);
+    loadingMessage.remove();
+    appendChatbotMessage(err.message || "Unable to get a chatbot response.", "bot");
+    setStatus(els.chatbotTestStatus, err.message || "Unable to send message.", "error");
+  } finally {
+    els.chatbotSendBtn.disabled = false;
+    scrollChatbotToBottom();
+  }
+}
+
 async function reloadDashboard() {
   try {
     await Promise.all([loadDashboard(), loadHistory(), loadSettings(), loadKnowledgeFiles()]);
@@ -767,6 +834,13 @@ document.addEventListener("DOMContentLoaded", () => {
   els.settingsForm.addEventListener("submit", saveSettings);
   els.passwordForm.addEventListener("submit", changePassword);
   els.kbUploadBtn.addEventListener("click", uploadKnowledgeFile);
+  els.chatbotSendBtn.addEventListener("click", sendTestChatMessage);
+  els.chatbotInput.addEventListener("keydown", event => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      sendTestChatMessage();
+    }
+  });
 
   reloadDashboard();
 });

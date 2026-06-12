@@ -123,6 +123,10 @@
       grid-column: span 12;
     }
 
+    .test-chat {
+      grid-column: span 12;
+    }
+
     .install {
       grid-column: span 12;
     }
@@ -366,6 +370,55 @@
       margin-top: 4px;
     }
 
+    #chatbot-test-container {
+      display: grid;
+      gap: 12px;
+    }
+
+    #chatbot-messages {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: grid;
+      gap: 10px;
+      height: 300px;
+      overflow-y: auto;
+      padding: 12px;
+    }
+
+    .chatbot-message {
+      border-radius: 12px;
+      line-height: 1.45;
+      max-width: 85%;
+      padding: 10px 12px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .chatbot-message.user {
+      background: #dbeafe;
+      justify-self: end;
+    }
+
+    .chatbot-message.bot {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      justify-self: start;
+    }
+
+    .chatbot-message.loading {
+      background: #eef2ff;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .chatbot-input-row {
+      align-items: center;
+      display: grid;
+      gap: 10px;
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
     @media (max-width: 900px) {
       .history,
       .settings {
@@ -528,6 +581,20 @@
         <div class="kb-spinner" id="kb-spinner">Uploading and indexing file...</div>
         <div class="status" id="kb-status"></div>
         <div class="kb-file-list" id="kb-file-list"></div>
+      </section>
+
+      <section class="card test-chat">
+        <h2>Test Your Chatbot</h2>
+        <p class="help-text">Try questions here to preview how your chatbot responds using your settings and uploaded knowledge.</p>
+
+        <div id="chatbot-test-container">
+          <div id="chatbot-messages"></div>
+          <div class="chatbot-input-row">
+            <input id="chatbot-input" type="text" placeholder="Ask your chatbot something..." maxlength="2000">
+            <button id="chatbot-send-btn" type="button">Send</button>
+          </div>
+          <div class="status" id="chatbot-test-status"></div>
+        </div>
       </section>
     </div>
   </main>
