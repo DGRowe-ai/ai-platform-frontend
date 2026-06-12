@@ -197,6 +197,17 @@ body {
   text-decoration: underline;
 }
 
+.site-footer {
+  color: var(--muted);
+  font-size: 13px;
+  padding: 0 20px 32px;
+  text-align: center;
+}
+
+.site-footer p {
+  margin: 0;
+}
+
 @media (max-width: 560px) {
   .page-main {
     padding: 28px 16px 40px;
