@@ -1,39 +1,338 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Register</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Create Account | Rowe AI</title>
+  <link rel="stylesheet" href="register.css">
 </head>
 <body>
-    <h2>Create Account</h2>
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="brand-logo-wrap">
+        <img class="brand-logo" src="images/loki/Logo/rowe-ai-logo.png" alt="Rowe AI">
+      </div>
+    </div>
+  </header>
 
-    <input id="email" type="email" placeholder="Email"><br>
-    <input id="password" type="password" placeholder="Password"><br>
-    <input id="business_name" type="text" placeholder="Business Name"><br>
+  <main class="page-main">
+    <section class="register-card">
+      <h1>Create Account</h1>
+      <p class="subtitle">Sign up to launch your branded AI chatbot and manage your business dashboard.</p>
 
-    <button id="register-btn">Register</button>
+      <div class="form-field">
+        <label for="email">Email</label>
+        <input id="email" type="email" placeholder="Email" autocomplete="email">
+      </div>
 
-    <script>
-        const API_URL = "https://ai-platform-backend-ulqs.onrender.com";
+      <div class="form-field">
+        <label for="password">Password</label>
+        <input id="password" type="password" placeholder="Password" autocomplete="new-password">
+      </div>
 
-        document.getElementById("register-btn").onclick = async () => {
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
-            const business_name = document.getElementById("business_name").value;
+      <div class="form-field">
+        <label for="business_name">Business Name</label>
+        <input id="business_name" type="text" placeholder="Business Name" autocomplete="organization">
+      </div>
 
-            const res = await fetch(`${API_URL}/signup`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email, password, business_name })
-            });
+      <button id="register-btn" type="button">Create Account</button>
 
-            if (res.ok) {
-                alert("Account created! Now log in.");
-                window.location.href = "login.html";
-            } else {
-                const data = await res.json();
-                alert("Registration failed: " + data.detail);
-            }
-        };
-    </script>
+      <p class="login-link">Already have an account? <a href="login.html">Log in</a></p>
+    </section>
+
+    <section class="policies-section">
+      <h2>Terms, Policies, and Legal Notices</h2>
+      <div class="policy-grid">
+        <a class="policy-link" href="policies/Rowe%20AI%20%E2%80%94%20Terms%20of%20Service.pdf" target="_blank" rel="noopener">Terms of Service</a>
+        <a class="policy-link" href="policies/Rowe%20AI%20%E2%80%94%20Privacy%20Policy.pdf" target="_blank" rel="noopener">Privacy Policy</a>
+        <a class="policy-link" href="policies/Rowe%20AI%20%E2%80%94%20Acceptable%20Use%20Policy%20(AUP).pdf" target="_blank" rel="noopener">Acceptable Use Policy</a>
+        <a class="policy-link" href="policies/Rowe%20AI%20%E2%80%94%20Data%20Handling%20%26%20Security%20Policy.pdf" target="_blank" rel="noopener">Data Handling &amp; Security Notice</a>
+        <a class="policy-link" href="policies/Rowe%20AI%20%E2%80%94%20Sanctions%20Compliance%20Statement.pdf" target="_blank" rel="noopener">Sanctions Compliance Statement</a>
+        <a class="policy-link" href="policies/Rowe%20AI%20%E2%80%94%20Onboarding%20Disclosure.pdf" target="_blank" rel="noopener">Onboarding Disclosure</a>
+        <a class="policy-link" href="policies/Rowe%20AI%20%E2%80%94%20Refund%20%26%20Cancellation%20Policy.pdf" target="_blank" rel="noopener">Refund &amp; Cancellation Policy</a>
+        <a class="policy-link" href="policies/Rowe%20AI%20%E2%80%94%20Liability%20Waiver%20%26%20Limitation%20of%20Liability%20Notice.pdf" target="_blank" rel="noopener">Liability Waiver &amp; Limitation of Liability Notice</a>
+      </div>
+    </section>
+
+    <section class="agreement-summary">
+      <h2>Client Service Agreement</h2>
+      <div class="agreement-box">
+        <pre>This Client Service Agreement (“Agreement”) is entered into between:
+
+
+Rowe AI, operated by Daryl Rowe, located in Ontario, Canada (“Service Provider”),  
+and  
+The subscribing business or individual (“Client”).
+
+
+By subscribing to Rowe AI, the Client agrees to the terms outlined below.
+
+
+---
+
+
+1. Scope of Services
+
+
+Rowe AI provides the following services (“Services”):
+
+
+- AI‑powered chatbot for customer interaction  
+- Business‑specific knowledge integration  
+- Dashboard access for managing business data  
+- Chat logs and analytics (if applicable)  
+- Technical support  
+- Optional website installation assistance  
+
+
+Rowe AI does not provide legal, medical, financial, or regulated professional advice.
+
+
+---
+
+
+2. Client Responsibilities
+
+
+The Client agrees to:
+
+
+- Provide accurate business information  
+- Supply menus, FAQs, policies, and other content  
+- Ensure the chatbot is used ethically and legally  
+- Inform their customers that a chatbot is in use  
+- Maintain secure login credentials  
+- Pay subscription fees on time  
+
+
+The Client is responsible for all content they upload or provide.
+
+
+---
+
+
+3. Fees &amp; Payment Terms
+
+
+- Subscription fees are billed monthly or annually in advance  
+- Payments are processed automatically  
+- All fees are non‑refundable, except in rare cases outlined in the Refund Policy  
+- Failure to pay may result in suspension or termination  
+
+
+Pricing may be updated with notice.
+
+
+---
+
+
+4. Term &amp; Termination
+
+
+4.1 Term
+This Agreement begins on the subscription start date and continues until cancelled.
+
+
+4.2 Client‑Initiated Termination
+The Client may cancel at any time.  
+Service remains active until the end of the paid billing period.
+
+
+4.3 Termination by Rowe AI
+Rowe AI may suspend or terminate the Client’s account immediately if:
+
+
+- The Client violates the Acceptable Use Policy  
+- The Client engages in illegal or harmful activity  
+- Payment fails repeatedly  
+- The Client misuses the AI system  
+
+
+No refunds will be issued for terminated accounts.
+
+
+---
+
+
+5. Data Ownership &amp; Rights
+
+
+5.1 Client Data
+The Client retains ownership of:
+
+
+- Business information  
+- Menus  
+- FAQs  
+- Uploaded content  
+- Chat logs (if applicable)  
+
+
+Rowe AI acts as a service provider, not the data owner.
+
+
+5.2 AI Output
+AI‑generated responses are produced dynamically and are not stored permanently unless the Client’s plan includes chat history.
+
+
+5.3 Use of Data
+Rowe AI may use anonymized, aggregated data to:
+
+
+- Improve system performance  
+- Enhance security  
+- Monitor abuse  
+
+
+Rowe AI does not sell or share personal data with third parties.
+
+
+---
+
+
+6. Service Availability &amp; Support
+
+
+Rowe AI aims to provide reliable uptime but does not guarantee uninterrupted service.
+
+
+Support is available via:
+
+
+rowe-ai@outlook.com
+
+
+Maintenance, updates, and improvements may occur periodically.
+
+
+---
+
+
+7. Limitations of Liability
+
+
+To the fullest extent permitted by Canadian law:
+
+
+- Rowe AI is not liable for indirect, incidental, or consequential damages  
+- Rowe AI is not liable for business losses, lost revenue, or lost customers  
+- Rowe AI is not liable for incorrect or inappropriate AI responses  
+- The Client is responsible for reviewing and approving all business data  
+
+
+Maximum liability is limited to the amount paid by the Client in the last 30 days.
+
+
+---
+
+
+8. No Professional Advice
+
+
+The AI may generate responses that resemble advice.  
+The Client agrees that:
+
+
+- The AI is not a lawyer  
+- The AI is not a doctor  
+- The AI is not a financial advisor  
+- The AI is not a regulated professional  
+
+
+The Client must ensure the AI does not provide prohibited advice.
+
+
+---
+
+
+9. Confidentiality
+
+
+Both parties agree to keep confidential:
+
+
+- Business data  
+- Login credentials  
+- Internal documents  
+- Non‑public information  
+
+
+Rowe AI will not disclose Client information except as required by law.
+
+
+---
+
+
+10. Compliance With Laws
+
+
+The Client agrees to comply with:
+
+
+- Canadian law  
+- PIPEDA  
+- Anti‑spam laws  
+- Sanctions restrictions  
+- Rowe AI’s Acceptable Use Policy  
+
+
+Rowe AI may suspend accounts involved in illegal or high‑risk activity.
+
+
+---
+
+
+11. Amendments
+
+
+Rowe AI may update this Agreement at any time.  
+Clients will be notified of material changes.
+
+
+Continued use of the service constitutes acceptance.
+
+
+---
+
+
+
+
+12. Governing Law
+
+
+This Agreement is governed by the laws of Ontario, Canada.
+
+
+---
+
+
+By creating an account and activating this service, you acknowledge that you have read, understood, and agree to be bound by the Client Service Agreement and all associated policies, including the Terms of Service, Privacy Policy, Acceptance Use Policy, Data Handling &amp; Security Notice, Sanctions Compliance Statement, Onboarding Disclosure, Refund &amp; Cancellation Policy, and Liability Waiver.</pre>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const API_URL = "https://ai-platform-backend-ulqs.onrender.com";
+
+    document.getElementById("register-btn").onclick = async () => {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+      const business_name = document.getElementById("business_name").value;
+
+      const res = await fetch(`${API_URL}/signup`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, business_name })
+      });
+
+      if (res.ok) {
+        alert("Account created! Now log in.");
+        window.location.href = "login.html";
+      } else {
+        const data = await res.json();
+        alert("Registration failed: " + data.detail);
+      }
+    };
+  </script>
 </body>
 </html>
