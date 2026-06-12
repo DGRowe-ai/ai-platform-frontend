@@ -34,25 +34,30 @@
     header {
       background: #0f172a;
       color: #ffffff;
-      padding: 24px clamp(16px, 5vw, 56px);
+      padding: 28px clamp(16px, 5vw, 56px);
     }
 
     .header-brand {
-      display: flex;
       align-items: center;
-      gap: 20px;
+      display: flex;
+      gap: 24px;
     }
 
     .brand-logo-wrap {
+      align-items: center;
       background: #ffffff;
-      border-radius: 12px;
-      padding: 8px 14px;
+      border-radius: 14px;
+      display: flex;
       flex-shrink: 0;
+      justify-content: center;
+      padding: 14px 26px;
     }
 
     .brand-logo {
       display: block;
-      height: 48px;
+      height: 96px;
+      max-width: min(100%, 360px);
+      object-fit: contain;
       width: auto;
     }
 
@@ -435,6 +440,20 @@
       .toolbar {
         align-items: stretch;
         flex-direction: column;
+      }
+
+      .header-brand {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .brand-logo-wrap {
+        padding: 12px 20px;
+      }
+
+      .brand-logo {
+        height: 76px;
       }
 
       .copy-row {
