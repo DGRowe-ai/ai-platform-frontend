@@ -388,6 +388,43 @@ tbody tr:hover {
   margin-top: 18px;
 }
 
+.modal-body-content {
+  display: grid;
+  gap: 12px;
+}
+
+.modal-body-content p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.modal-confirm-field {
+  display: grid;
+  gap: 6px;
+}
+
+.modal-confirm-field label {
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.modal-confirm-field input {
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font: inherit;
+  padding: 10px 12px;
+  width: 100%;
+}
+
+.modal-confirm-error {
+  color: var(--danger);
+  font-size: 13px;
+  min-height: 18px;
+}
+
 .report-meta {
   color: var(--muted);
   font-size: 14px;

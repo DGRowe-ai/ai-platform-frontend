@@ -454,6 +454,63 @@ function messageNode(message) {
   return wrapper;
 }
 
+function buildDeleteConfirmBody(business, errorMessage = "") {
+  const wrapper = document.createElement("div");
+  wrapper.className = "modal-body-content";
+
+  const intro = document.createElement("p");
+  intro.textContent = `This permanently deletes ${business.name}, removes its chatbot files, and deletes the owner account if they have no other businesses.`;
+
+  const instruction = document.createElement("p");
+  instruction.className = "muted";
+  instruction.innerHTML = `Type <strong>${escapeHtml(business.name)}</strong> below to confirm.`;
+
+  const field = document.createElement("div");
+  field.className = "modal-confirm-field";
+
+  const label = document.createElement("label");
+  label.setAttribute("for", "delete-confirm-input");
+  label.textContent = "Business name";
+
+  const input = document.createElement("input");
+  input.id = "delete-confirm-input";
+  input.type = "text";
+  input.placeholder = "Enter business name exactly";
+  input.autocomplete = "off";
+  input.spellcheck = false;
+
+  const error = document.createElement("div");
+  error.className = "modal-confirm-error";
+  error.id = "delete-confirm-error";
+  error.textContent = errorMessage;
+
+  field.appendChild(label);
+  field.appendChild(input);
+  field.appendChild(error);
+
+  wrapper.appendChild(intro);
+  wrapper.appendChild(instruction);
+  wrapper.appendChild(field);
+
+  return wrapper;
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function focusDeleteConfirmInput() {
+  const input = document.getElementById("delete-confirm-input");
+  if (input) {
+    input.focus();
+  }
+}
+
 async function recordPayment(business, payload) {
   const businessId = encodeURIComponent(business.businessKey);
   return tryApi([
@@ -521,24 +578,26 @@ async function deleteClientBusiness(business) {
 }
 
 function confirmDeleteClient(business) {
-  const warning = document.createElement("div");
-  warning.innerHTML = `
-    <p>This permanently deletes <strong>${business.name}</strong>, removes its chatbot files, and deletes the owner account if they have no other businesses.</p>
-    <p class="muted">Type <strong>${business.name}</strong> to confirm.</p>
-    <input id="delete-confirm-input" type="text" placeholder="Business name">
-  `;
+  const body = buildDeleteConfirmBody(business);
 
   openModal(
     "Delete client business?",
-    warning,
+    body,
     [
       modalButton("Cancel", "secondary", closeModal),
       modalButton("Delete Client", "danger", async () => {
-        const typed = document.getElementById("delete-confirm-input").value.trim();
+        const input = document.getElementById("delete-confirm-input");
+        const errorEl = document.getElementById("delete-confirm-error");
+        const typed = input ? input.value.trim() : "";
+
         if (typed !== business.name) {
-          openModal("Confirmation required", messageNode("Enter the exact business name to delete this client."), [
-            modalButton("Close", "secondary", closeModal),
-          ]);
+          if (errorEl) {
+            errorEl.textContent = `Enter the exact business name: ${business.name}`;
+          }
+          if (input) {
+            input.focus();
+            input.select();
+          }
           return;
         }
 
@@ -549,13 +608,18 @@ function confirmDeleteClient(business) {
           setStatus(`${business.name} deleted.`, "success");
         } catch (err) {
           console.error(err);
-          openModal("Unable to delete client", messageNode(err.message), [
-            modalButton("Close", "secondary", closeModal),
-          ]);
+          if (errorEl) {
+            errorEl.textContent = err.message || "Unable to delete client.";
+          }
+          if (input) {
+            input.focus();
+          }
         }
       }),
     ],
   );
+
+  focusDeleteConfirmInput();
 }
 
 function confirmMarkPaid(business) {
