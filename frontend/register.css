@@ -25,7 +25,7 @@ body {
 
 .site-header {
   background: linear-gradient(135deg, var(--teal-deep) 0%, var(--teal) 55%, var(--teal-dark) 100%);
-  padding: 28px 20px;
+  padding: 36px 20px;
   width: 100%;
 }
 
@@ -41,12 +41,12 @@ body {
   background: #ffffff;
   border-radius: 14px;
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
-  padding: 10px 18px;
+  padding: 14px 22px;
 }
 
 .brand-logo {
   display: block;
-  height: 56px;
+  height: 84px;
   width: auto;
 }
 
@@ -220,6 +220,6 @@ body {
   }
 
   .brand-logo {
-    height: 48px;
+    height: 68px;
   }
 }
