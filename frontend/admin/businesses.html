@@ -32,6 +32,21 @@
 
     <section class="card span-12">
       <div class="toolbar">
+        <h2>Business Manager Reports</h2>
+        <span class="muted">Daily email and monthly PDF summaries</span>
+      </div>
+      <div class="report-meta" id="report-status">Loading report status...</div>
+      <div class="button-row report-actions">
+        <button id="preview-daily-btn" type="button">Preview Daily Report</button>
+        <button id="send-daily-btn" type="button">Send Daily Report Email</button>
+        <button class="secondary" id="download-monthly-btn" type="button">Download Monthly PDF</button>
+        <button class="secondary" id="send-monthly-btn" type="button">Email Monthly PDF</button>
+      </div>
+      <pre class="report-preview" id="daily-report-preview" hidden></pre>
+    </section>
+
+    <section class="card span-12">
+      <div class="toolbar">
         <h2>Platform Analytics</h2>
         <span class="muted">Live admin summary</span>
       </div>
@@ -102,6 +117,6 @@
     </div>
   </div>
 
-  <script src="businesses.js?v=20260611-admin-delete-client"></script>
+  <script src="businesses.js?v=20260611-business-reports"></script>
 </body>
 </html>

@@ -20,6 +20,12 @@ const els = {
   pageStatus: document.getElementById("page-status"),
   paymentFilter: document.getElementById("payment-filter"),
   refreshBtn: document.getElementById("refresh-btn"),
+  reportStatus: document.getElementById("report-status"),
+  dailyReportPreview: document.getElementById("daily-report-preview"),
+  previewDailyBtn: document.getElementById("preview-daily-btn"),
+  sendDailyBtn: document.getElementById("send-daily-btn"),
+  downloadMonthlyBtn: document.getElementById("download-monthly-btn"),
+  sendMonthlyBtn: document.getElementById("send-monthly-btn"),
   searchInput: document.getElementById("search-input"),
   statusFilter: document.getElementById("status-filter"),
   tableBody: document.getElementById("business-table-body"),
@@ -613,6 +619,122 @@ async function showPaymentHistory(business) {
   }
 }
 
+function formatReportPreview(data) {
+  const metrics = data.summary_metrics || {};
+  const lines = [
+    `Rowe AI Daily Business Status Report`,
+    `Date: ${data.report_date || "No data provided."}`,
+    "",
+    "SUMMARY METRICS",
+    `- Total businesses signed up: ${metrics.total_businesses_signed_up ?? "No data provided."}`,
+    `- New signups in the last 24 hours: ${metrics.new_signups_last_24h ?? "No data provided."}`,
+    `- Businesses who have not activated their chatbot yet: ${metrics.businesses_not_activated ?? "No data provided."}`,
+    `- Active businesses: ${metrics.active_businesses ?? "No data provided."}`,
+    `- Inactive businesses (no chat activity): ${metrics.inactive_businesses ?? "No data provided."}`,
+    `- Total chats in the last 24 hours: ${metrics.total_chats_last_24h ?? "No data provided."}`,
+    `- Errors or warnings detected: ${metrics.errors_or_warnings ?? "No data provided."}`,
+    `- Overdue clients: ${metrics.overdue_clients ?? "No data provided."}`,
+    `- Upcoming renewals (next 7 days): ${metrics.upcoming_renewals_next_7_days ?? "No data provided."}`,
+    "",
+    "RECOMMENDED ACTIONS",
+  ];
+
+  (data.recommended_actions || []).forEach(action => lines.push(`- ${action}`));
+  return lines.join("\n");
+}
+
+async function loadReportStatus() {
+  if (!els.reportStatus) {
+    return;
+  }
+
+  try {
+    const status = await apiRequest("/admin/reports/status");
+    const parts = [
+      `Reports are sent to ${status.recipient || "rowe-ai@outlook.com"}.`,
+      status.last_daily_report ? `Last daily report: ${formatDate(status.last_daily_report)}` : "Last daily report: No data provided.",
+      status.last_monthly_report ? `Last monthly report: ${formatDate(status.last_monthly_report)}` : "Last monthly report: No data provided.",
+    ];
+    els.reportStatus.textContent = parts.join(" ");
+  } catch (err) {
+    console.warn("Report status unavailable:", err);
+    els.reportStatus.textContent = "Report status unavailable on this backend.";
+  }
+}
+
+async function previewDailyReport() {
+  setStatus("Loading daily report preview...");
+  try {
+    const data = await apiRequest("/admin/reports/daily-preview");
+    els.dailyReportPreview.hidden = false;
+    els.dailyReportPreview.textContent = formatReportPreview(data);
+    setStatus("Daily report preview loaded.", "success");
+  } catch (err) {
+    console.error(err);
+    setStatus(err.message || "Unable to load daily report preview.", "error");
+  }
+}
+
+async function sendDailyReport() {
+  setStatus("Sending daily report email...");
+  try {
+    const result = await apiRequest("/admin/reports/send-daily", { method: "POST" });
+    if (result.preview) {
+      els.dailyReportPreview.hidden = false;
+      els.dailyReportPreview.textContent = formatReportPreview(result.preview);
+    }
+    await loadReportStatus();
+    setStatus(`Daily report sent to ${result.recipient || "rowe-ai@outlook.com"}.`, "success");
+  } catch (err) {
+    console.error(err);
+    setStatus(err.message || "Unable to send daily report.", "error");
+  }
+}
+
+async function downloadMonthlyReport() {
+  setStatus("Preparing monthly PDF...");
+  try {
+    const token = getToken();
+    const response = await fetch(`${API_URL}/admin/reports/monthly.pdf`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (response.status === 401 || response.status === 403) {
+      redirectToLogin();
+      return;
+    }
+
+    if (!response.ok) {
+      throw new Error("Unable to download monthly PDF.");
+    }
+
+    const blob = await response.blob();
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    const now = new Date();
+    link.href = url;
+    link.download = `rowe-ai-monthly-report-${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}.pdf`;
+    link.click();
+    URL.revokeObjectURL(url);
+    setStatus("Monthly PDF downloaded.", "success");
+  } catch (err) {
+    console.error(err);
+    setStatus(err.message || "Unable to download monthly PDF.", "error");
+  }
+}
+
+async function sendMonthlyReport() {
+  setStatus("Sending monthly PDF report...");
+  try {
+    const result = await apiRequest("/admin/reports/send-monthly", { method: "POST" });
+    await loadReportStatus();
+    setStatus(`Monthly report sent to ${result.recipient || "rowe-ai@outlook.com"}.`, "success");
+  } catch (err) {
+    console.error(err);
+    setStatus(err.message || "Unable to send monthly report.", "error");
+  }
+}
+
 async function loadDashboard() {
   setStatus("Loading admin dashboard...");
 
@@ -631,6 +753,7 @@ async function loadDashboard() {
 
     renderAnalytics();
     applyFilters();
+    await loadReportStatus();
     setStatus("Admin dashboard loaded.", "success");
   } catch (err) {
     console.error("Error loading admin dashboard:", err);
@@ -662,6 +785,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
   els.refreshBtn.addEventListener("click", loadDashboard);
   els.logoutBtn.addEventListener("click", logout);
+  if (els.previewDailyBtn) els.previewDailyBtn.addEventListener("click", previewDailyReport);
+  if (els.sendDailyBtn) els.sendDailyBtn.addEventListener("click", sendDailyReport);
+  if (els.downloadMonthlyBtn) els.downloadMonthlyBtn.addEventListener("click", downloadMonthlyReport);
+  if (els.sendMonthlyBtn) els.sendMonthlyBtn.addEventListener("click", sendMonthlyReport);
   els.searchInput.addEventListener("input", applyFilters);
   els.statusFilter.addEventListener("change", applyFilters);
   els.paymentFilter.addEventListener("change", applyFilters);
