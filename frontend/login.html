@@ -1,58 +1,146 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Rowe AI</title>
+    <link rel="stylesheet" href="css/responsive-base.css">
     <style>
+        :root {
+            --bg: #f4f7fb;
+            --card: #ffffff;
+            --text: #172033;
+            --muted: #667085;
+            --border: #d9e2ef;
+            --primary: #0f9488;
+            --primary-dark: #0f766e;
+            --shadow: 0 18px 45px rgba(15, 118, 110, 0.18);
+        }
+
         body {
-            font-family: Arial;
-            background: #f5f5f5;
-            padding: 40px;
+            align-items: center;
+            background:
+                radial-gradient(circle at top right, rgba(153, 246, 228, 0.34), transparent 34%),
+                linear-gradient(135deg, #ecfeff 0%, var(--bg) 58%, #ccfbf1 100%);
+            color: var(--text);
+            display: flex;
+            font-family: Arial, sans-serif;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 24px 16px;
         }
-        .box {
-            width: 350px;
-            margin: auto;
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        input {
+
+        .login-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            box-shadow: var(--shadow);
+            margin: 0 auto;
+            max-width: 400px;
+            overflow: hidden;
             width: 100%;
-            padding: 10px;
-            margin-top: 10px;
         }
-        button {
-            width: 100%;
-            padding: 12px;
-            margin-top: 15px;
-            background: #0078ff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
+
+        .login-header {
+            background: linear-gradient(135deg, #0f766e 0%, #0f9488 55%, #115e59 100%);
+            color: #ffffff;
+            padding: 28px 24px;
         }
-        .admin-link {
+
+        .login-header h2 {
+            font-size: clamp(24px, 5vw, 31px);
+            margin: 0 0 8px;
+        }
+
+        .login-header p {
+            color: #d7fffa;
+            font-size: 14px;
+            line-height: 1.45;
+            margin: 0;
+        }
+
+        .login-body {
+            padding: 24px;
+        }
+
+        label {
+            color: var(--muted);
             display: block;
+            font-size: 13px;
+            font-weight: 700;
+            margin: 14px 0 6px;
+        }
+
+        input {
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            font: inherit;
+            padding: 12px;
+            width: 100%;
+        }
+
+        button {
+            background: var(--primary);
+            border: 0;
+            border-radius: 10px;
+            color: #ffffff;
+            cursor: pointer;
+            font: inherit;
+            font-weight: 700;
+            margin-top: 18px;
+            padding: 12px 14px;
+            width: 100%;
+        }
+
+        button:hover {
+            background: var(--primary-dark);
+        }
+
+        .admin-link {
+            color: var(--primary-dark);
+            display: block;
+            font-size: 14px;
             margin-top: 16px;
             text-align: center;
-            color: #0f766e;
-            font-size: 14px;
+            text-decoration: none;
+        }
+
+        .admin-link:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 16px 10px;
+            }
+
+            .login-body {
+                padding: 20px 16px;
+            }
         }
     </style>
 </head>
 <body>
 
-<div class="box">
-    <h2>Login</h2>
+<section class="login-card">
+    <div class="login-header">
+        <h2>Client Login</h2>
+        <p>Sign in to manage your chatbot dashboard.</p>
+    </div>
 
-    <input id="email" type="email" placeholder="Email">
-    <input id="password" type="password" placeholder="Password">
+    <div class="login-body">
+        <label for="email">Email</label>
+        <input id="email" type="email" placeholder="you@company.com" autocomplete="email">
 
-    <button onclick="login()">Login</button>
-    <a class="admin-link" href="register.html">Create an account</a>
-    <a class="admin-link" href="admin/login.html">Admin login</a>
-</div>
+        <label for="password">Password</label>
+        <input id="password" type="password" placeholder="Password" autocomplete="current-password">
+
+        <button type="button" onclick="login()">Login</button>
+        <a class="admin-link" href="register.html">Create an account</a>
+        <a class="admin-link" href="admin/login.html">Admin login</a>
+    </div>
+</section>
 
 <script>
 const API_URL = "https://ai-platform-backend-ulqs.onrender.com";
@@ -146,8 +234,6 @@ async function login() {
             localStorage.setItem("businesses", JSON.stringify(data.businesses));
         }
 
-        // Regular login always opens the client dashboard.
-        // Platform admins can switch to the admin panel from there.
         window.location.href = "client-dashboard.html";
     } catch (err) {
         console.error("Login error:", err);

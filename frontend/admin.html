@@ -2,47 +2,50 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Control Panel</title>
+  <link rel="stylesheet" href="css/responsive-base.css">
   <link rel="stylesheet" href="admin.css">
 </head>
 <body>
+  <main class="container">
   <h1>Admin Control Panel</h1>
 
-  <!-- Add Customer -->
   <section>
     <h2>Add Customer</h2>
     <input id="email" placeholder="Customer Email">
     <input id="password" placeholder="Password" type="password">
     <input id="business-name" placeholder="Business Name">
-    <button id="add-btn">Create Customer + Business</button>
+    <button id="add-btn" type="button">Create Customer + Business</button>
   </section>
 
-  <!-- Add Business to Existing User -->
   <section>
     <h2>Add Business to Existing User</h2>
     <input id="existing-email" placeholder="Existing User Email">
     <input id="existing-business-name" placeholder="New Business Name">
-    <button id="add-business-btn">Create Business for User</button>
+    <button id="add-business-btn" type="button">Create Business for User</button>
   </section>
 
-  <!-- List Businesses -->
   <section>
     <h2>All Businesses</h2>
-    <table id="business-table">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Business Name</th>
-          <th>Folder</th>
-          <th>Owner Email</th>
-          <th>Status</th>
-          <th>Disable</th>
-          <th>Delete</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+    <div class="table-scroll">
+      <table id="business-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Business Name</th>
+            <th>Folder</th>
+            <th>Owner Email</th>
+            <th>Status</th>
+            <th>Disable</th>
+            <th>Delete</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
   </section>
+  </main>
 
   <script src="admin.js"></script>
 </body>

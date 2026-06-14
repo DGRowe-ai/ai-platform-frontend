@@ -4,6 +4,7 @@
 
 body {
     margin: 0;
+    overflow-x: hidden;
     font-family: Arial, sans-serif;
     background: transparent;
 }
@@ -135,10 +136,12 @@ html.embedded #chat-widget-wrapper {
 
 #user-input {
     flex: 1;
+    min-width: 0;
     padding: 10px;
     border: 1px solid #aaa;
     border-radius: 6px;
-    font-size: 15px;
+    font-size: 16px;
+    min-height: 44px;
 }
 
 #send-btn {
@@ -149,7 +152,9 @@ html.embedded #chat-widget-wrapper {
     border: none;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 15px;
+    font-size: 16px;
+    min-height: 44px;
+    flex-shrink: 0;
 }
 
 #send-btn:hover {
@@ -166,4 +171,21 @@ html.embedded #chat-widget-wrapper {
     color: #004d40;
     background: #e0f7f4;
     border-top: 1px solid #b2dfdb;
+}
+
+@media (max-width: 480px) {
+    #input-area {
+        flex-wrap: wrap;
+    }
+
+    #send-btn {
+        margin-left: 0;
+        margin-top: 8px;
+        width: 100%;
+    }
+
+    .message {
+        font-size: 14px;
+        max-width: 92%;
+    }
 }

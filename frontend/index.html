@@ -1,19 +1,30 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Business Chat Widget</title>
+    <style>
+        body {
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        #loki-widget {
+            border: none;
+            bottom: 20px;
+            height: min(600px, calc(100vh - 40px));
+            max-width: calc(100vw - 40px);
+            position: fixed;
+            right: 20px;
+            width: min(380px, calc(100vw - 40px));
+            z-index: 999999;
+        }
+    </style>
 </head>
 <body>
 
-    <iframe id="loki-widget" src="widget-frame.html" style="
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        width: 380px;
-        height: 600px;
-        border: none;
-        z-index: 999999;
-    "></iframe>
+    <iframe id="loki-widget" src="widget-frame.html" title="Rowe AI Chat"></iframe>
 
 </body>
 </html>

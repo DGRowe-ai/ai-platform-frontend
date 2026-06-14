@@ -1,0 +1,72 @@
+/* Rowe AI — shared mobile-responsive base */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  overflow-x: hidden;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  width: 100%;
+}
+
+.touch-target,
+button,
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+select,
+a.button-link {
+  min-height: 44px;
+}
+
+input[type="email"],
+input[type="password"],
+input[type="text"],
+input[type="search"],
+input[type="number"],
+input[type="tel"],
+input[type="url"] {
+  font-size: 16px;
+  min-height: 44px;
+}
+
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 10px;
+  }
+
+  body {
+    padding: 0;
+  }
+}

@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Client Dashboard</title>
+  <link rel="stylesheet" href="css/responsive-base.css">
   <style>
     :root {
       color-scheme: light;
@@ -27,9 +28,15 @@
 
     body {
       margin: 0;
+      overflow-x: hidden;
       font-family: Arial, sans-serif;
       background: var(--bg);
       color: var(--text);
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
     }
 
     header {
@@ -300,6 +307,7 @@
       border: 0;
       border-radius: 10px;
       padding: 10px 14px;
+      min-height: 44px;
       font-weight: 700;
       cursor: pointer;
       background: var(--primary);
@@ -476,6 +484,45 @@
       }
     }
 
+    @media (max-width: 768px) {
+      main {
+        margin: 20px auto 32px;
+        width: calc(100% - 16px);
+      }
+
+      header {
+        padding: 24px 16px;
+      }
+
+      .card {
+        padding: 18px;
+      }
+
+      .toolbar {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .topbar-actions {
+        width: 100%;
+      }
+
+      .topbar-actions .secondary,
+      .topbar-actions .admin-panel-link {
+        flex: 1 1 auto;
+        text-align: center;
+      }
+
+      .kb-file-item {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .chatbot-message {
+        max-width: 95%;
+      }
+    }
+
     @media (max-width: 560px) {
       .topbar,
       .toolbar {
@@ -491,18 +538,28 @@
 
       .brand-logo-wrap {
         padding: 18px 30px;
+        width: 100%;
       }
 
       .brand-logo {
         height: 130px;
       }
 
-      .copy-row {
+      .copy-row,
+      .chatbot-input-row {
         grid-template-columns: 1fr;
       }
 
       .stats-grid {
         grid-template-columns: 1fr;
+      }
+
+      .chat-list {
+        max-height: none;
+      }
+
+      #chatbot-messages {
+        height: min(50vh, 320px);
       }
     }
   </style>

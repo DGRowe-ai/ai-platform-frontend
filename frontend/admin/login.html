@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Admin Login</title>
+  <link rel="stylesheet" href="../css/responsive-base.css">
   <style>
     :root {
       --bg: #f4f7fb;
@@ -32,7 +33,8 @@
       justify-content: center;
       margin: 0;
       min-height: 100vh;
-      padding: 24px;
+      overflow-x: hidden;
+      padding: 24px 16px;
     }
 
     .login-card {
@@ -92,6 +94,7 @@
       font: inherit;
       font-weight: 700;
       margin-top: 18px;
+      min-height: 44px;
       padding: 12px 14px;
       width: 100%;
     }
@@ -125,6 +128,13 @@
 
     .help a {
       color: var(--primary-dark);
+    }
+
+    @media (max-width: 600px) {
+      .login-header,
+      form {
+        padding: 22px 18px;
+      }
     }
   </style>
 </head>
