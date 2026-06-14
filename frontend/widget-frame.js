@@ -3,7 +3,10 @@
 ------------------------------*/
 
 const API_URL = "https://ai-platform-backend-ulqs.onrender.com";
-const BUSINESS_ID = "rowe_ai"; // your real folder name
+
+const urlParams = new URLSearchParams(window.location.search);
+const BUSINESS_ID = urlParams.get("business") || urlParams.get("b") || "rowe_ai";
+const WIDGET_ORIGIN = window.location.origin;
 
 /* -----------------------------
    DOM Elements
@@ -19,7 +22,7 @@ window.addEventListener("DOMContentLoaded", () => {
        Loki Animation System
     ------------------------------*/
 
-    const LOKI_BASE = "images/loki";
+    const LOKI_BASE = `${WIDGET_ORIGIN}/images/loki`;
 
     const LOKI_STATES = {
         idle: [`${LOKI_BASE}/idle/idle.png`],

@@ -154,7 +154,8 @@
 
     .embed-code {
       font-family: "Courier New", monospace;
-      min-height: 74px;
+      min-height: 120px;
+      resize: vertical;
     }
 
     .stats-grid {
@@ -504,28 +505,31 @@
       <section class="card install">
         <div class="toolbar">
           <div>
-            <h2>Frontend URL</h2>
-            <p class="help-text">Copy the chatbot URL or embed code for your website.</p>
+            <h2>Website Install</h2>
+            <p class="help-text">Add the chat widget to your site, or share a direct link to the full-page chat.</p>
           </div>
           <a class="download-guide-link" href="static/docs/chatbot_installation_guide.pdf" download>Download Installation Guide (PDF)</a>
         </div>
 
         <div class="install-grid">
           <div>
-            <label for="chatbot-url">Chatbot URL</label>
+            <label for="chatbot-url">Direct Chat Link</label>
+            <p class="help-text">Full-page chat URL (optional — for sharing or testing without embedding).</p>
             <div class="copy-row">
-              <input id="chatbot-url" type="text" readonly value="Loading chatbot URL...">
-              <button id="copy-url-btn" type="button">Copy URL</button>
+              <input id="chatbot-url" type="text" readonly value="Loading chat link...">
+              <button id="copy-url-btn" type="button">Copy Link</button>
             </div>
             <div class="status" id="copy-url-status"></div>
           </div>
 
           <div>
             <label for="embed-code">Embed Code</label>
+            <p class="help-text">Paste this snippet before <code>&lt;/body&gt;</code> on any page (e.g. roweai.ca). Works on external domains.</p>
             <div class="copy-row">
-              <textarea class="embed-code" id="embed-code" readonly>Loading embed code...</textarea>
+              <textarea class="embed-code" id="embed-code" readonly spellcheck="false">Loading embed code...</textarea>
               <button class="secondary" id="copy-embed-btn" type="button">Copy Embed Code</button>
             </div>
+            <div class="status" id="copy-embed-status"></div>
           </div>
         </div>
       </section>

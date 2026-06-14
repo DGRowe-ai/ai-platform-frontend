@@ -1,5 +1,5 @@
 const API_URL = "https://ai-platform-backend-ulqs.onrender.com";
-const FRONTEND_URL = "https://ai-platform-frontend-uaaa.onrender.com";
+const DEFAULT_WIDGET_BASE = "https://ai-platform-frontend-uaaa.onrender.com";
 
 let clientBusinessId = null;
 
@@ -10,6 +10,7 @@ const els = {
   chatbotUrl: document.getElementById("chatbot-url"),
   historyStatus: document.getElementById("history-status"),
   copyEmbedBtn: document.getElementById("copy-embed-btn"),
+  copyEmbedStatus: document.getElementById("copy-embed-status"),
   copyUrlBtn: document.getElementById("copy-url-btn"),
   copyUrlStatus: document.getElementById("copy-url-status"),
   embedCode: document.getElementById("embed-code"),
@@ -226,18 +227,30 @@ function getBusinessId(data) {
   }
 }
 
-function renderInstallInfo(data) {
-  const businessId = getBusinessId(data);
-  const widgetUrl = `${FRONTEND_URL}/widget.js`;
+function getWidgetBaseUrl() {
+  const origin = window.location.origin;
+  if (origin && !/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(origin)) {
+    return origin.replace(/\/$/, "");
+  }
+  return DEFAULT_WIDGET_BASE;
+}
 
-  els.chatbotUrl.value = widgetUrl;
-  els.embedCode.value = [
+function buildEmbedSnippet(businessId) {
+  const widgetUrl = `${getWidgetBaseUrl()}/widget.js`;
+  return [
     "<script",
     `  src="${widgetUrl}"`,
     `  data-business="${businessId}"`,
-    "  defer",
     "></script>",
   ].join("\n");
+}
+
+function renderInstallInfo(data) {
+  const businessId = getBusinessId(data);
+  const baseUrl = getWidgetBaseUrl();
+
+  els.chatbotUrl.value = `${baseUrl}/chat.html?b=${encodeURIComponent(businessId)}`;
+  els.embedCode.value = buildEmbedSnippet(businessId);
 }
 
 function renderAnalytics(data) {
@@ -808,16 +821,16 @@ function logout() {
   redirectToLogin();
 }
 
-async function copyToClipboard(text) {
+async function copyToClipboard(text, statusEl = els.copyUrlStatus) {
   try {
     await navigator.clipboard.writeText(text);
-    setStatus(els.copyUrlStatus, "Copied!", "success");
+    setStatus(statusEl, "Copied!", "success");
     setTimeout(() => {
-      setStatus(els.copyUrlStatus, "");
+      setStatus(statusEl, "");
     }, 2000);
   } catch (err) {
     console.error("Clipboard copy failed:", err);
-    setStatus(els.copyUrlStatus, "Unable to copy. Please select and copy manually.", "error");
+    setStatus(statusEl, "Unable to copy. Please select and copy manually.", "error");
   }
 }
 
@@ -829,8 +842,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   els.logoutBtn.addEventListener("click", logout);
   els.refreshBtn.addEventListener("click", reloadDashboard);
-  els.copyUrlBtn.addEventListener("click", () => copyToClipboard(els.chatbotUrl.value));
-  els.copyEmbedBtn.addEventListener("click", () => copyToClipboard(els.embedCode.value));
+  els.copyUrlBtn.addEventListener("click", () => copyToClipboard(els.chatbotUrl.value, els.copyUrlStatus));
+  els.copyEmbedBtn.addEventListener("click", () => copyToClipboard(els.embedCode.value, els.copyEmbedStatus));
   els.settingsForm.addEventListener("submit", saveSettings);
   els.passwordForm.addEventListener("submit", changePassword);
   els.kbUploadBtn.addEventListener("click", uploadKnowledgeFile);

@@ -1,36 +1,81 @@
 (function () {
+    const script =
+        document.currentScript ||
+        document.querySelector('script[src*="widget.js"][data-business]');
 
-    const businessId = document.currentScript.getAttribute("data-business");
+    if (!script) {
+        console.error("[Rowe AI Widget] Could not find widget script tag.");
+        return;
+    }
 
-    // Create chat bubble
+    const businessId = script.getAttribute("data-business");
+    if (!businessId) {
+        console.error("[Rowe AI Widget] Missing data-business attribute on script tag.");
+        return;
+    }
+
+    let baseUrl = "https://ai-platform-frontend-uaaa.onrender.com";
+    try {
+        if (script.src) {
+            baseUrl = new URL(script.src, window.location.href).origin;
+        }
+    } catch (err) {
+        console.warn("[Rowe AI Widget] Using default frontend URL.", err);
+    }
+
+    const style = document.createElement("style");
+    style.textContent = `
+        #chat-bubble {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 999999;
+            cursor: pointer;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+            background: #ffffff;
+            border: 2px solid #009688;
+        }
+        #chat-bubble img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        #rowe-ai-chat-widget {
+            position: fixed;
+            bottom: 100px;
+            right: 20px;
+            width: 350px;
+            height: 520px;
+            border: none;
+            border-radius: 14px;
+            box-shadow: 0 0 12px rgba(0, 0, 0, 0.25);
+            z-index: 999999;
+            display: none;
+        }
+    `;
+    (document.head || document.documentElement).appendChild(style);
+
     const bubble = document.createElement("div");
     bubble.id = "chat-bubble";
-    bubble.innerHTML = `<img src="https://i.imgur.com/8QfQ7kT.png">`;
+    bubble.setAttribute("role", "button");
+    bubble.setAttribute("aria-label", "Open chat");
+    bubble.innerHTML = `<img src="${baseUrl}/images/loki/idle/idle.png" alt="Chat">`;
     document.body.appendChild(bubble);
 
-    // Create iframe for chat widget
     const iframe = document.createElement("iframe");
-
-    // ⭐ FIXED: Load widget-frame.html from the SAME server as your frontend (Vite)
-    iframe.src = `/widget-frame.html?business=${businessId}`;
-
-    iframe.style.position = "fixed";
-    iframe.style.bottom = "100px";
-    iframe.style.right = "20px";
-    iframe.style.width = "350px";
-    iframe.style.height = "520px";
-    iframe.style.border = "none";
-    iframe.style.borderRadius = "14px";
-    iframe.style.boxShadow = "0 0 12px rgba(0,0,0,0.25)";
-    iframe.style.zIndex = "999999";
-    iframe.style.display = "none";
-    iframe.classList.add("fade-in");
+    iframe.id = "rowe-ai-chat-widget";
+    iframe.title = "Rowe AI Chat";
+    iframe.src = `${baseUrl}/widget-frame.html?business=${encodeURIComponent(businessId)}`;
 
     document.body.appendChild(iframe);
 
-    // Toggle open/close
     bubble.addEventListener("click", () => {
-        iframe.style.display = iframe.style.display === "none" ? "block" : "none";
+        const isHidden = iframe.style.display === "none" || !iframe.style.display;
+        iframe.style.display = isHidden ? "block" : "none";
     });
-
 })();
