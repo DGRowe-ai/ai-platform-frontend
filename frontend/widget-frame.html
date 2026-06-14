@@ -3,6 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <title>Chat Widget</title>
+    <script>
+        (function () {
+            var params = new URLSearchParams(window.location.search);
+            if (params.get("embed") === "1" || window.self !== window.top) {
+                document.documentElement.classList.add("embedded");
+            }
+        })();
+    </script>
     <link rel="stylesheet" href="/style.css">
 </head>
 <body>

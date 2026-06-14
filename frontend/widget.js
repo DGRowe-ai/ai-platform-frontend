@@ -51,6 +51,8 @@
             right: 20px;
             width: 350px;
             height: 520px;
+            max-width: calc(100vw - 40px);
+            max-height: calc(100vh - 120px);
             border: none;
             border-radius: 14px;
             box-shadow: 0 0 12px rgba(0, 0, 0, 0.25);
@@ -64,13 +66,13 @@
     bubble.id = "chat-bubble";
     bubble.setAttribute("role", "button");
     bubble.setAttribute("aria-label", "Open chat");
-    bubble.innerHTML = `<img src="${baseUrl}/images/loki/idle/idle.png" alt="Chat">`;
+    bubble.innerHTML = `<img src="${baseUrl}/images/loki/idle/idle.png" alt="Chat" width="60" height="60">`;
     document.body.appendChild(bubble);
 
     const iframe = document.createElement("iframe");
     iframe.id = "rowe-ai-chat-widget";
     iframe.title = "Rowe AI Chat";
-    iframe.src = `${baseUrl}/widget-frame.html?business=${encodeURIComponent(businessId)}`;
+    iframe.src = `${baseUrl}/widget-frame.html?business=${encodeURIComponent(businessId)}&embed=1`;
 
     document.body.appendChild(iframe);
 
