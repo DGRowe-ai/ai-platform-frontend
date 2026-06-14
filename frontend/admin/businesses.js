@@ -838,6 +838,7 @@ function logout() {
   localStorage.removeItem("token");
   localStorage.removeItem("access_token");
   localStorage.removeItem("user_role");
+  localStorage.removeItem("is_platform_admin");
   redirectToLogin();
 }
 

@@ -133,6 +133,10 @@ async function login() {
         localStorage.setItem("token", token);
         localStorage.setItem("access_token", token);
         localStorage.setItem("user_role", role);
+        localStorage.setItem(
+            "is_platform_admin",
+            isAdminUser(data, tokenPayload) ? "1" : "0"
+        );
 
         if (data.user_id) {
             localStorage.setItem("user_id", data.user_id);
@@ -142,9 +146,9 @@ async function login() {
             localStorage.setItem("businesses", JSON.stringify(data.businesses));
         }
 
-        window.location.href = isAdminUser(data, tokenPayload)
-            ? "admin/businesses.html"
-            : "client-dashboard.html";
+        // Regular login always opens the client dashboard.
+        // Platform admins can switch to the admin panel from there.
+        window.location.href = "client-dashboard.html";
     } catch (err) {
         console.error("Login error:", err);
         alert("Unable to login. Please try again.");

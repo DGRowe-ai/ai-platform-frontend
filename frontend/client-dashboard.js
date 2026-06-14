@@ -15,6 +15,9 @@ const els = {
   copyUrlStatus: document.getElementById("copy-url-status"),
   embedCode: document.getElementById("embed-code"),
   logoutBtn: document.getElementById("logout-btn"),
+  manageSubscriptionBtn: document.getElementById("manage-subscription-btn"),
+  adminPanelBtn: document.getElementById("admin-panel-btn"),
+  billingStatus: document.getElementById("billing-status"),
   pageStatus: document.getElementById("page-status"),
   refreshBtn: document.getElementById("refresh-btn"),
   settingsForm: document.getElementById("settings-form"),
@@ -50,6 +53,10 @@ function setStatus(element, message, type = "") {
   if (type) {
     element.classList.add(type);
   }
+}
+
+function isPlatformAdmin() {
+  return localStorage.getItem("is_platform_admin") === "1";
 }
 
 function redirectToLogin() {
@@ -818,7 +825,24 @@ function logout() {
   localStorage.removeItem("token");
   localStorage.removeItem("access_token");
   localStorage.removeItem("user_role");
+  localStorage.removeItem("is_platform_admin");
   redirectToLogin();
+}
+
+async function openCustomerPortal() {
+  setStatus(els.billingStatus, "Opening billing portal...");
+  els.manageSubscriptionBtn.disabled = true;
+
+  try {
+    const data = await apiRequest("/create-customer-portal-session", { method: "POST" });
+    if (!data?.url) {
+      throw new Error("Billing portal URL was not returned.");
+    }
+    window.location.href = data.url;
+  } catch (err) {
+    setStatus(els.billingStatus, err.message || "Unable to open billing portal.", "error");
+    els.manageSubscriptionBtn.disabled = false;
+  }
 }
 
 async function copyToClipboard(text, statusEl = els.copyUrlStatus) {
@@ -840,7 +864,16 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
+  const role = (localStorage.getItem("user_role") || "owner").toLowerCase();
+  if (isPlatformAdmin() && els.adminPanelBtn) {
+    els.adminPanelBtn.style.display = "inline-block";
+  }
+  if (role !== "owner" && !isPlatformAdmin() && els.manageSubscriptionBtn) {
+    els.manageSubscriptionBtn.closest(".billing")?.classList.add("hidden");
+  }
+
   els.logoutBtn.addEventListener("click", logout);
+  els.manageSubscriptionBtn.addEventListener("click", openCustomerPortal);
   els.refreshBtn.addEventListener("click", reloadDashboard);
   els.copyUrlBtn.addEventListener("click", () => copyToClipboard(els.chatbotUrl.value, els.copyUrlStatus));
   els.copyEmbedBtn.addEventListener("click", () => copyToClipboard(els.embedCode.value, els.copyEmbedStatus));

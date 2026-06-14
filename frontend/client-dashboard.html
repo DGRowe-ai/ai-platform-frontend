@@ -88,6 +88,27 @@
       margin-bottom: 20px;
     }
 
+    .topbar-actions {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .admin-panel-link {
+      background: #e2e8f0;
+      border-radius: 10px;
+      color: #172033;
+      display: none;
+      font-weight: 700;
+      padding: 10px 14px;
+      text-decoration: none;
+    }
+
+    .admin-panel-link:hover {
+      background: #cbd5e1;
+    }
+
     .business-name {
       color: var(--muted);
       font-size: 15px;
@@ -126,6 +147,21 @@
 
     .account {
       grid-column: span 12;
+    }
+
+    .billing {
+      grid-column: span 12;
+    }
+
+    .billing-actions {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .billing.hidden {
+      display: none;
     }
 
     .knowledge {
@@ -490,7 +526,10 @@
         <div class="business-name" id="business-name">Loading business...</div>
         <div class="status" id="page-status"></div>
       </div>
-      <button class="secondary" id="logout-btn" type="button">Log out</button>
+      <div class="topbar-actions">
+        <a class="admin-panel-link" id="admin-panel-btn" href="admin/businesses.html">Admin Panel</a>
+        <button class="secondary" id="logout-btn" type="button">Log out</button>
+      </div>
     </div>
 
     <div class="grid">
@@ -540,6 +579,15 @@
           <span class="status" id="history-status"></span>
         </div>
         <div class="chat-list" id="chat-history"></div>
+      </section>
+
+      <section class="card billing">
+        <h2>Billing &amp; Subscription</h2>
+        <p class="help-text">Update your payment method, view invoices, or cancel your subscription in Stripe.</p>
+        <div class="billing-actions">
+          <button id="manage-subscription-btn" type="button">Manage Subscription</button>
+        </div>
+        <div class="status" id="billing-status"></div>
       </section>
 
       <section class="card account">
