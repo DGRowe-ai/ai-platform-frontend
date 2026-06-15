@@ -319,8 +319,51 @@ By creating an account and activating this service, you acknowledge that you hav
 
   <script>
     const API_URL = "https://ai-platform-backend-ulqs.onrender.com";
+    const urlParams = new URLSearchParams(window.location.search);
+    const checkoutSessionId = urlParams.get("session_id");
+    const statusBanner = document.createElement("p");
+    statusBanner.className = "help-text";
+    statusBanner.id = "billing-gate-status";
+    document.querySelector(".register-card").prepend(statusBanner);
+
+    async function enforceBillingGate() {
+      if (!checkoutSessionId) {
+        window.location.href = "billing.html";
+        return false;
+      }
+
+      statusBanner.textContent = "Verifying billing setup...";
+
+      try {
+        const response = await fetch(
+          `${API_URL}/verify-checkout-session?session_id=${encodeURIComponent(checkoutSessionId)}`
+        );
+        const data = await response.json();
+
+        if (!response.ok || !data.valid) {
+          window.location.href = "billing.html";
+          return false;
+        }
+
+        if (data.email) {
+          document.getElementById("email").value = data.email;
+        }
+
+        statusBanner.textContent = "Billing verified. Complete your account details below.";
+        return true;
+      } catch (err) {
+        console.error("Billing verification failed:", err);
+        window.location.href = "billing.html";
+        return false;
+      }
+    }
 
     document.getElementById("register-btn").onclick = async () => {
+      if (!checkoutSessionId) {
+        window.location.href = "billing.html";
+        return;
+      }
+
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
       const business_name = document.getElementById("business_name").value;
@@ -328,7 +371,12 @@ By creating an account and activating this service, you acknowledge that you hav
       const res = await fetch(`${API_URL}/signup`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, business_name })
+        body: JSON.stringify({
+          email,
+          password,
+          business_name,
+          session_id: checkoutSessionId,
+        })
       });
 
       if (res.ok) {
@@ -336,9 +384,11 @@ By creating an account and activating this service, you acknowledge that you hav
         window.location.href = "login.html";
       } else {
         const data = await res.json();
-        alert("Registration failed: " + data.detail);
+        alert("Registration failed: " + (data.detail || "Unknown error"));
       }
     };
+
+    enforceBillingGate();
   </script>
 </body>
 </html>
