@@ -175,7 +175,23 @@ function normalizeBusiness(raw) {
   };
 }
 
+function isBusinessSuspended(business) {
+  if (business.raw.service_suspended === true) {
+    return true;
+  }
+
+  const billingStatus = String(firstValue(business.raw, ["billing_status"], "")).toLowerCase();
+  const status = String(firstValue(business.raw, ["status", "business_status", "subscription_status"], "")).toLowerCase();
+  const paymentStatus = String(firstValue(business.raw, ["payment_status", "paymentStatus"], "")).toLowerCase();
+
+  return billingStatus === "suspended" || status === "suspended" || paymentStatus === "suspended";
+}
+
 function isBusinessActive(business) {
+  if (isBusinessSuspended(business)) {
+    return false;
+  }
+
   const rawStatus = String(firstValue(business.raw, ["status", "business_status", "subscription_status"], "")).toLowerCase();
 
   if (business.raw.disabled === true || business.raw.is_disabled === true || rawStatus === "disabled") {
@@ -190,7 +206,15 @@ function isBusinessActive(business) {
 }
 
 function getPaymentState(business) {
+  if (isBusinessSuspended(business)) {
+    return "suspended";
+  }
+
   const rawStatus = String(firstValue(business.raw, ["payment_status", "paymentStatus"], "")).toLowerCase();
+
+  if (rawStatus.includes("suspended")) {
+    return "suspended";
+  }
 
   if (rawStatus.includes("overdue")) {
     return "overdue";
@@ -297,6 +321,8 @@ function renderPaymentCell(business) {
 
   if (paymentState === "overdue") {
     wrapper.appendChild(createBadge("Overdue", "danger"));
+  } else if (paymentState === "suspended") {
+    wrapper.appendChild(createBadge("Suspended", "danger"));
   } else if (paymentState === "none") {
     wrapper.appendChild(createBadge("No payments recorded", "warning"));
   } else {
@@ -309,6 +335,17 @@ function renderPaymentCell(business) {
   wrapper.appendChild(lastPayment);
 
   return wrapper;
+}
+
+function renderStatusCell(business) {
+  if (isBusinessSuspended(business)) {
+    return createBadge("Suspended", "danger");
+  }
+
+  return createBadge(
+    isBusinessActive(business) ? "Active" : "Disabled",
+    isBusinessActive(business) ? "success" : "danger",
+  );
 }
 
 function renderActionsCell(business) {
@@ -343,6 +380,27 @@ function renderActionsCell(business) {
     confirmMarkPaid(business);
   });
   actions.appendChild(paid);
+
+  if (isBusinessSuspended(business)) {
+    const reactivate = document.createElement("button");
+    reactivate.type = "button";
+    reactivate.textContent = "Reactivate Service";
+    reactivate.addEventListener("click", event => {
+      event.stopPropagation();
+      confirmReactivateService(business);
+    });
+    actions.appendChild(reactivate);
+  } else {
+    const suspend = document.createElement("button");
+    suspend.className = "warning";
+    suspend.type = "button";
+    suspend.textContent = "Suspend Service";
+    suspend.addEventListener("click", event => {
+      event.stopPropagation();
+      confirmSuspendService(business);
+    });
+    actions.appendChild(suspend);
+  }
 
   const deleteClient = document.createElement("button");
   deleteClient.className = "danger";
@@ -381,7 +439,7 @@ function renderBusinesses() {
     appendCell(row, business.name);
     appendCell(row, business.ownerEmail || "-");
     appendCell(row, formatDate(business.createdAt));
-    appendCell(row, createBadge(isBusinessActive(business) ? "Active" : "Disabled", isBusinessActive(business) ? "success" : "danger"));
+    appendCell(row, renderStatusCell(business));
     appendCell(row, renderPaymentCell(business));
     appendCell(row, formatDate(business.nextRenewalAt));
     appendCell(row, renderActionsCell(business));
@@ -412,7 +470,8 @@ function applyFilters() {
       String(business.ownerEmail || "").toLowerCase().includes(search);
     const matchesStatus = status === "all" ||
       (status === "active" && isBusinessActive(business)) ||
-      (status === "disabled" && !isBusinessActive(business));
+      (status === "suspended" && isBusinessSuspended(business)) ||
+      (status === "disabled" && !isBusinessActive(business) && !isBusinessSuspended(business));
     const paymentState = getPaymentState(business);
     const matchesPayment = payment === "all" || payment === paymentState;
     const matchesOverdue = !state.showOverdueOnly || paymentState === "overdue";
@@ -575,6 +634,70 @@ async function deleteClientBusiness(business) {
   return apiRequest(`/admin/businesses/${businessKey}`, {
     method: "DELETE",
   });
+}
+
+async function suspendClientBusiness(business, sendEmail = true) {
+  const businessKey = encodeURIComponent(business.businessKey);
+  return apiRequest(`/admin/businesses/${businessKey}/suspend`, {
+    method: "POST",
+    body: JSON.stringify({ send_email: sendEmail }),
+  });
+}
+
+async function reactivateClientBusiness(business) {
+  const businessKey = encodeURIComponent(business.businessKey);
+  return apiRequest(`/admin/businesses/${businessKey}/reactivate`, {
+    method: "POST",
+  });
+}
+
+function confirmSuspendService(business) {
+  openModal(
+    "Suspend client service?",
+    messageNode(
+      `Suspend ${business.name}? The chatbot will stop responding on their website and an email will be sent to ${business.ownerEmail || "the owner"} explaining how to reactivate.`,
+    ),
+    [
+      modalButton("Cancel", "secondary", closeModal),
+      modalButton("Suspend Service", "warning", async () => {
+        try {
+          const result = await suspendClientBusiness(business, true);
+          closeModal();
+          await loadDashboard();
+          const emailNote = result.email_sent ? " Suspension email sent." : " Suspension email could not be sent.";
+          setStatus(`${business.name} suspended.${emailNote}`, "success");
+        } catch (err) {
+          console.error(err);
+          openModal("Unable to suspend service", messageNode(err.message), [
+            modalButton("Close", "secondary", closeModal),
+          ]);
+        }
+      }),
+    ],
+  );
+}
+
+function confirmReactivateService(business) {
+  openModal(
+    "Reactivate client service?",
+    messageNode(`Restore chatbot service for ${business.name}?`),
+    [
+      modalButton("Cancel", "secondary", closeModal),
+      modalButton("Reactivate Service", "", async () => {
+        try {
+          await reactivateClientBusiness(business);
+          closeModal();
+          await loadDashboard();
+          setStatus(`${business.name} reactivated.`, "success");
+        } catch (err) {
+          console.error(err);
+          openModal("Unable to reactivate service", messageNode(err.message), [
+            modalButton("Close", "secondary", closeModal),
+          ]);
+        }
+      }),
+    ],
+  );
 }
 
 function confirmDeleteClient(business) {
