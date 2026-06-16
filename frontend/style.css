@@ -108,6 +108,9 @@ html.embedded #chat-widget-wrapper {
     border-radius: 14px;
     font-size: 15px;
     line-height: 1.4;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .message.bot {

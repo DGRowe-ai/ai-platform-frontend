@@ -103,15 +103,50 @@
             })
         });
 
-        const data = await res.json();
-        addMessage("bot", data.response);
+        let data = null;
+        try {
+            data = await res.json();
+        } catch (err) {
+            console.warn("Chat response was not JSON:", err);
+        }
+
+        if (!res.ok) {
+            const errorText =
+                extractChatResponse(data) ||
+                "Sorry, the chatbot is unavailable right now. Please try again later.";
+            addMessage("bot", errorText);
+            return;
+        }
+
+        const reply =
+            extractChatResponse(data) ||
+            "Sorry, I didn't receive a response. Please try again.";
+        addMessage("bot", reply);
+    }
+
+    function extractChatResponse(data) {
+        if (!data || typeof data !== "object") {
+            return "";
+        }
+
+        const value = data.response ?? data.reply ?? data.answer ?? data.detail;
+        if (value == null) {
+            return "";
+        }
+
+        return typeof value === "string" ? value : String(value);
     }
 
     function addMessage(role, text) {
+        const content = (text == null ? "" : String(text)).trim();
+        if (!content) {
+            return;
+        }
+
         const div = document.getElementById("messages");
         const p = document.createElement("p");
         p.className = role;
-        p.textContent = text;
+        p.textContent = content;
         div.appendChild(p);
         div.scrollTop = div.scrollHeight;
     }

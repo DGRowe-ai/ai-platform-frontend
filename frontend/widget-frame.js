@@ -74,10 +74,28 @@ window.addEventListener("DOMContentLoaded", () => {
        Chat UI Helpers
     ------------------------------*/
 
+    function extractChatResponse(data) {
+        if (!data || typeof data !== "object") {
+            return "";
+        }
+
+        const value = data.response ?? data.reply ?? data.answer ?? data.detail;
+        if (value == null) {
+            return "";
+        }
+
+        return typeof value === "string" ? value : String(value);
+    }
+
     function addMessage(text, sender) {
+        const content = (text == null ? "" : String(text)).trim();
+        if (!content) {
+            return;
+        }
+
         const msg = document.createElement("div");
         msg.classList.add("message", sender);
-        msg.textContent = text;
+        msg.textContent = content;
         messagesDiv.appendChild(msg);
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
     }
@@ -116,9 +134,28 @@ window.addEventListener("DOMContentLoaded", () => {
                 })
             });
 
-            const data = await response.json();
+            let data = null;
+            try {
+                data = await response.json();
+            } catch (parseErr) {
+                console.warn("Chat response was not JSON:", parseErr);
+            }
+
             setLokiState("talking");
-            addMessage(data.response, "bot");
+
+            if (!response.ok) {
+                const errorText =
+                    extractChatResponse(data) ||
+                    "Sorry, the chatbot is unavailable right now. Please try again later.";
+                addMessage(errorText, "bot");
+                setLokiState("idle");
+                return;
+            }
+
+            const reply =
+                extractChatResponse(data) ||
+                "Sorry, I didn't receive a response. Please try again.";
+            addMessage(reply, "bot");
 
             setTimeout(() => {
                 if (lokiState === "talking") setLokiState("idle");
