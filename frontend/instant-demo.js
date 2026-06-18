@@ -1,5 +1,22 @@
-const API_URL = "https://ai-platform-backend-ulqs.onrender.com";
+function resolveApiUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const override = params.get("api");
+  if (override) {
+    return override.replace(/\/$/, "");
+  }
+
+  const host = window.location.hostname;
+  if (host === "localhost" || host === "127.0.0.1") {
+    return "http://localhost:8000";
+  }
+
+  return "https://ai-platform-backend-ulqs.onrender.com";
+}
+
+const API_URL = resolveApiUrl();
 const REGISTER_URL = "billing.html";
+
+console.info("[Instant Demo] API base URL:", API_URL);
 
 const state = {
   instanceId: null,
@@ -61,11 +78,48 @@ function escapeHtml(value) {
     .replace(/'/g, "&#39;");
 }
 
+function logFetchFailure(label, err, details = {}) {
+  console.error(`[Instant Demo] ${label} failed`, {
+    error: err,
+    name: err?.name,
+    message: err?.message,
+    stack: err?.stack,
+    ...details,
+  });
+}
+
+function formatFetchError(err, endpoint) {
+  if (err?.name === "TypeError" && err?.message === "Failed to fetch") {
+    return (
+      `Network error reaching ${endpoint}. ` +
+      "This is usually a CORS or connectivity issue. " +
+      "Check the browser console for details."
+    );
+  }
+  return err?.message || "Request failed.";
+}
+
+async function parseJsonResponse(response) {
+  const text = await response.text();
+  if (!text) {
+    return {};
+  }
+  try {
+    return JSON.parse(text);
+  } catch (err) {
+    console.warn("[Instant Demo] Non-JSON response body:", text);
+    return { detail: text };
+  }
+}
+
 async function generateDemo() {
   const url = els.websiteUrl.value.trim();
   if (!url || state.isGenerating) {
     return;
   }
+
+  const endpoint = `${API_URL}/api/generate-demo`;
+  const requestBody = { url };
 
   state.isGenerating = true;
   els.generateBtn.disabled = true;
@@ -74,16 +128,35 @@ async function generateDemo() {
   els.cta.classList.add("hidden");
   els.chatMessages.innerHTML = "";
 
+  console.info("[Instant Demo] POST", endpoint, requestBody);
+
   try {
-    const response = await fetch(`${API_URL}/api/generate-demo`, {
+    const response = await fetch(endpoint, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ url }),
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify(requestBody),
     });
 
-    const data = await response.json().catch(() => ({}));
+    const data = await parseJsonResponse(response);
+    console.info("[Instant Demo] generate-demo response", {
+      ok: response.ok,
+      status: response.status,
+      data,
+    });
+
     if (!response.ok) {
-      throw new Error(data.detail || "Unable to generate demo.");
+      const detail = data.detail;
+      const message = Array.isArray(detail)
+        ? detail.map(item => item.msg || JSON.stringify(item)).join(", ")
+        : detail || `Request failed with status ${response.status}`;
+      throw new Error(message);
+    }
+
+    if (!data.instanceId) {
+      throw new Error("Demo API did not return an instanceId.");
     }
 
     state.instanceId = data.instanceId;
@@ -100,8 +173,8 @@ async function generateDemo() {
     setStatus("Demo ready. Try chatting below.", "success");
     els.chatInput.focus();
   } catch (err) {
-    console.error(err);
-    setStatus(err.message || "Unable to generate demo.", "error");
+    logFetchFailure("generate-demo", err, { endpoint, requestBody });
+    setStatus(formatFetchError(err, endpoint), "error");
   } finally {
     state.isGenerating = false;
     els.generateBtn.disabled = false;
@@ -109,15 +182,28 @@ async function generateDemo() {
 }
 
 async function streamDemoChat(message) {
-  const response = await fetch(`${API_URL}/api/chat/${encodeURIComponent(state.instanceId)}`, {
+  const endpoint = `${API_URL}/api/chat/${encodeURIComponent(state.instanceId)}`;
+  const requestBody = { message };
+
+  console.info("[Instant Demo] POST", endpoint, requestBody);
+
+  const response = await fetch(endpoint, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message }),
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "text/event-stream",
+    },
+    body: JSON.stringify(requestBody),
   });
 
   if (!response.ok) {
-    const data = await response.json().catch(() => ({}));
-    throw new Error(data.detail || "Demo chat unavailable.");
+    const data = await parseJsonResponse(response);
+    console.error("[Instant Demo] chat error response", {
+      status: response.status,
+      data,
+    });
+    const detail = data.detail;
+    throw new Error(detail || `Demo chat unavailable (${response.status}).`);
   }
 
   if (!response.body) {
@@ -192,8 +278,11 @@ async function sendChatMessage(event) {
   try {
     await streamDemoChat(message);
   } catch (err) {
-    console.error(err);
-    appendMessage(err.message || "Sorry, something went wrong.", "assistant");
+    logFetchFailure("chat", err, {
+      endpoint: `${API_URL}/api/chat/${state.instanceId}`,
+      message,
+    });
+    appendMessage(formatFetchError(err, "demo chat"), "assistant");
   } finally {
     state.isSending = false;
     els.chatSend.disabled = false;
