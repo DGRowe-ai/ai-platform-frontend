@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Instant Chatbot Demo | Rowe AI</title>
+  <link rel="stylesheet" href="css/responsive-base.css">
+  <link rel="stylesheet" href="instant-demo.css">
+</head>
+<body>
+  <main class="demo-page">
+    <header class="demo-header">
+      <img class="demo-logo" src="images/loki/Logo/rowe-ai-logo.png" alt="Rowe AI">
+      <h1>Instant Chatbot Demo</h1>
+      <p class="demo-subtext">
+        See how Rowe AI would work on your business website. Enter your URL below to generate
+        a personalized chatbot demo using information from your site.
+      </p>
+    </header>
+
+    <section class="demo-card" id="demo-form-section">
+      <label for="website-url">Enter your business website</label>
+      <div class="demo-input-row">
+        <input
+          id="website-url"
+          type="url"
+          inputmode="url"
+          placeholder="https://yourbusiness.com"
+          autocomplete="url"
+        >
+        <button id="generate-demo-btn" type="button">Generate Demo</button>
+      </div>
+      <div class="demo-status" id="demo-status" aria-live="polite"></div>
+    </section>
+
+    <section class="demo-card demo-chat-section hidden" id="demo-chat-section">
+      <div class="demo-business-summary" id="demo-business-summary"></div>
+      <div class="demo-chat" id="demo-chat-messages" aria-live="polite"></div>
+      <form class="demo-chat-input-row" id="demo-chat-form">
+        <input
+          id="demo-chat-input"
+          type="text"
+          placeholder="Ask the demo chatbot a question..."
+          maxlength="2000"
+          autocomplete="off"
+        >
+        <button id="demo-chat-send" type="submit">Send</button>
+      </form>
+    </section>
+
+    <section class="demo-cta hidden" id="demo-cta">
+      <p>Want a chatbot like this for your business?</p>
+      <a class="demo-register-btn" id="register-link" href="billing.html">Register Now — 30-Day Free Trial</a>
+    </section>
+  </main>
+
+  <script src="instant-demo.js"></script>
+</body>
+</html>
