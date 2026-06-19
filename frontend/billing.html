@@ -75,6 +75,21 @@
       min-height: 20px;
     }
 
+    .toast-banner {
+      background: #ecfdf5;
+      border: 1px solid #99f6e4;
+      border-radius: 12px;
+      color: #047857;
+      margin: 0 auto 20px;
+      max-width: 720px;
+      padding: 14px 18px;
+      text-align: center;
+    }
+
+    .hidden {
+      display: none;
+    }
+
     .login-link {
       margin-top: 24px;
     }
@@ -90,6 +105,10 @@
   </header>
 
   <main class="billing-main">
+    <div class="toast-banner hidden" id="account-deleted-banner">
+      Your account has been deleted.
+    </div>
+
     <section class="billing-card">
       <h1>Start Your Rowe AI Chatbot</h1>
       <p>
@@ -126,6 +145,19 @@
 
     const startBtn = document.getElementById("start-trial-btn");
     const statusEl = document.getElementById("billing-status");
+    const deletedBanner = document.getElementById("account-deleted-banner");
+
+    const deletedMessage =
+      sessionStorage.getItem("account_deleted_message") ||
+      (new URLSearchParams(window.location.search).get("account_deleted") === "1"
+        ? "Your account has been deleted."
+        : "");
+
+    if (deletedMessage && deletedBanner) {
+      deletedBanner.textContent = deletedMessage;
+      deletedBanner.classList.remove("hidden");
+      sessionStorage.removeItem("account_deleted_message");
+    }
 
     startBtn.addEventListener("click", async () => {
       statusEl.textContent = "Redirecting to secure checkout...";

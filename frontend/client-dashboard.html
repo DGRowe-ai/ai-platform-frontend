@@ -362,6 +362,63 @@
       color: var(--danger);
     }
 
+    .modal-backdrop {
+      align-items: center;
+      background: rgba(15, 23, 42, 0.55);
+      display: none;
+      inset: 0;
+      justify-content: center;
+      padding: 20px;
+      position: fixed;
+      z-index: 1000;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      max-width: 480px;
+      padding: 24px;
+      width: 100%;
+    }
+
+    .modal h2 {
+      margin: 0 0 12px;
+    }
+
+    .modal p {
+      color: var(--muted);
+      line-height: 1.55;
+      margin: 0 0 20px;
+    }
+
+    .modal-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .toast-banner {
+      background: #ecfdf5;
+      border: 1px solid #99f6e4;
+      border-radius: 12px;
+      color: var(--success);
+      margin: 0 auto 20px;
+      max-width: 900px;
+      padding: 14px 18px;
+      text-align: center;
+    }
+
+    .account-management {
+      border-color: #fecaca;
+    }
+
     .empty {
       color: var(--muted);
       border: 1px dashed var(--border);
@@ -753,8 +810,31 @@
           <div class="status" id="chatbot-test-status"></div>
         </div>
       </section>
+
+      <section class="card account-management">
+        <h2>Account Management</h2>
+        <p class="help-text">
+          Permanently delete your Rowe AI account, cancel your subscription, and remove all chatbot data.
+          This action cannot be undone.
+        </p>
+        <button class="danger" id="delete-account-btn" type="button">
+          Delete Account &amp; Cancel Subscription
+        </button>
+        <div class="status" id="delete-account-status"></div>
+      </section>
     </div>
   </main>
+
+  <div class="modal-backdrop" id="delete-account-modal" role="dialog" aria-modal="true" aria-labelledby="delete-modal-title">
+    <div class="modal">
+      <h2 id="delete-modal-title">Are you sure you want to delete your account?</h2>
+      <p>We're sorry to see you go. Rest assured, all of your data will be deleted.</p>
+      <div class="modal-actions">
+        <button class="secondary" id="delete-account-cancel-btn" type="button">Cancel</button>
+        <button class="danger" id="delete-account-confirm-btn" type="button">Yes, Delete My Account</button>
+      </div>
+    </div>
+  </div>
 
   <script src="client-dashboard.js"></script>
 </body>

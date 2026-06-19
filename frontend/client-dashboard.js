@@ -47,6 +47,11 @@ const els = {
   referralCount: document.getElementById("referral-count"),
   freeMonthsEarned: document.getElementById("free-months-earned"),
   referralStatus: document.getElementById("referral-status"),
+  deleteAccountBtn: document.getElementById("delete-account-btn"),
+  deleteAccountStatus: document.getElementById("delete-account-status"),
+  deleteAccountModal: document.getElementById("delete-account-modal"),
+  deleteAccountCancelBtn: document.getElementById("delete-account-cancel-btn"),
+  deleteAccountConfirmBtn: document.getElementById("delete-account-confirm-btn"),
 };
 
 function getToken() {
@@ -895,6 +900,53 @@ async function copyToClipboard(text, statusEl = els.copyUrlStatus) {
   }
 }
 
+function openDeleteAccountModal() {
+  if (els.deleteAccountModal) {
+    els.deleteAccountModal.classList.add("open");
+  }
+}
+
+function closeDeleteAccountModal() {
+  if (els.deleteAccountModal) {
+    els.deleteAccountModal.classList.remove("open");
+  }
+}
+
+async function deleteAccount() {
+  if (!els.deleteAccountConfirmBtn) {
+    return;
+  }
+
+  els.deleteAccountConfirmBtn.disabled = true;
+  setStatus(els.deleteAccountStatus, "Deleting your account...", "");
+
+  try {
+    const response = await apiRequest("/api/account/delete", { method: "DELETE" });
+    closeDeleteAccountModal();
+
+    localStorage.removeItem("token");
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("user_role");
+    localStorage.removeItem("is_platform_admin");
+    localStorage.removeItem("user_id");
+    localStorage.removeItem("businesses");
+
+    sessionStorage.setItem(
+      "account_deleted_message",
+      response.message || "Your account has been deleted.",
+    );
+    window.location.href = response.redirect_url || "billing.html?account_deleted=1";
+  } catch (err) {
+    console.error("Account deletion failed:", err);
+    setStatus(
+      els.deleteAccountStatus,
+      err.message || "Unable to delete your account. Please contact support.",
+      "error",
+    );
+    els.deleteAccountConfirmBtn.disabled = false;
+  }
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   if (!getToken()) {
     redirectToLogin();
@@ -907,6 +959,9 @@ document.addEventListener("DOMContentLoaded", () => {
   }
   if (role !== "owner" && !isPlatformAdmin() && els.manageSubscriptionBtn) {
     els.manageSubscriptionBtn.closest(".billing")?.classList.add("hidden");
+  }
+  if (role !== "owner" && !isPlatformAdmin() && els.deleteAccountBtn) {
+    els.deleteAccountBtn.closest(".account-management")?.classList.add("hidden");
   }
 
   els.logoutBtn.addEventListener("click", logout);
@@ -929,6 +984,23 @@ document.addEventListener("DOMContentLoaded", () => {
       sendTestChatMessage();
     }
   });
+
+  if (els.deleteAccountBtn) {
+    els.deleteAccountBtn.addEventListener("click", openDeleteAccountModal);
+  }
+  if (els.deleteAccountCancelBtn) {
+    els.deleteAccountCancelBtn.addEventListener("click", closeDeleteAccountModal);
+  }
+  if (els.deleteAccountConfirmBtn) {
+    els.deleteAccountConfirmBtn.addEventListener("click", deleteAccount);
+  }
+  if (els.deleteAccountModal) {
+    els.deleteAccountModal.addEventListener("click", event => {
+      if (event.target === els.deleteAccountModal) {
+        closeDeleteAccountModal();
+      }
+    });
+  }
 
   reloadDashboard();
 });
