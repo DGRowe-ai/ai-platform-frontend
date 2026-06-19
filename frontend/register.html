@@ -321,6 +321,12 @@ By creating an account and activating this service, you acknowledge that you hav
     const API_URL = "https://ai-platform-backend-ulqs.onrender.com";
     const urlParams = new URLSearchParams(window.location.search);
     const checkoutSessionId = urlParams.get("session_id");
+    const referralFromUrl = urlParams.get("ref");
+
+    if (referralFromUrl) {
+      sessionStorage.setItem("rowe_referral_code", referralFromUrl.trim());
+    }
+
     const statusBanner = document.createElement("p");
     statusBanner.className = "help-text";
     statusBanner.id = "billing-gate-status";
@@ -328,7 +334,10 @@ By creating an account and activating this service, you acknowledge that you hav
 
     async function enforceBillingGate() {
       if (!checkoutSessionId) {
-        window.location.href = "billing.html";
+        const ref = sessionStorage.getItem("rowe_referral_code") || referralFromUrl;
+        window.location.href = ref
+          ? `billing.html?ref=${encodeURIComponent(ref)}`
+          : "billing.html";
         return false;
       }
 
@@ -367,6 +376,7 @@ By creating an account and activating this service, you acknowledge that you hav
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
       const business_name = document.getElementById("business_name").value;
+      const referral_code = sessionStorage.getItem("rowe_referral_code") || referralFromUrl;
 
       const res = await fetch(`${API_URL}/signup`, {
         method: "POST",
@@ -376,10 +386,12 @@ By creating an account and activating this service, you acknowledge that you hav
           password,
           business_name,
           session_id: checkoutSessionId,
+          referral_code: referral_code || null,
         })
       });
 
       if (res.ok) {
+        sessionStorage.removeItem("rowe_referral_code");
         alert("Account created! Now log in.");
         window.location.href = "login.html";
       } else {

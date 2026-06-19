@@ -41,6 +41,12 @@ const els = {
   chatbotInput: document.getElementById("chatbot-input"),
   chatbotSendBtn: document.getElementById("chatbot-send-btn"),
   chatbotTestStatus: document.getElementById("chatbot-test-status"),
+  referralLink: document.getElementById("referral-link"),
+  copyReferralBtn: document.getElementById("copy-referral-btn"),
+  copyReferralStatus: document.getElementById("copy-referral-status"),
+  referralCount: document.getElementById("referral-count"),
+  freeMonthsEarned: document.getElementById("free-months-earned"),
+  referralStatus: document.getElementById("referral-status"),
 };
 
 function getToken() {
@@ -717,9 +723,40 @@ async function sendTestChatMessage() {
   }
 }
 
+async function loadReferralStats() {
+  if (!els.referralLink) {
+    return;
+  }
+
+  try {
+    const data = await apiRequest("/client/referral-stats");
+    els.referralLink.value = data.referralLink || "";
+    if (els.referralCount) {
+      els.referralCount.textContent = String(data.successfulReferrals ?? 0);
+    }
+    if (els.freeMonthsEarned) {
+      els.freeMonthsEarned.textContent = String(data.freeMonthsEarned ?? 0);
+    }
+    setStatus(els.referralStatus, "");
+  } catch (err) {
+    console.error("Referral stats unavailable:", err);
+    setStatus(
+      els.referralStatus,
+      err.message || "Referral rewards are unavailable right now.",
+      "error",
+    );
+  }
+}
+
 async function reloadDashboard() {
   try {
-    await Promise.all([loadDashboard(), loadHistory(), loadSettings(), loadKnowledgeFiles()]);
+    await Promise.all([
+      loadDashboard(),
+      loadHistory(),
+      loadSettings(),
+      loadKnowledgeFiles(),
+      loadReferralStats(),
+    ]);
   } catch (err) {
     console.error(err);
     setStatus(els.pageStatus, err.message || "Unable to load dashboard.", "error");
@@ -877,6 +914,11 @@ document.addEventListener("DOMContentLoaded", () => {
   els.refreshBtn.addEventListener("click", reloadDashboard);
   els.copyUrlBtn.addEventListener("click", () => copyToClipboard(els.chatbotUrl.value, els.copyUrlStatus));
   els.copyEmbedBtn.addEventListener("click", () => copyToClipboard(els.embedCode.value, els.copyEmbedStatus));
+  if (els.copyReferralBtn) {
+    els.copyReferralBtn.addEventListener("click", () =>
+      copyToClipboard(els.referralLink.value, els.copyReferralStatus),
+    );
+  }
   els.settingsForm.addEventListener("submit", saveSettings);
   els.passwordForm.addEventListener("submit", changePassword);
   els.kbUploadBtn.addEventListener("click", uploadKnowledgeFile);

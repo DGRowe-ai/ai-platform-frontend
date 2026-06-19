@@ -117,6 +117,13 @@
 
   <script>
     const API_URL = "https://ai-platform-backend-ulqs.onrender.com";
+    const urlParams = new URLSearchParams(window.location.search);
+    const referralFromUrl = urlParams.get("ref");
+
+    if (referralFromUrl) {
+      sessionStorage.setItem("rowe_referral_code", referralFromUrl.trim());
+    }
+
     const startBtn = document.getElementById("start-trial-btn");
     const statusEl = document.getElementById("billing-status");
 
@@ -124,10 +131,15 @@
       statusEl.textContent = "Redirecting to secure checkout...";
       startBtn.disabled = true;
 
+      const referralCode = sessionStorage.getItem("rowe_referral_code") || referralFromUrl;
+
       try {
         const response = await fetch(`${API_URL}/create-checkout-session`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            referral_code: referralCode || null,
+          }),
         });
 
         const data = await response.json();
