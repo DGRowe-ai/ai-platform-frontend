@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Business Accounting | Admin Dashboard</title>
+  <link rel="stylesheet" href="../css/responsive-base.css">
+  <link rel="stylesheet" href="admin-dashboard.css">
+</head>
+<body>
+  <header>
+    <div class="header-brand">
+      <div class="brand-logo-wrap">
+        <img class="brand-logo" src="../images/loki/Logo/rowe-ai-logo.png" alt="Rowe AI">
+      </div>
+      <div>
+        <h1 id="business-title">Business Accounting</h1>
+        <p id="business-subtitle">Payment log and billing details for this client.</p>
+      </div>
+    </div>
+    <nav class="admin-nav" aria-label="Admin sections">
+      <a href="businesses.html">Client Dashboard</a>
+      <a class="active" href="accounting.html">Accounting</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="topbar">
+      <div>
+        <div class="status" id="page-status">Loading business accounting...</div>
+      </div>
+      <div class="button-row">
+        <a class="button-link secondary" href="accounting.html">Back to Accounting</a>
+        <button class="secondary" id="refresh-btn" type="button">Refresh</button>
+        <button class="secondary" id="logout-btn" type="button">Log out</button>
+      </div>
+    </div>
+
+    <div class="detail-grid">
+      <section class="card span-6">
+        <h2>Client Summary</h2>
+        <div class="detail-list" id="client-summary"></div>
+      </section>
+
+      <section class="card span-6">
+        <h2>Payment Log File</h2>
+        <div class="detail-list" id="log-summary"></div>
+        <pre class="code-path" id="log-path"></pre>
+      </section>
+
+      <section class="card span-12">
+        <div class="toolbar">
+          <h2>Stripe Payment Log</h2>
+          <span class="muted">Entries from payments.log</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Invoice ID</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody id="payment-log-body"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card span-12">
+        <div class="toolbar">
+          <h2>Database Payment Records</h2>
+          <span class="muted">Manual or legacy admin payment entries</span>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Amount</th>
+                <th>Renewal</th>
+                <th>Type</th>
+                <th>Note</th>
+              </tr>
+            </thead>
+            <tbody id="database-payment-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="accounting-detail.js?v=20260619-accounting-1"></script>
+</body>
+</html>

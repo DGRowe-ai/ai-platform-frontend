@@ -84,6 +84,115 @@ main {
   margin: 28px auto 48px;
 }
 
+.admin-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.admin-nav a {
+  background: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 999px;
+  color: #ffffff;
+  display: inline-flex;
+  font-weight: 700;
+  min-height: 44px;
+  padding: 10px 16px;
+  text-decoration: none;
+}
+
+.admin-nav a:hover,
+.admin-nav a.active {
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+}
+
+.business-link-list {
+  display: grid;
+  gap: 12px;
+}
+
+.business-link-item {
+  align-items: center;
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  color: inherit;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  padding: 16px 18px;
+  text-decoration: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.business-link-item:hover {
+  border-color: #99f6e4;
+  box-shadow: 0 10px 24px rgba(15, 148, 136, 0.12);
+  transform: translateY(-1px);
+}
+
+.business-link-item h3 {
+  margin: 0 0 4px;
+}
+
+.business-link-item p {
+  color: var(--muted);
+  margin: 0;
+}
+
+.business-link-meta {
+  color: var(--muted);
+  font-size: 13px;
+  text-align: right;
+}
+
+.detail-grid {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: repeat(12, 1fr);
+}
+
+.detail-grid .span-6 {
+  grid-column: span 6;
+}
+
+.detail-list {
+  display: grid;
+  gap: 10px;
+}
+
+.detail-list-item {
+  background: #f8fafc;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+}
+
+.detail-list-item strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.empty-state {
+  color: var(--muted);
+  padding: 12px 0;
+}
+
+.code-path {
+  background: #0f172a;
+  border-radius: 12px;
+  color: #e2e8f0;
+  font-family: Consolas, monospace;
+  font-size: 13px;
+  overflow-x: auto;
+  padding: 14px 16px;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
 a {
   color: var(--primary);
 }
@@ -473,7 +582,8 @@ tbody tr:hover {
 
   .span-8,
   .span-6,
-  .span-4 {
+  .span-4,
+  .detail-grid .span-6 {
     grid-column: span 12;
   }
 
