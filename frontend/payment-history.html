@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment History | Client Dashboard</title>
+  <link rel="stylesheet" href="css/responsive-base.css">
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --text: #172033;
+      --muted: #667085;
+      --border: #d9e2ef;
+      --primary: #0f9488;
+      --primary-dark: #0f766e;
+      --shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      overflow-x: hidden;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    header {
+      background:
+        radial-gradient(circle at top right, rgba(153, 246, 228, 0.28), transparent 34%),
+        linear-gradient(135deg, #0f766e 0%, #0f9488 48%, #115e59 100%);
+      box-shadow: 0 18px 45px rgba(15, 118, 110, 0.22);
+      color: #ffffff;
+      padding: 32px clamp(16px, 5vw, 56px);
+    }
+
+    .header-brand {
+      align-items: center;
+      display: flex;
+      gap: 28px;
+    }
+
+    .brand-logo-wrap {
+      align-items: center;
+      background: #ffffff;
+      border-radius: 14px;
+      display: flex;
+      flex-shrink: 0;
+      justify-content: center;
+      padding: 22px 45px;
+    }
+
+    .brand-logo {
+      display: block;
+      height: 175px;
+      max-width: min(100%, 575px);
+      object-fit: contain;
+      width: auto;
+    }
+
+    header h1 {
+      margin: 0 0 6px;
+      font-size: clamp(28px, 4vw, 40px);
+    }
+
+    header p {
+      margin: 0;
+      color: #d7fffa;
+    }
+
+    .client-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .client-nav a {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      border-radius: 999px;
+      color: #ffffff;
+      display: inline-flex;
+      font-weight: 700;
+      min-height: 44px;
+      padding: 10px 16px;
+      text-decoration: none;
+    }
+
+    .client-nav a:hover,
+    .client-nav a.active {
+      background: rgba(255, 255, 255, 0.22);
+      color: #ffffff;
+    }
+
+    main {
+      width: min(1180px, calc(100% - 32px));
+      margin: 28px auto 48px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .topbar-actions {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .business-name {
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 22px;
+    }
+
+    .card h2 {
+      margin: 0 0 16px;
+      font-size: 21px;
+    }
+
+    .toolbar {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .help-text {
+      color: var(--muted);
+      margin: 0;
+    }
+
+    button {
+      background: var(--primary);
+      border: 0;
+      border-radius: 10px;
+      color: #ffffff;
+      cursor: pointer;
+      font: inherit;
+      font-weight: 700;
+      min-height: 44px;
+      padding: 10px 14px;
+    }
+
+    button:hover {
+      background: var(--primary-dark);
+    }
+
+    button.secondary {
+      background: #e2e8f0;
+      color: var(--text);
+    }
+
+    button.secondary:hover {
+      background: #cbd5e1;
+    }
+
+    .status {
+      color: var(--muted);
+      font-size: 14px;
+      margin-top: 6px;
+    }
+
+    .status.success {
+      color: #047857;
+    }
+
+    .status.error {
+      color: #dc2626;
+    }
+
+    .empty {
+      color: var(--muted);
+      padding: 12px 0;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      width: 100%;
+    }
+
+    table {
+      border-collapse: collapse;
+      min-width: 640px;
+      width: 100%;
+    }
+
+    th,
+    td {
+      border-bottom: 1px solid var(--border);
+      padding: 12px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: 13px;
+      text-transform: uppercase;
+    }
+
+    tbody tr:hover {
+      background: #f8fafc;
+    }
+
+    @media (max-width: 768px) {
+      header {
+        padding: 24px 16px;
+      }
+
+      .brand-logo {
+        height: 130px;
+      }
+
+      .card {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-brand">
+      <div class="brand-logo-wrap">
+        <img class="brand-logo" src="images/loki/Logo/rowe-ai-logo.png" alt="Rowe AI">
+      </div>
+      <div>
+        <h1>Payment History</h1>
+        <p>View your Stripe subscription payments recorded for your business account.</p>
+      </div>
+    </div>
+    <nav class="client-nav" aria-label="Client dashboard sections">
+      <a href="client-dashboard.html">Dashboard</a>
+      <a class="active" href="payment-history.html">Payment History</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="topbar">
+      <div>
+        <div class="business-name" id="business-name">Loading business...</div>
+        <div class="status" id="page-status">Loading payment history...</div>
+      </div>
+      <div class="topbar-actions">
+        <button class="secondary" id="refresh-btn" type="button">Refresh</button>
+        <button class="secondary" id="logout-btn" type="button">Log out</button>
+      </div>
+    </div>
+
+    <section class="card">
+      <div class="toolbar">
+        <div>
+          <h2>Your Payments</h2>
+          <p class="help-text">Successful Stripe payments are logged automatically after billing.</p>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Amount</th>
+              <th>Invoice ID</th>
+              <th>Description</th>
+            </tr>
+          </thead>
+          <tbody id="payment-history-body"></tbody>
+        </table>
+      </div>
+      <div class="empty" id="empty-state" hidden>No payments recorded yet.</div>
+    </section>
+  </main>
+
+  <script src="payment-history.js?v=20260619-payment-history-1"></script>
+</body>
+</html>

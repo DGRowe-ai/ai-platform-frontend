@@ -82,6 +82,31 @@
       color: #d7fffa;
     }
 
+    .client-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .client-nav a {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      border-radius: 999px;
+      color: #ffffff;
+      display: inline-flex;
+      font-weight: 700;
+      min-height: 44px;
+      padding: 10px 16px;
+      text-decoration: none;
+    }
+
+    .client-nav a:hover,
+    .client-nav a.active {
+      background: rgba(255, 255, 255, 0.22);
+      color: #ffffff;
+    }
+
     main {
       width: min(1180px, calc(100% - 32px));
       margin: 28px auto 48px;
@@ -632,6 +657,10 @@
         <p>Review chatbot performance, manage conversations, and tune the customer chat experience.</p>
       </div>
     </div>
+    <nav class="client-nav" aria-label="Client dashboard sections">
+      <a class="active" href="client-dashboard.html">Dashboard</a>
+      <a href="payment-history.html">Payment History</a>
+    </nav>
   </header>
 
   <main>

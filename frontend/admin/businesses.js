@@ -362,6 +362,12 @@ function renderActionsCell(business) {
   });
   actions.appendChild(history);
 
+  const accounting = document.createElement("a");
+  accounting.className = "button-link secondary";
+  accounting.href = `accounting-detail.html?b=${encodeURIComponent(business.businessKey)}`;
+  accounting.textContent = "View Accounting";
+  actions.appendChild(accounting);
+
   const record = document.createElement("button");
   record.type = "button";
   record.textContent = "Record Payment";
