@@ -393,6 +393,17 @@ tbody tr:hover {
   background: #f8fafc;
 }
 
+tbody td a {
+  color: var(--primary);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+tbody td a:hover {
+  color: var(--primary-dark);
+  text-decoration: underline;
+}
+
 .badge {
   border-radius: 999px;
   display: inline-flex;

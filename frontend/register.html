@@ -33,7 +33,12 @@
 
       <div class="form-field">
         <label for="business_name">Business Name</label>
-        <input id="business_name" type="text" placeholder="Business Name" autocomplete="organization">
+        <input id="business_name" type="text" placeholder="Business Name" autocomplete="organization" required>
+      </div>
+
+      <div class="form-field">
+        <label for="business_phone">Business Phone Number</label>
+        <input id="business_phone" type="tel" placeholder="(555) 123-4567" autocomplete="tel" required>
       </div>
 
       <button id="register-btn" type="button">Create Account</button>
@@ -367,16 +372,36 @@ By creating an account and activating this service, you acknowledge that you hav
       }
     }
 
+    function countPhoneDigits(value) {
+      return String(value || "").replace(/\D/g, "").length;
+    }
+
+    function isValidBusinessPhone(value) {
+      const digits = countPhoneDigits(value);
+      return digits >= 10 && digits <= 15;
+    }
+
     document.getElementById("register-btn").onclick = async () => {
       if (!checkoutSessionId) {
         window.location.href = "billing.html";
         return;
       }
 
-      const email = document.getElementById("email").value;
+      const email = document.getElementById("email").value.trim();
       const password = document.getElementById("password").value;
-      const business_name = document.getElementById("business_name").value;
+      const business_name = document.getElementById("business_name").value.trim();
+      const business_phone = document.getElementById("business_phone").value.trim();
       const referral_code = sessionStorage.getItem("rowe_referral_code") || referralFromUrl;
+
+      if (!email || !password || !business_name || !business_phone) {
+        alert("Please complete all required fields, including your business phone number.");
+        return;
+      }
+
+      if (!isValidBusinessPhone(business_phone)) {
+        alert("Please enter a valid phone number with 10 to 15 digits.");
+        return;
+      }
 
       const res = await fetch(`${API_URL}/signup`, {
         method: "POST",
@@ -385,6 +410,7 @@ By creating an account and activating this service, you acknowledge that you hav
           email,
           password,
           business_name,
+          business_phone,
           session_id: checkoutSessionId,
           referral_code: referral_code || null,
         })

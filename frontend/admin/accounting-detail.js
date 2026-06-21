@@ -123,6 +123,7 @@ function renderDetail(data) {
   [
     ["Business Key", business.business_key],
     ["Owner Email", business.owner_email],
+    ["Business Phone", business.phone],
     ["Billing Status", business.billing_status],
     ["Subscription Active", business.subscription_active ? "Yes" : "No"],
     ["Stripe Customer ID", business.stripe_customer_id],

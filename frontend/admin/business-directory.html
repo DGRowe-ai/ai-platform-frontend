@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Accounting | Admin Dashboard</title>
+  <title>Business Directory | Admin Dashboard</title>
   <link rel="stylesheet" href="../css/responsive-base.css">
   <link rel="stylesheet" href="admin-dashboard.css">
 </head>
@@ -14,21 +14,21 @@
         <img class="brand-logo" src="../images/loki/Logo/rowe-ai-logo.png" alt="Rowe AI">
       </div>
       <div>
-        <h1>Accounting</h1>
-        <p>Review client payment logs and billing activity pulled from each business payment folder.</p>
+        <h1>Business Directory</h1>
+        <p>View all registered businesses with contact details and quick access to accounting records.</p>
       </div>
     </div>
     <nav class="admin-nav" aria-label="Admin sections">
       <a href="businesses.html">Client Dashboard</a>
-      <a href="business-directory.html">Business Directory</a>
-      <a class="active" href="accounting.html">Accounting</a>
+      <a class="active" href="business-directory.html">Business Directory</a>
+      <a href="accounting.html">Accounting</a>
     </nav>
   </header>
 
   <main>
     <div class="topbar">
       <div>
-        <div class="status" id="page-status">Loading accounting data...</div>
+        <div class="status" id="page-status">Loading business directory...</div>
       </div>
       <div class="button-row">
         <button class="secondary" id="refresh-btn" type="button">Refresh</button>
@@ -39,7 +39,7 @@
     <section class="card span-12">
       <div class="toolbar">
         <div>
-          <h2>Client Businesses</h2>
+          <h2>All Businesses</h2>
           <div class="muted" id="business-count">0 businesses</div>
         </div>
       </div>
@@ -47,14 +47,25 @@
       <div class="filters">
         <div>
           <label for="search-input">Search businesses</label>
-          <input id="search-input" type="search" placeholder="Search by business or owner email">
+          <input id="search-input" type="search" placeholder="Search by business, email, or phone">
         </div>
       </div>
 
-      <div class="business-link-list" id="business-list"></div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Business Name</th>
+              <th>Email</th>
+              <th>Phone Number</th>
+            </tr>
+          </thead>
+          <tbody id="directory-table-body"></tbody>
+        </table>
+      </div>
     </section>
   </main>
 
-  <script src="accounting.js?v=20260619-accounting-1"></script>
+  <script src="business-directory.js?v=20260619-directory-1"></script>
 </body>
 </html>
