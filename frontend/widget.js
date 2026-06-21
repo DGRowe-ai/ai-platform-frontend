@@ -1,4 +1,6 @@
 (function () {
+    const API_URL = "https://ai-platform-backend-ulqs.onrender.com";
+
     const script =
         document.currentScript ||
         document.querySelector('script[src*="widget.js"][data-business]');
@@ -27,8 +29,6 @@
     style.textContent = `
         #chat-bubble {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
             z-index: 999999;
             cursor: pointer;
             width: 60px;
@@ -47,8 +47,6 @@
         }
         #rowe-ai-chat-widget {
             position: fixed;
-            bottom: 100px;
-            right: 20px;
             width: 350px;
             height: 520px;
             max-width: calc(100vw - 40px);
@@ -73,11 +71,42 @@
     iframe.id = "rowe-ai-chat-widget";
     iframe.title = "Rowe AI Chat";
     iframe.src = `${baseUrl}/widget-frame.html?business=${encodeURIComponent(businessId)}&embed=1`;
-
     document.body.appendChild(iframe);
 
     bubble.addEventListener("click", () => {
         const isHidden = iframe.style.display === "none" || !iframe.style.display;
         iframe.style.display = isHidden ? "block" : "none";
     });
+
+    async function loadWidgetSettings() {
+        const fallbackAvatarUrl = `${baseUrl}/images/loki/idle/idle.png`;
+        let settings = null;
+
+        try {
+            const response = await fetch(
+                `${API_URL}/api/widget/settings?client_id=${encodeURIComponent(businessId)}`
+            );
+            if (response.ok) {
+                const data = await response.json();
+                settings = data.settings;
+            }
+        } catch (err) {
+            console.warn("[Rowe AI Widget] Using default widget settings.", err);
+        }
+
+        if (window.RoweWidgetSettings) {
+            window.RoweWidgetSettings.applyLauncherStyles({
+                bubble,
+                iframe,
+                settings,
+                fallbackAvatarUrl,
+            });
+        }
+    }
+
+    const sharedScript = document.createElement("script");
+    sharedScript.src = `${baseUrl}/js/widget-settings-shared.js`;
+    sharedScript.onload = loadWidgetSettings;
+    sharedScript.onerror = loadWidgetSettings;
+    document.head.appendChild(sharedScript);
 })();

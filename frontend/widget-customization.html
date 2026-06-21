@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Widget Customization | Client Dashboard</title>
+  <link rel="stylesheet" href="css/responsive-base.css">
+  <link rel="stylesheet" href="css/client-dashboard-common.css">
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --text: #172033;
+      --muted: #667085;
+      --border: #d9e2ef;
+      --primary: #0f9488;
+      --primary-dark: #0f766e;
+      --shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      overflow-x: hidden;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    header {
+      background:
+        radial-gradient(circle at top right, rgba(153, 246, 228, 0.28), transparent 34%),
+        linear-gradient(135deg, #0f766e 0%, #0f9488 48%, #115e59 100%);
+      box-shadow: 0 18px 45px rgba(15, 118, 110, 0.22);
+      color: #ffffff;
+      padding: 32px clamp(16px, 5vw, 56px);
+    }
+
+    .header-brand {
+      align-items: center;
+      display: flex;
+      gap: 28px;
+    }
+
+    .brand-logo-wrap {
+      align-items: center;
+      background: #ffffff;
+      border-radius: 14px;
+      display: flex;
+      flex-shrink: 0;
+      justify-content: center;
+      padding: 22px 45px;
+    }
+
+    .brand-logo {
+      display: block;
+      height: 175px;
+      max-width: min(100%, 575px);
+      object-fit: contain;
+      width: auto;
+    }
+
+    header h1 { margin: 0 0 6px; font-size: clamp(28px, 4vw, 40px); }
+    header p { margin: 0; color: #d7fffa; }
+
+    .client-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .client-nav a {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      border-radius: 999px;
+      color: #ffffff;
+      display: inline-flex;
+      font-weight: 700;
+      min-height: 44px;
+      padding: 10px 16px;
+      text-decoration: none;
+    }
+
+    .client-nav a:hover,
+    .client-nav a.active {
+      background: rgba(255, 255, 255, 0.22);
+      color: #ffffff;
+    }
+
+    main {
+      width: min(1180px, calc(100% - 32px));
+      margin: 28px auto 48px;
+    }
+
+    .topbar,
+    .toolbar {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .topbar-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .business-name,
+    .help-text,
+    .status { color: var(--muted); font-size: 14px; }
+    .status.success { color: #047857; }
+    .status.error { color: #dc2626; }
+
+    .grid {
+      display: grid;
+      gap: 20px;
+      grid-template-columns: repeat(12, 1fr);
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 22px;
+    }
+
+    .card h2 { margin: 0 0 16px; font-size: 21px; }
+    .span-7 { grid-column: span 7; }
+    .span-5 { grid-column: span 5; }
+
+    .form-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .form-grid .full { grid-column: 1 / -1; }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    input[type="text"],
+    input[type="color"],
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 12px;
+      font: inherit;
+      color: var(--text);
+      background: #ffffff;
+      min-height: 44px;
+    }
+
+    textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    .toggle-row {
+      align-items: center;
+      display: flex;
+      gap: 10px;
+      min-height: 44px;
+    }
+
+    button {
+      background: var(--primary);
+      border: 0;
+      border-radius: 10px;
+      color: #ffffff;
+      cursor: pointer;
+      font: inherit;
+      font-weight: 700;
+      min-height: 44px;
+      padding: 10px 14px;
+    }
+
+    button:hover { background: var(--primary-dark); }
+    button.secondary { background: #e2e8f0; color: var(--text); }
+    button.secondary:hover { background: #cbd5e1; }
+
+    .preview-shell {
+      background: #e8edf5;
+      border: 1px dashed var(--border);
+      border-radius: 16px;
+      min-height: 520px;
+      padding: 20px;
+      position: relative;
+    }
+
+    #preview-bubble {
+      align-items: center;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      overflow: hidden;
+      position: absolute;
+      right: 20px;
+      bottom: 20px;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: 2px solid #4f46e5;
+      background: #ffffff;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+    }
+
+    #preview-bubble img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    #preview-frame {
+      border: 2px solid #4f46e5;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      height: 360px;
+      margin: 0 auto 80px;
+      max-width: 320px;
+      overflow: hidden;
+      background: #ffffff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    }
+
+    #preview-header {
+      align-items: center;
+      background: #4f46e5;
+      display: flex;
+      justify-content: center;
+      padding: 10px 0;
+    }
+
+    #preview-avatar {
+      width: 56px;
+      height: 56px;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+
+    #preview-messages {
+      flex: 1;
+      overflow: auto;
+      padding: 14px;
+      background: #ffffff;
+    }
+
+    .preview-message.bot {
+      background: #f1f5f9;
+      border-radius: 12px;
+      display: inline-block;
+      margin-bottom: 10px;
+      max-width: 85%;
+      padding: 10px 12px;
+    }
+
+    #preview-input-area {
+      align-items: center;
+      border-top: 1px solid var(--border);
+      display: grid;
+      gap: 8px;
+      grid-template-columns: 1fr auto;
+      padding: 10px;
+      background: #ffffff;
+    }
+
+    #preview-input-area input {
+      min-height: 40px;
+    }
+
+    #preview-send-btn {
+      min-height: 40px;
+      padding: 8px 12px;
+    }
+
+    #preview-branding {
+      color: var(--muted);
+      font-size: 12px;
+      padding: 8px 10px;
+      text-align: center;
+    }
+
+    @media (max-width: 920px) {
+      .span-7,
+      .span-5 { grid-column: span 12; }
+      .form-grid { grid-template-columns: 1fr; }
+      .brand-logo { height: 130px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-brand">
+      <div class="brand-logo-wrap">
+        <img class="brand-logo" src="images/loki/Logo/rowe-ai-logo.png" alt="Rowe AI">
+      </div>
+      <div>
+        <h1>Widget Customization</h1>
+        <p>Customize your chatbot launcher colors, layout, welcome message, and avatar.</p>
+      </div>
+    </div>
+    <nav class="client-nav" aria-label="Client dashboard sections">
+      <a href="client-dashboard.html">Dashboard</a>
+      <a href="payment-history.html">Payment History</a>
+      <a class="active" href="widget-customization.html">Widget Customization</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="topbar">
+      <div>
+        <div class="business-name" id="business-name">Loading business...</div>
+        <div class="status" id="page-status">Loading widget settings...</div>
+      </div>
+      <div class="topbar-actions">
+        <button class="secondary" id="refresh-btn" type="button">Refresh</button>
+        <button class="secondary" id="logout-btn" type="button">Log out</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <section class="card span-7">
+        <div class="toolbar">
+          <div>
+            <h2>Appearance Settings</h2>
+            <p class="help-text">Dashboard → Chatbot → Widget Customization</p>
+          </div>
+        </div>
+
+        <form id="widget-settings-form" class="form-grid" onsubmit="return false;">
+          <div>
+            <label for="primary-color">Primary Color</label>
+            <input id="primary-color" type="color" value="#4F46E5">
+          </div>
+          <div>
+            <label for="secondary-color">Secondary Color</label>
+            <input id="secondary-color" type="color" value="#FFFFFF">
+          </div>
+          <div>
+            <label for="chat-bubble-color">Chat Bubble Color</label>
+            <input id="chat-bubble-color" type="color" value="#4F46E5">
+          </div>
+          <div>
+            <label for="text-color">Text Color</label>
+            <input id="text-color" type="color" value="#000000">
+          </div>
+
+          <div class="full">
+            <label for="welcome-message">Welcome Message</label>
+            <textarea id="welcome-message" maxlength="500"></textarea>
+          </div>
+
+          <div>
+            <label for="font-family">Font Family</label>
+            <input id="font-family" type="text" placeholder="Inter">
+          </div>
+          <div>
+            <label for="position">Widget Position</label>
+            <select id="position">
+              <option value="bottom-right">Bottom Right</option>
+              <option value="bottom-left">Bottom Left</option>
+              <option value="top-right">Top Right</option>
+              <option value="top-left">Top Left</option>
+            </select>
+          </div>
+
+          <div>
+            <label for="widget-shape">Widget Shape</label>
+            <select id="widget-shape">
+              <option value="rounded">Rounded</option>
+              <option value="square">Square</option>
+              <option value="circle">Circle</option>
+            </select>
+          </div>
+
+          <div class="toggle-row">
+            <input id="show-avatar" type="checkbox" checked>
+            <label for="show-avatar">Show Avatar</label>
+          </div>
+          <div class="toggle-row">
+            <input id="enable-shadow" type="checkbox" checked>
+            <label for="enable-shadow">Enable Shadow</label>
+          </div>
+          <div class="toggle-row full">
+            <input id="enable-typing-animation" type="checkbox" checked>
+            <label for="enable-typing-animation">Enable Typing Animation</label>
+          </div>
+
+          <div class="full">
+            <label for="custom-css">Custom CSS</label>
+            <textarea id="custom-css" placeholder=".message.bot { background: #eef2ff; }"></textarea>
+          </div>
+
+          <div class="full">
+            <label for="avatar-file">Avatar Upload</label>
+            <input id="avatar-file" type="file" accept="image/png,image/jpeg,image/webp,image/gif">
+            <div style="margin-top:10px;">
+              <button id="avatar-upload-btn" type="button">Upload Avatar</button>
+            </div>
+            <div class="status" id="avatar-status"></div>
+          </div>
+        </form>
+
+        <div class="toolbar" style="margin-top:18px;">
+          <button id="save-btn" type="button">Save Widget Settings</button>
+          <button class="secondary" id="reset-btn" type="button">Reset to Defaults</button>
+        </div>
+        <div class="status" id="save-status"></div>
+      </section>
+
+      <section class="card span-5">
+        <h2>Live Preview</h2>
+        <p class="help-text">Preview updates instantly as you change settings.</p>
+        <div class="preview-shell">
+          <div id="preview-frame">
+            <div id="preview-header">
+              <img id="preview-avatar" src="images/loki/idle/idle.png" alt="Avatar preview">
+            </div>
+            <div id="preview-messages"></div>
+            <div id="preview-input-area">
+              <input type="text" value="Type your message..." readonly>
+              <button id="preview-send-btn" type="button">Send</button>
+            </div>
+            <div id="preview-branding">Powered by Rowe AI</div>
+          </div>
+          <div id="preview-bubble" aria-hidden="true">
+            <img src="images/loki/idle/idle.png" alt="">
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script src="js/client-dashboard-support.js"></script>
+  <script src="js/widget-settings-shared.js"></script>
+  <script src="widget-customization.js?v=20260619-widget-1"></script>
+</body>
+</html>

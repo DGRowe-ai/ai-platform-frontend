@@ -350,6 +350,22 @@
       text-decoration: none;
     }
 
+    .button-link.secondary {
+      background: #e2e8f0;
+      border-radius: 10px;
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      font-weight: 700;
+      min-height: 44px;
+      padding: 10px 14px;
+      text-decoration: none;
+    }
+
+    .button-link.secondary:hover {
+      background: #cbd5e1;
+    }
+
     button:hover,
     .download-guide-link:hover {
       background: var(--primary-dark);
@@ -661,6 +677,7 @@
     <nav class="client-nav" aria-label="Client dashboard sections">
       <a class="active" href="client-dashboard.html">Dashboard</a>
       <a href="payment-history.html">Payment History</a>
+      <a href="widget-customization.html">Widget Customization</a>
     </nav>
   </header>
 
@@ -778,7 +795,13 @@
       </section>
 
       <section class="card settings">
-        <h2>Chatbot Settings</h2>
+        <div class="toolbar">
+          <div>
+            <h2>Chatbot Settings</h2>
+            <p class="help-text">Tune chatbot behavior, or customize widget colors and layout.</p>
+          </div>
+          <a class="button-link secondary" href="widget-customization.html">Widget Customization</a>
+        </div>
         <form id="settings-form">
           <label for="welcome-message">Welcome Message</label>
           <textarea id="welcome-message" name="welcome_message" placeholder="Hello! How can I help you today?"></textarea>

@@ -8,15 +8,32 @@ const urlParams = new URLSearchParams(window.location.search);
 const BUSINESS_ID = urlParams.get("business") || urlParams.get("b") || "rowe_ai";
 const WIDGET_ORIGIN = window.location.origin;
 
+let widgetSettings = null;
+let enableTypingAnimation = true;
+
 /* -----------------------------
    DOM Elements
 ------------------------------*/
 
-window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("DOMContentLoaded", async () => {
     const sendBtn = document.getElementById("send-btn");
     const userInput = document.getElementById("user-input");
     const messagesDiv = document.getElementById("messages");
     const lokiAvatar = document.getElementById("loki-avatar");
+    const wrapper = document.getElementById("chat-widget-wrapper");
+    const header = document.getElementById("loki-header");
+    const inputArea = document.getElementById("input-area");
+    const branding = document.getElementById("branding");
+
+    await loadWidgetSettings({
+        wrapper,
+        header,
+        messagesDiv,
+        inputArea,
+        sendBtn,
+        branding,
+        lokiAvatar,
+    });
 
     /* -----------------------------
        Loki Animation System
@@ -46,6 +63,10 @@ window.addEventListener("DOMContentLoaded", () => {
     let typingTimeout = null;
 
     function setLokiState(newState) {
+        if (!enableTypingAnimation) {
+            return;
+        }
+
         if (!LOKI_STATES[newState]) return;
 
         lokiState = newState;
@@ -67,8 +88,11 @@ window.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // Start idle
-    setLokiState("idle");
+    if (!enableTypingAnimation) {
+        setLokiState("idle");
+    } else {
+        setLokiState("idle");
+    }
 
     /* -----------------------------
        Chat UI Helpers
@@ -100,16 +124,20 @@ window.addEventListener("DOMContentLoaded", () => {
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
     }
 
-    /* -----------------------------
-       Welcome Message (NO BACKEND CALL)
-    ------------------------------*/
-
     async function playWelcomeMessage() {
-        setLokiState("talking");
-        addMessage("Hello! My name is Loki, your friendly chatbot!", "bot");
-        await new Promise(resolve => setTimeout(resolve, 1200));
-        addMessage("How can I help you today?", "bot");
-        setTimeout(() => setLokiState("idle"), 1500);
+        const welcomeMessage =
+            widgetSettings?.welcomeMessage ||
+            "Hi there! How can I help you today?";
+
+        if (enableTypingAnimation) {
+            setLokiState("talking");
+        }
+
+        addMessage(welcomeMessage, "bot");
+
+        if (enableTypingAnimation) {
+            setTimeout(() => setLokiState("idle"), 1500);
+        }
     }
 
     /* -----------------------------
@@ -176,7 +204,7 @@ window.addEventListener("DOMContentLoaded", () => {
     userInput.addEventListener("keypress", (e) => {
         if (e.key === "Enter") {
             sendMessage();
-        } else {
+        } else if (enableTypingAnimation) {
             setLokiState("listening");
             if (typingTimeout) clearTimeout(typingTimeout);
             typingTimeout = setTimeout(() => {
@@ -185,9 +213,59 @@ window.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    /* -----------------------------
-       On Load
-    ------------------------------*/
-
     playWelcomeMessage();
 });
+
+async function loadWidgetSettings(elements) {
+    const fallbackAvatarUrl = `${WIDGET_ORIGIN}/images/loki/idle/idle.png`;
+
+    try {
+        const response = await fetch(
+            `${API_URL}/api/widget/settings?client_id=${encodeURIComponent(BUSINESS_ID)}`
+        );
+        if (response.ok) {
+            const data = await response.json();
+            widgetSettings = data.settings || null;
+            enableTypingAnimation = widgetSettings?.enableTypingAnimation !== false;
+        }
+    } catch (err) {
+        console.warn("Widget settings unavailable, using defaults.", err);
+    }
+
+    await ensureSharedSettingsScript();
+
+    if (window.RoweWidgetSettings) {
+        window.RoweWidgetSettings.applyFrameStyles({
+            wrapper: elements.wrapper,
+            header: elements.header,
+            messages: elements.messagesDiv,
+            inputArea: elements.inputArea,
+            sendBtn: elements.sendBtn,
+            branding: elements.branding,
+            avatar: elements.lokiAvatar,
+            settings: widgetSettings,
+            fallbackAvatarUrl,
+        });
+    }
+}
+
+function ensureSharedSettingsScript() {
+    if (window.RoweWidgetSettings) {
+        return Promise.resolve();
+    }
+
+    return new Promise((resolve) => {
+        const existing = document.querySelector('script[src*="widget-settings-shared.js"]');
+        if (existing) {
+            existing.addEventListener("load", () => resolve(), { once: true });
+            existing.addEventListener("error", () => resolve(), { once: true });
+            return;
+        }
+
+        const script = document.createElement("script");
+        script.src = `${WIDGET_ORIGIN}/js/widget-settings-shared.js`;
+        script.onload = () => resolve();
+        script.onerror = () => resolve();
+        document.head.appendChild(script);
+    });
+}
