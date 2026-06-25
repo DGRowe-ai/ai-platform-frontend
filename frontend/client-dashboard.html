@@ -182,6 +182,54 @@
       grid-column: span 12;
     }
 
+    .referrals {
+      grid-column: span 12;
+    }
+
+    .google-review {
+      grid-column: span 12;
+    }
+
+    .google-review-content {
+      align-items: center;
+      display: grid;
+      gap: 20px;
+      grid-template-columns: minmax(0, 1fr) 220px;
+    }
+
+    .google-review-copy p {
+      margin: 0 0 12px;
+      line-height: 1.55;
+    }
+
+    .google-review-link {
+      color: var(--primary);
+      font-weight: 700;
+      word-break: break-all;
+    }
+
+    .google-review-qr {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      text-align: center;
+    }
+
+    .google-review-qr img {
+      display: block;
+      height: auto;
+      margin: 0 auto;
+      max-width: 180px;
+      width: 100%;
+    }
+
+    .google-review-qr p {
+      color: var(--muted);
+      font-size: 13px;
+      margin: 10px 0 0;
+    }
+
     .billing {
       grid-column: span 12;
     }
@@ -602,6 +650,10 @@
         flex-direction: column;
       }
 
+      .google-review-content {
+        grid-template-columns: 1fr;
+      }
+
       .topbar-actions {
         width: 100%;
       }
@@ -774,6 +826,25 @@
           </div>
         </div>
         <div class="status" id="referral-status"></div>
+      </section>
+
+      <section class="card google-review">
+        <h2>We'd Love To Hear Your Review</h2>
+        <div class="google-review-content">
+          <div class="google-review-copy">
+            <p>If you're enjoying Rowe AI, we'd really appreciate a Google review. Your feedback helps us improve and helps other businesses discover our chatbot platform.</p>
+            <p><strong>Please leave us a Google review using the QR code, or use this link:</strong></p>
+            <p>
+              <a class="google-review-link" href="https://share.google/HIvgRJCoeZ1NLXap0" target="_blank" rel="noopener noreferrer">
+                https://share.google/HIvgRJCoeZ1NLXap0
+              </a>
+            </p>
+          </div>
+          <div class="google-review-qr">
+            <img src="images/loki/qr%20code/qr-code-google-review.png" alt="Google review QR code">
+            <p>Scan to leave a Google review</p>
+          </div>
+        </div>
       </section>
 
       <section class="card account">
