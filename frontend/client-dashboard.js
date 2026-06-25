@@ -1,5 +1,7 @@
-const API_URL = "https://ai-platform-backend-ulqs.onrender.com";
-const DEFAULT_WIDGET_BASE = "https://ai-platform-frontend-uaaa.onrender.com";
+const API_URL = window.RoweAppConfig?.API_URL || "https://ai-platform-backend-ulqs.onrender.com";
+const getWidgetBaseUrl =
+  window.RoweAppConfig?.getWidgetBaseUrl ||
+  (() => "https://ai-platform-frontend-uaaa.onrender.com");
 
 let clientBusinessId = null;
 
@@ -243,14 +245,6 @@ function getBusinessId(data) {
     console.warn("Unable to read saved businesses from localStorage", err);
     return "YOUR_BUSINESS_ID";
   }
-}
-
-function getWidgetBaseUrl() {
-  const origin = window.location.origin;
-  if (origin && !/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(origin)) {
-    return origin.replace(/\/$/, "");
-  }
-  return DEFAULT_WIDGET_BASE;
 }
 
 function buildEmbedSnippet(businessId) {
@@ -504,13 +498,6 @@ async function loadHistory() {
   setStatus(els.historyStatus, "Loading...");
   const data = await apiRequest("/client/chat_history?limit=50");
   renderChatHistory(data);
-}
-
-async function loadSettings() {
-  setStatus(els.settingsStatus, "Loading settings...");
-  const data = await apiRequest("/client/chatbot_settings");
-  renderSettings(data);
-  setStatus(els.settingsStatus, "");
 }
 
 async function loadSettings() {

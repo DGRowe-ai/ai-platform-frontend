@@ -1,4 +1,7 @@
-const API_URL = "https://ai-platform-backend-ulqs.onrender.com";
+const API_URL = window.RoweAppConfig?.API_URL || "https://ai-platform-backend-ulqs.onrender.com";
+const getWidgetBaseUrl =
+  window.RoweAppConfig?.getWidgetBaseUrl ||
+  (() => "https://ai-platform-frontend-uaaa.onrender.com");
 
 const DEFAULTS = window.RoweWidgetSettings.DEFAULT_WIDGET_SETTINGS;
 
@@ -129,7 +132,7 @@ function fillForm(settings) {
 
 function renderPreview() {
   const settings = readFormSettings();
-  const fallbackAvatar = `${window.location.origin}/images/loki/idle/idle.png`;
+  const fallbackAvatar = `${getWidgetBaseUrl()}/images/loki/idle/idle.png`;
 
   window.RoweWidgetSettings.applyLauncherStyles({
     bubble: els.previewBubble,

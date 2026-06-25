@@ -1,4 +1,4 @@
-const API_URL = "https://ai-platform-backend-ulqs.onrender.com";
+const API_URL = window.RoweAppConfig?.API_URL || "https://ai-platform-backend-ulqs.onrender.com";
 
 const els = {
   businessName: document.getElementById("business-name"),
