@@ -92,10 +92,10 @@ main {
 }
 
 .admin-nav a {
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.92);
   border: 1px solid rgba(255, 255, 255, 0.35);
   border-radius: 999px;
-  color: #ffffff;
+  color: #0f766e;
   display: inline-flex;
   font-weight: 700;
   min-height: 44px;
