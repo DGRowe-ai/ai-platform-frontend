@@ -134,6 +134,7 @@
     <p>&copy; Rowe AI. All rights reserved.</p>
   </footer>
 
+  <script src="js/device-fingerprint.js"></script>
   <script>
     const API_URL = "https://ai-platform-backend-ulqs.onrender.com";
     const urlParams = new URLSearchParams(window.location.search);
@@ -166,11 +167,13 @@
       const referralCode = sessionStorage.getItem("rowe_referral_code") || referralFromUrl;
 
       try {
+        const deviceFingerprint = await RoweDeviceFingerprint.getDeviceFingerprint();
         const response = await fetch(`${API_URL}/create-checkout-session`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             referral_code: referralCode || null,
+            device_fingerprint: deviceFingerprint,
           }),
         });
 
@@ -178,6 +181,10 @@
 
         if (!response.ok || !data.url) {
           throw new Error(data.detail || "Unable to start checkout.");
+        }
+
+        if (data.trial_eligible === false && data.trial_message) {
+          statusEl.textContent = data.trial_message + " Continuing to paid checkout...";
         }
 
         window.location.href = data.url;
