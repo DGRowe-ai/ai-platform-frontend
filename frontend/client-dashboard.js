@@ -18,6 +18,7 @@ const els = {
   embedCode: document.getElementById("embed-code"),
   logoutBtn: document.getElementById("logout-btn"),
   manageSubscriptionBtn: document.getElementById("manage-subscription-btn"),
+  voiceDashboardBtn: document.getElementById("voice-dashboard-btn"),
   adminPanelBtn: document.getElementById("admin-panel-btn"),
   billingStatus: document.getElementById("billing-status"),
   pageStatus: document.getElementById("page-status"),
@@ -900,6 +901,19 @@ async function loadReferralStats() {
   }
 }
 
+async function loadSubscription() {
+  const subscription = await apiRequest("/client/subscription");
+  const planType = subscription.plan_type || "chatbot";
+  localStorage.setItem("plan_type", planType);
+  if (planType === "voicebot") {
+    window.location.href = "voicebot-dashboard.html";
+    return;
+  }
+  if (els.voiceDashboardBtn) {
+    els.voiceDashboardBtn.classList.toggle("hidden", planType !== "duo");
+  }
+}
+
 async function reloadDashboard() {
   try {
     await Promise.all([
@@ -910,6 +924,7 @@ async function reloadDashboard() {
       loadReferralStats(),
       loadAppointments(),
       loadAppointmentSettings(),
+      loadSubscription(),
     ]);
   } catch (err) {
     console.error(err);

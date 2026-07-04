@@ -3,15 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Start Your Trial | Rowe AI</title>
+  <title>Choose Your Plan | Rowe AI</title>
   <link rel="stylesheet" href="css/responsive-base.css">
   <link rel="stylesheet" href="register.css">
   <style>
     .billing-main {
       margin: 0 auto;
-      max-width: 720px;
+      max-width: 980px;
       padding: 40px 20px 56px;
-      text-align: center;
     }
 
     .billing-card {
@@ -21,6 +20,7 @@
       box-shadow: var(--shadow);
       color: #000000;
       padding: 40px 32px;
+      text-align: center;
     }
 
     .billing-card h1 {
@@ -29,36 +29,71 @@
       margin: 0 0 12px;
     }
 
-    .billing-card p {
+    .billing-card > p {
       color: #000000;
       font-size: 17px;
       line-height: 1.6;
       margin: 0 auto 28px;
-      max-width: 520px;
+      max-width: 620px;
     }
 
-    .trial-btn {
+    .plan-grid {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      margin-top: 24px;
+      text-align: left;
+    }
+
+    .plan-card {
+      background: #f8fafc;
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding: 22px;
+    }
+
+    .plan-card.selected {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 1px var(--teal);
+    }
+
+    .plan-card h2 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .plan-price {
+      color: var(--teal-dark);
+      font-size: 28px;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .plan-card ul {
+      color: #334155;
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .plan-card button {
       background: var(--teal);
       border: 0;
       border-radius: 12px;
       color: #ffffff;
       cursor: pointer;
-      display: inline-block;
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 700;
-      margin: 0 auto;
-      min-height: 52px;
-      min-width: min(100%, 320px);
-      padding: 14px 28px;
+      margin-top: auto;
+      min-height: 48px;
+      padding: 12px 16px;
+      width: 100%;
     }
 
-    .trial-btn:hover {
+    .plan-card button:hover {
       background: var(--teal-dark);
-    }
-
-    .trial-btn:disabled {
-      cursor: not-allowed;
-      opacity: 0.65;
     }
 
     .security-note {
@@ -81,17 +116,17 @@
       border-radius: 12px;
       color: #047857;
       margin: 0 auto 20px;
-      max-width: 720px;
+      max-width: 980px;
       padding: 14px 18px;
       text-align: center;
     }
 
-    .hidden {
-      display: none;
-    }
+    .hidden { display: none; }
 
-    .login-link {
-      margin-top: 24px;
+    .login-link { margin-top: 24px; text-align: center; }
+
+    @media (max-width: 900px) {
+      .plan-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -110,15 +145,46 @@
     </div>
 
     <section class="billing-card">
-      <h1>Start Your Rowe AI Chatbot</h1>
+      <h1>Choose Your Rowe AI Plan</h1>
       <p>
-        Begin your free 30-day trial. Secure checkout takes about a minute,
-        then you will create your account and launch your branded AI chatbot.
+        Start your free 30-day trial on any plan. Secure checkout takes about a minute,
+        then you will create your account and launch your dashboard.
       </p>
 
-      <button class="trial-btn" id="start-trial-btn" type="button">
-        Start Free 30-Day Trial
-      </button>
+      <div class="plan-grid">
+        <article class="plan-card selected" data-plan="chatbot">
+          <h2>Chatbot</h2>
+          <p class="plan-price">$25/mo</p>
+          <ul>
+            <li>Website chat widget</li>
+            <li>Knowledge base uploads</li>
+            <li>Client dashboard</li>
+          </ul>
+          <button type="button" data-plan="chatbot">Start Chatbot Trial</button>
+        </article>
+
+        <article class="plan-card" data-plan="voicebot">
+          <h2>Voicebot</h2>
+          <p class="plan-price">$50/mo</p>
+          <ul>
+            <li>AI phone receptionist</li>
+            <li>Call history dashboard</li>
+            <li>Voice settings &amp; knowledge</li>
+          </ul>
+          <button type="button" data-plan="voicebot">Start Voicebot Trial</button>
+        </article>
+
+        <article class="plan-card" data-plan="duo">
+          <h2>Duo</h2>
+          <p class="plan-price">$65/mo</p>
+          <ul>
+            <li>Chatbot + Voicebot</li>
+            <li>Both dashboards included</li>
+            <li>Best value bundle</li>
+          </ul>
+          <button type="button" data-plan="duo">Start Duo Trial</button>
+        </article>
+      </div>
 
       <div class="billing-status" id="billing-status"></div>
 
@@ -135,18 +201,37 @@
   </footer>
 
   <script src="js/device-fingerprint.js"></script>
+  <script src="js/app-config.js"></script>
   <script>
-    const API_URL = "https://ai-platform-backend-ulqs.onrender.com";
+    const API_URL = window.RoweAppConfig?.API_URL || "https://ai-platform-backend-ulqs.onrender.com";
     const urlParams = new URLSearchParams(window.location.search);
     const referralFromUrl = urlParams.get("ref");
+    let selectedPlan = urlParams.get("plan") || "chatbot";
 
     if (referralFromUrl) {
       sessionStorage.setItem("rowe_referral_code", referralFromUrl.trim());
     }
 
-    const startBtn = document.getElementById("start-trial-btn");
     const statusEl = document.getElementById("billing-status");
     const deletedBanner = document.getElementById("account-deleted-banner");
+    const planCards = document.querySelectorAll(".plan-card");
+
+    function setSelectedPlan(plan) {
+      selectedPlan = plan;
+      planCards.forEach(card => {
+        card.classList.toggle("selected", card.dataset.plan === plan);
+      });
+    }
+
+    setSelectedPlan(selectedPlan);
+
+    planCards.forEach(card => {
+      card.addEventListener("click", event => {
+        if (event.target.tagName === "BUTTON") return;
+        setSelectedPlan(card.dataset.plan);
+      });
+      card.querySelector("button").addEventListener("click", () => startCheckout(card.dataset.plan));
+    });
 
     const deletedMessage =
       sessionStorage.getItem("account_deleted_message") ||
@@ -160,9 +245,12 @@
       sessionStorage.removeItem("account_deleted_message");
     }
 
-    startBtn.addEventListener("click", async () => {
+    async function startCheckout(planType) {
+      setSelectedPlan(planType);
       statusEl.textContent = "Redirecting to secure checkout...";
-      startBtn.disabled = true;
+      planCards.forEach(card => {
+        card.querySelector("button").disabled = true;
+      });
 
       const referralCode = sessionStorage.getItem("rowe_referral_code") || referralFromUrl;
 
@@ -174,6 +262,7 @@
           body: JSON.stringify({
             referral_code: referralCode || null,
             device_fingerprint: deviceFingerprint,
+            plan_type: planType,
           }),
         });
 
@@ -191,9 +280,11 @@
       } catch (err) {
         console.error("Checkout error:", err);
         statusEl.textContent = err.message || "Unable to start checkout. Please try again.";
-        startBtn.disabled = false;
+        planCards.forEach(card => {
+          card.querySelector("button").disabled = false;
+        });
       }
-    });
+    }
   </script>
 </body>
 </html>

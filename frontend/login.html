@@ -133,6 +133,21 @@ async function login() {
             localStorage.setItem("businesses", JSON.stringify(data.businesses));
         }
 
+        if (data.plan_type) {
+            localStorage.setItem("plan_type", data.plan_type);
+        }
+        if (typeof data.has_voicebot !== "undefined") {
+            localStorage.setItem("has_voicebot", data.has_voicebot ? "1" : "0");
+        }
+        if (typeof data.has_chatbot !== "undefined") {
+            localStorage.setItem("has_chatbot", data.has_chatbot ? "1" : "0");
+        }
+
+        if (data.plan_type === "voicebot") {
+            window.location.href = "voicebot-dashboard.html";
+            return;
+        }
+
         window.location.href = "client-dashboard.html";
     } catch (err) {
         console.error("Login error:", err);

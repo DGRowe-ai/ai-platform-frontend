@@ -1,5 +1,13 @@
 (function mountClientDashboardSupport() {
-  if (document.querySelector(".client-support")) {
+  const supportText =
+    'Questions or errors? Contact us at <a href="mailto:support@roweai.ca">support@roweai.ca</a>';
+
+  const existing = document.querySelector(".client-support");
+  if (existing) {
+    const textEl = existing.querySelector(".client-support-text");
+    if (textEl) {
+      textEl.innerHTML = supportText;
+    }
     return;
   }
 
@@ -16,10 +24,7 @@
         <circle cx="12" cy="16.75" r="0.9" fill="currentColor"></circle>
       </svg>
     </span>
-    <p class="client-support-text">
-      Having trouble? Contact Rowe AI at
-      <a href="mailto:support@roweai.ca">support@roweai.ca</a>
-    </p>
+    <p class="client-support-text">${supportText}</p>
   `;
 
   const main = document.querySelector("main");

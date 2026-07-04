@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voicebot Dashboard</title>
+  <link rel="stylesheet" href="css/responsive-base.css">
+  <link rel="stylesheet" href="css/client-dashboard-common.css">
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --text: #172033;
+      --muted: #667085;
+      --border: #d9e2ef;
+      --primary: #0f9488;
+      --primary-dark: #0f766e;
+      --danger: #dc2626;
+      --danger-bg: #fef2f2;
+      --success: #047857;
+      --shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    header {
+      background:
+        radial-gradient(circle at top right, rgba(153, 246, 228, 0.28), transparent 34%),
+        linear-gradient(135deg, #0f766e 0%, #0f9488 48%, #115e59 100%);
+      box-shadow: 0 18px 45px rgba(15, 118, 110, 0.22);
+      color: #ffffff;
+      padding: 32px clamp(16px, 5vw, 56px);
+    }
+
+    .header-brand {
+      align-items: center;
+      display: flex;
+      gap: 28px;
+    }
+
+    .brand-logo-wrap {
+      align-items: center;
+      background: #ffffff;
+      border-radius: 14px;
+      display: flex;
+      padding: 18px 36px;
+    }
+
+    .brand-logo {
+      display: block;
+      height: 120px;
+      max-width: min(100%, 420px);
+      object-fit: contain;
+    }
+
+    header h1 { margin: 0 0 6px; font-size: clamp(28px, 4vw, 40px); }
+    header p { margin: 0; color: #d7fffa; }
+
+    .client-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .client-nav a {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      border-radius: 999px;
+      color: #ffffff;
+      display: inline-flex;
+      font-weight: 700;
+      min-height: 44px;
+      padding: 10px 16px;
+      text-decoration: none;
+    }
+
+    .client-nav a.active,
+    .client-nav a:hover {
+      background: rgba(255, 255, 255, 0.22);
+    }
+
+    main {
+      width: min(1180px, calc(100% - 32px));
+      margin: 28px auto 48px;
+    }
+
+    .topbar {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .business-name { font-size: 24px; font-weight: 700; }
+
+    .topbar-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 22px;
+    }
+
+    .card h2 { margin: 0 0 16px; font-size: 21px; }
+
+    .analytics, .settings, .knowledge, .history, .cancel-service {
+      grid-column: span 12;
+    }
+
+    .stats-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .stat {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+    }
+
+    .stat .label { color: var(--muted); font-size: 13px; margin-bottom: 8px; }
+    .stat .value { font-size: 26px; font-weight: 700; }
+
+    label { display: block; font-weight: 700; margin: 14px 0 6px; }
+
+    input, select, textarea {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font: inherit;
+      padding: 11px 12px;
+      width: 100%;
+    }
+
+    textarea { min-height: 120px; resize: vertical; }
+
+    .help-text { color: var(--muted); font-size: 13px; margin-top: 6px; }
+
+    button {
+      background: var(--primary);
+      border: 0;
+      border-radius: 10px;
+      color: #ffffff;
+      cursor: pointer;
+      font-weight: 700;
+      min-height: 44px;
+      padding: 10px 14px;
+    }
+
+    button.secondary {
+      background: #e2e8f0;
+      color: #172033;
+    }
+
+    button.danger {
+      background: var(--danger-bg);
+      border: 1px solid #fecaca;
+      color: var(--danger);
+    }
+
+    .button-link.secondary {
+      align-items: center;
+      background: #e2e8f0;
+      border-radius: 10px;
+      color: var(--text);
+      display: inline-flex;
+      font-weight: 700;
+      min-height: 44px;
+      padding: 10px 14px;
+      text-decoration: none;
+    }
+
+    .status { color: var(--muted); font-size: 14px; min-height: 20px; }
+    .status.success { color: var(--success); }
+    .status.error { color: var(--danger); }
+
+    .call-list {
+      display: grid;
+      gap: 12px;
+      max-height: 620px;
+      overflow: auto;
+    }
+
+    .call-item {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .call-meta {
+      color: var(--muted);
+      display: flex;
+      flex-wrap: wrap;
+      font-size: 13px;
+      gap: 8px 14px;
+      margin-bottom: 10px;
+    }
+
+    .call-transcript {
+      line-height: 1.45;
+      white-space: pre-wrap;
+    }
+
+    .checkbox-row {
+      align-items: center;
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .checkbox-row input { width: auto; }
+
+    .kb-upload-row {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .kb-file-list { display: grid; gap: 10px; margin-top: 14px; }
+
+    .kb-file-item {
+      align-items: center;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: space-between;
+      padding: 12px;
+    }
+
+    .cancel-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .hidden { display: none !important; }
+
+    @media (max-width: 900px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      .header-brand { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-brand">
+      <div class="brand-logo-wrap">
+        <img class="brand-logo" src="images/loki/Logo/rowe-ai-logo.png" alt="Rowe AI">
+      </div>
+      <div>
+        <h1>Voicebot Dashboard</h1>
+        <p>Configure your AI phone receptionist, review call history, and manage your voice service.</p>
+      </div>
+    </div>
+    <nav class="client-nav" aria-label="Voicebot dashboard sections">
+      <a class="active" href="voicebot-dashboard.html">Voice Dashboard</a>
+      <a class="hidden" id="chat-dashboard-nav" href="client-dashboard.html">Chat Dashboard</a>
+      <a href="payment-history.html">Payment History</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="topbar">
+      <div>
+        <div class="business-name" id="business-name">Loading business...</div>
+        <div class="status" id="page-status"></div>
+      </div>
+      <div class="topbar-actions">
+        <a class="button-link secondary hidden" id="chat-dashboard-btn" href="client-dashboard.html">Chatbot Dashboard</a>
+        <button class="secondary" id="logout-btn" type="button">Log out</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <section class="card analytics">
+        <div class="toolbar" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <h2 style="margin:0;">Call Analytics</h2>
+          <button class="secondary" id="refresh-btn" type="button">Refresh</button>
+        </div>
+        <div class="stats-grid" id="analytics-cards"></div>
+      </section>
+
+      <section class="card settings">
+        <h2>Voicebot Settings</h2>
+        <p class="help-text">Configure how your AI receptionist speaks and what it knows about your business.</p>
+        <form id="settings-form">
+          <label for="tone">Tone</label>
+          <select id="tone" name="tone">
+            <option value="friendly">Friendly</option>
+            <option value="professional">Professional</option>
+            <option value="casual">Casual</option>
+            <option value="concise">Concise</option>
+            <option value="enthusiastic">Enthusiastic</option>
+          </select>
+
+          <label for="knowledge">Knowledge &amp; Instructions</label>
+          <textarea id="knowledge" name="knowledge" placeholder="Tell the voicebot about your business hours, services, policies, and how to handle common caller questions."></textarea>
+
+          <div class="checkbox-row">
+            <input id="spell-name" name="spell_name" type="checkbox">
+            <label for="spell-name" style="margin:0;">Ask callers to spell out their name when they provide it</label>
+          </div>
+
+          <button id="save-settings-btn" type="submit">Save Settings</button>
+          <div class="status" id="settings-status"></div>
+        </form>
+      </section>
+
+      <section class="card knowledge">
+        <h2>Knowledge Base</h2>
+        <p class="help-text">Upload documents your voicebot can reference during phone calls.</p>
+        <div class="kb-upload-row">
+          <input type="file" id="kb-file" accept=".pdf,.txt,.doc,.docx,.csv,.md,.json">
+          <button id="kb-upload-btn" type="button">Upload File</button>
+        </div>
+        <div class="status" id="kb-status"></div>
+        <div class="kb-file-list" id="kb-file-list"></div>
+      </section>
+
+      <section class="card history">
+        <div class="toolbar" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <h2 style="margin:0;">Call History</h2>
+          <span class="status" id="history-status"></span>
+        </div>
+        <div class="call-list" id="call-history"></div>
+      </section>
+
+      <section class="card cancel-service">
+        <h2>Cancel Voicebot Service</h2>
+        <p class="help-text">
+          Cancelling removes your AI phone receptionist. Duo subscribers keep their chatbot subscription.
+        </p>
+        <div class="cancel-actions">
+          <button class="danger" id="cancel-service-btn" type="button">Cancel Service</button>
+          <button class="danger hidden" id="confirm-cancel-btn" type="button">Confirm Cancelation</button>
+        </div>
+        <div class="status" id="cancel-status"></div>
+      </section>
+    </div>
+  </main>
+
+  <script src="js/app-config.js"></script>
+  <script src="js/client-dashboard-support.js"></script>
+  <script src="voicebot-dashboard.js"></script>
+</body>
+</html>
