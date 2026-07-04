@@ -36,7 +36,14 @@ function setStatus(element, message, type = "") {
 }
 
 function redirectToLogin() {
-  window.location.href = "login.html";
+  window.location.href = "login-voicebot.html";
+}
+
+function hasBothProducts(subscription) {
+  if (subscription?.plan_type === "duo") {
+    return true;
+  }
+  return Boolean(subscription?.has_chatbot && subscription?.has_voicebot);
 }
 
 async function apiRequest(path, options = {}) {
@@ -142,7 +149,9 @@ function renderKnowledgeFiles(files) {
 function applySubscription(subscription) {
   const planType = subscription?.plan_type || localStorage.getItem("plan_type") || "";
   localStorage.setItem("plan_type", planType);
-  const showChat = planType === "duo";
+  localStorage.setItem("has_voicebot", subscription?.has_voicebot ? "1" : "0");
+  localStorage.setItem("has_chatbot", subscription?.has_chatbot ? "1" : "0");
+  const showChat = hasBothProducts(subscription);
   els.chatDashboardBtn?.classList.toggle("hidden", !showChat);
   els.chatDashboardNav?.classList.toggle("hidden", !showChat);
 }
@@ -160,6 +169,11 @@ async function loadDashboard() {
   els.businessName.textContent = dashboard.business?.name || "Your Business";
   renderAnalytics(dashboard);
   applySubscription(subscription);
+
+  if (!subscription.has_voicebot && localStorage.getItem("is_platform_admin") !== "1") {
+    window.location.href = "client-dashboard.html";
+    return;
+  }
 
   els.tone.value = settings.tone || "friendly";
   els.knowledge.value = settings.knowledge || settings.custom_instructions || "";

@@ -84,7 +84,14 @@ function isPlatformAdmin() {
 }
 
 function redirectToLogin() {
-  window.location.href = "login.html";
+  window.location.href = "login-chatbot.html";
+}
+
+function hasBothProducts(subscription) {
+  if (subscription?.plan_type === "duo") {
+    return true;
+  }
+  return Boolean(subscription?.has_chatbot && subscription?.has_voicebot);
 }
 
 async function apiRequest(path, options = {}) {
@@ -910,7 +917,7 @@ async function loadSubscription() {
     return;
   }
   if (els.voiceDashboardBtn) {
-    els.voiceDashboardBtn.classList.toggle("hidden", planType !== "duo");
+    els.voiceDashboardBtn.classList.toggle("hidden", !hasBothProducts(subscription));
   }
 }
 
