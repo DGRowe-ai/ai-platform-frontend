@@ -22,6 +22,11 @@ const els = {
   cancelServiceBtn: document.getElementById("cancel-service-btn"),
   confirmCancelBtn: document.getElementById("confirm-cancel-btn"),
   cancelStatus: document.getElementById("cancel-status"),
+  businessPhoneCard: document.getElementById("business-phone-card"),
+  callForwardingCard: document.getElementById("call-forwarding-card"),
+  businessPhoneForm: document.getElementById("business-phone-form"),
+  businessPhoneInput: document.getElementById("business-phone"),
+  businessPhoneStatus: document.getElementById("business-phone-status"),
 };
 
 function getToken() {
@@ -44,6 +49,10 @@ function hasBothProducts(subscription) {
     return true;
   }
   return Boolean(subscription?.has_chatbot && subscription?.has_voicebot);
+}
+
+function hasVoiceAccess(subscription) {
+  return Boolean(subscription?.has_voicebot || subscription?.plan_type === "duo");
 }
 
 async function apiRequest(path, options = {}) {
@@ -154,13 +163,16 @@ function applySubscription(subscription) {
   const showChat = hasBothProducts(subscription);
   els.chatDashboardBtn?.classList.toggle("hidden", !showChat);
   els.chatDashboardNav?.classList.toggle("hidden", !showChat);
+  const showVoiceSections = hasVoiceAccess(subscription);
+  els.businessPhoneCard?.classList.toggle("hidden", !showVoiceSections);
+  els.callForwardingCard?.classList.toggle("hidden", !showVoiceSections);
 }
 
 async function loadDashboard() {
   setStatus(els.pageStatus, "Loading dashboard...");
   const [dashboard, settings, history, files, subscription] = await Promise.all([
     apiRequest("/client/voicebot/dashboard"),
-    apiRequest("/client/voicebot_settings"),
+    apiRequest("/voicebot/settings"),
     apiRequest("/client/voice_call_history"),
     apiRequest("/api/knowledge/list"),
     apiRequest("/client/subscription"),
@@ -178,10 +190,29 @@ async function loadDashboard() {
   els.tone.value = settings.tone || "friendly";
   els.knowledge.value = settings.knowledge || settings.custom_instructions || "";
   els.spellName.checked = Boolean(settings.spell_name);
+  if (els.businessPhoneInput) {
+    els.businessPhoneInput.value = settings.businessPhoneNumber || settings.business_phone_number || "";
+  }
 
   renderCallHistory(history.calls || []);
   renderKnowledgeFiles(files.files || []);
   setStatus(els.pageStatus, "", "");
+}
+
+async function saveBusinessPhone(event) {
+  event.preventDefault();
+  try {
+    setStatus(els.businessPhoneStatus, "Saving phone number...");
+    await apiRequest("/voicebot/settings", {
+      method: "POST",
+      body: JSON.stringify({
+        businessPhoneNumber: els.businessPhoneInput.value.trim(),
+      }),
+    });
+    setStatus(els.businessPhoneStatus, "Business phone number saved.", "success");
+  } catch (err) {
+    setStatus(els.businessPhoneStatus, err.message || "Unable to save phone number.", "error");
+  }
 }
 
 async function saveSettings(event) {
@@ -274,6 +305,9 @@ document.addEventListener("DOMContentLoaded", () => {
     loadDashboard().catch(err => setStatus(els.pageStatus, err.message, "error"));
   });
   els.settingsForm.addEventListener("submit", saveSettings);
+  if (els.businessPhoneForm) {
+    els.businessPhoneForm.addEventListener("submit", saveBusinessPhone);
+  }
   els.kbUploadBtn.addEventListener("click", uploadKnowledgeFile);
   els.cancelServiceBtn.addEventListener("click", showCancelConfirmation);
   els.confirmCancelBtn.addEventListener("click", confirmCancellation);

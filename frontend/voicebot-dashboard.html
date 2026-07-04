@@ -267,6 +267,32 @@
 
     .hidden { display: none !important; }
 
+    .forwarding-number {
+      font-size: 18px;
+      font-weight: 700;
+      margin: 12px 0;
+    }
+
+    .carrier-block {
+      margin-top: 16px;
+    }
+
+    .carrier-block h3 {
+      font-size: 16px;
+      margin: 0 0 8px;
+    }
+
+    .carrier-block ol {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .setup-footer {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 18px;
+    }
+
     @media (max-width: 900px) {
       .stats-grid { grid-template-columns: 1fr; }
       .header-brand { flex-direction: column; align-items: flex-start; }
@@ -310,6 +336,81 @@
           <button class="secondary" id="refresh-btn" type="button">Refresh</button>
         </div>
         <div class="stats-grid" id="analytics-cards"></div>
+      </section>
+
+      <section class="card phone-setup voice-access-only hidden" id="business-phone-card">
+        <h2>Business Phone Number</h2>
+        <form id="business-phone-form">
+          <label for="business-phone">Your Business Phone Number</label>
+          <input
+            id="business-phone"
+            name="businessPhoneNumber"
+            type="tel"
+            placeholder="519-555-1234"
+            autocomplete="tel"
+          >
+          <p class="help-text">
+            This is your real business phone number. When customers call it, your phone provider forwards the call to your AI receptionist. We use this number to identify your business and load your personalized Voicebot settings (knowledge base, personality, business name, spelling name). Without this number, the Voicebot cannot determine which business the call belongs to.
+          </p>
+          <button id="save-business-phone-btn" type="submit">Save</button>
+          <div class="status" id="business-phone-status"></div>
+        </form>
+      </section>
+
+      <section class="card forwarding-setup voice-access-only hidden" id="call-forwarding-card">
+        <h2>Call Forwarding Setup</h2>
+        <p class="help-text">
+          To activate your AI phone receptionist, forward your existing business phone number to your Rowe AI Voicebot number:
+        </p>
+        <p class="forwarding-number">Forward all calls to: (+1) 416-367-0103</p>
+        <p class="help-text">
+          Customers will continue calling your usual number, but the AI receptionist will answer for you. Below are quick steps for common Canadian carriers:
+        </p>
+
+        <div class="carrier-block">
+          <h3>Bell</h3>
+          <ol>
+            <li>Dial *72</li>
+            <li>Enter 416-367-0103</li>
+            <li>Press Call</li>
+          </ol>
+        </div>
+
+        <div class="carrier-block">
+          <h3>Rogers</h3>
+          <ol>
+            <li>Dial *21*4163670103#</li>
+            <li>Press Call</li>
+          </ol>
+        </div>
+
+        <div class="carrier-block">
+          <h3>Telus</h3>
+          <ol>
+            <li>Dial *72</li>
+            <li>Enter 416-367-0103</li>
+            <li>Press Call</li>
+          </ol>
+        </div>
+
+        <div class="carrier-block">
+          <h3>Fido</h3>
+          <ol>
+            <li>Dial *21*4163670103#</li>
+            <li>Press Call</li>
+          </ol>
+        </div>
+
+        <div class="carrier-block">
+          <h3>Koodo</h3>
+          <ol>
+            <li>Dial *21*4163670103#</li>
+            <li>Press Call</li>
+          </ol>
+        </div>
+
+        <p class="setup-footer">To disable forwarding: Dial ##21# and press Call.</p>
+        <p class="setup-footer">Need help? Email support@roweai.ca or call 226-343-9977.</p>
       </section>
 
       <section class="card settings">
