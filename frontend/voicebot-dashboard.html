@@ -48,16 +48,16 @@
 
     .brand-logo-wrap {
       align-items: center;
-      background: #ffffff;
-      border-radius: 14px;
+      background: transparent;
+      border-radius: 0;
       display: flex;
-      padding: 18px 36px;
+      padding: 0;
     }
 
     .brand-logo {
       display: block;
-      height: 120px;
-      max-width: min(100%, 420px);
+      height: 165px;
+      max-width: min(100%, 520px);
       object-fit: contain;
     }
 
@@ -126,8 +126,114 @@
 
     .card h2 { margin: 0 0 16px; font-size: 21px; }
 
-    .analytics, .settings, .knowledge, .history, .cancel-service {
+    .analytics, .settings, .knowledge, .history, .cancel-service, .voice-setup-row {
       grid-column: span 12;
+    }
+
+    .voice-setup-row {
+      display: grid;
+      gap: 20px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .voice-setup-row .card {
+      margin: 0;
+    }
+
+    .carrier-grid {
+      display: grid;
+      gap: 12px 24px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .suggested-prompt-box {
+      background: #f0fdfa;
+      border: 1px solid #99f6e4;
+      border-radius: 12px;
+      margin: 14px 0 18px;
+      padding: 16px 18px;
+    }
+
+    .suggested-prompt-box h3 {
+      font-size: 16px;
+      margin: 0 0 8px;
+    }
+
+    .suggested-prompt-box p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+      margin: 0 0 12px;
+    }
+
+    .suggested-prompt-example {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.55;
+      margin: 0;
+      padding: 14px;
+      white-space: pre-wrap;
+    }
+
+    .history-toolbar {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    #history-status {
+      display: block;
+      margin-bottom: 12px;
+    }
+
+    .history-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .modal-backdrop {
+      align-items: center;
+      background: rgba(15, 23, 42, 0.55);
+      display: none;
+      inset: 0;
+      justify-content: center;
+      padding: 20px;
+      position: fixed;
+      z-index: 1000;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      max-width: 480px;
+      padding: 24px;
+      width: 100%;
+    }
+
+    .modal h2 {
+      font-size: 20px;
+      margin: 0 0 12px;
+    }
+
+    .modal-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 20px;
     }
 
     .stats-grid {
@@ -296,6 +402,9 @@
     @media (max-width: 900px) {
       .stats-grid { grid-template-columns: 1fr; }
       .header-brand { flex-direction: column; align-items: flex-start; }
+      .voice-setup-row { grid-template-columns: 1fr; }
+      .carrier-grid { grid-template-columns: 1fr; }
+      .brand-logo { height: 140px; }
     }
   </style>
 </head>
@@ -338,80 +447,84 @@
         <div class="stats-grid" id="analytics-cards"></div>
       </section>
 
-      <section class="card phone-setup voice-access-only hidden" id="business-phone-card">
-        <h2>Business Phone Number</h2>
-        <form id="business-phone-form">
-          <label for="business-phone">Your Business Phone Number</label>
-          <input
-            id="business-phone"
-            name="businessPhoneNumber"
-            type="tel"
-            placeholder="519-555-1234"
-            autocomplete="tel"
-          >
+      <div class="voice-setup-row voice-access-only hidden" id="voice-setup-row">
+        <section class="card phone-setup" id="business-phone-card">
+          <h2>Business Phone Number</h2>
+          <form id="business-phone-form">
+            <label for="business-phone">Your Business Phone Number</label>
+            <input
+              id="business-phone"
+              name="businessPhoneNumber"
+              type="tel"
+              placeholder="519-555-1234"
+              autocomplete="tel"
+            >
+            <p class="help-text">
+              This is your real business phone number. When customers call it, your phone provider forwards the call to your AI receptionist. We use this number to identify your business and load your personalized Voicebot settings (knowledge base, personality, business name, spelling name). Without this number, the Voicebot cannot determine which business the call belongs to.
+            </p>
+            <button id="save-business-phone-btn" type="submit">Save</button>
+            <div class="status" id="business-phone-status"></div>
+          </form>
+        </section>
+
+        <section class="card forwarding-setup" id="call-forwarding-card">
+          <h2>Call Forwarding Setup</h2>
           <p class="help-text">
-            This is your real business phone number. When customers call it, your phone provider forwards the call to your AI receptionist. We use this number to identify your business and load your personalized Voicebot settings (knowledge base, personality, business name, spelling name). Without this number, the Voicebot cannot determine which business the call belongs to.
+            To activate your AI phone receptionist, forward your existing business phone number to your Rowe AI Voicebot number:
           </p>
-          <button id="save-business-phone-btn" type="submit">Save</button>
-          <div class="status" id="business-phone-status"></div>
-        </form>
-      </section>
+          <p class="forwarding-number">Forward all calls to: (+1) 416-367-0103</p>
+          <p class="help-text">
+            Customers will continue calling your usual number, but the AI receptionist will answer for you. Below are quick steps for common Canadian carriers:
+          </p>
 
-      <section class="card forwarding-setup voice-access-only hidden" id="call-forwarding-card">
-        <h2>Call Forwarding Setup</h2>
-        <p class="help-text">
-          To activate your AI phone receptionist, forward your existing business phone number to your Rowe AI Voicebot number:
-        </p>
-        <p class="forwarding-number">Forward all calls to: (+1) 416-367-0103</p>
-        <p class="help-text">
-          Customers will continue calling your usual number, but the AI receptionist will answer for you. Below are quick steps for common Canadian carriers:
-        </p>
+          <div class="carrier-grid">
+            <div class="carrier-block">
+              <h3>Bell</h3>
+              <ol>
+                <li>Dial *72</li>
+                <li>Enter 416-367-0103</li>
+                <li>Press Call</li>
+              </ol>
+            </div>
 
-        <div class="carrier-block">
-          <h3>Bell</h3>
-          <ol>
-            <li>Dial *72</li>
-            <li>Enter 416-367-0103</li>
-            <li>Press Call</li>
-          </ol>
-        </div>
+            <div class="carrier-block">
+              <h3>Rogers</h3>
+              <ol>
+                <li>Dial *21*4163670103#</li>
+                <li>Press Call</li>
+              </ol>
+            </div>
 
-        <div class="carrier-block">
-          <h3>Rogers</h3>
-          <ol>
-            <li>Dial *21*4163670103#</li>
-            <li>Press Call</li>
-          </ol>
-        </div>
+            <div class="carrier-block">
+              <h3>Telus</h3>
+              <ol>
+                <li>Dial *72</li>
+                <li>Enter 416-367-0103</li>
+                <li>Press Call</li>
+              </ol>
+            </div>
 
-        <div class="carrier-block">
-          <h3>Telus</h3>
-          <ol>
-            <li>Dial *72</li>
-            <li>Enter 416-367-0103</li>
-            <li>Press Call</li>
-          </ol>
-        </div>
+            <div class="carrier-block">
+              <h3>Fido</h3>
+              <ol>
+                <li>Dial *21*4163670103#</li>
+                <li>Press Call</li>
+              </ol>
+            </div>
 
-        <div class="carrier-block">
-          <h3>Fido</h3>
-          <ol>
-            <li>Dial *21*4163670103#</li>
-            <li>Press Call</li>
-          </ol>
-        </div>
+            <div class="carrier-block">
+              <h3>Koodo</h3>
+              <ol>
+                <li>Dial *21*4163670103#</li>
+                <li>Press Call</li>
+              </ol>
+            </div>
+          </div>
 
-        <div class="carrier-block">
-          <h3>Koodo</h3>
-          <ol>
-            <li>Dial *21*4163670103#</li>
-            <li>Press Call</li>
-          </ol>
-        </div>
-
-        <p class="setup-footer">To disable forwarding: Dial ##21# and press Call.</p>
-        <p class="setup-footer">Need help? Email support@roweai.ca or call 226-343-9977.</p>
-      </section>
+          <p class="setup-footer">To disable forwarding: Dial ##21# and press Call.</p>
+          <p class="setup-footer">Need help? Email support@roweai.ca or call 226-343-9977.</p>
+        </section>
+      </div>
 
       <section class="card settings">
         <h2>Voicebot Settings</h2>
@@ -431,6 +544,14 @@
           <p class="help-text">This is the exact company name callers should hear — e.g. <strong>Rowe AI</strong>, not a shortened version.</p>
 
           <label for="knowledge">Knowledge &amp; Instructions</label>
+
+          <div class="suggested-prompt-box">
+            <h3>Suggested Prompt Example</h3>
+            <p>Provide customers with a sample prompt showing how to write effective instructions for their voicebot.</p>
+            <p class="suggested-prompt-example"><strong>Example Prompt:</strong>
+"You are the AI receptionist for my business. Greet callers politely and professionally. Answer questions about store hours, location, pricing, and services using the information I provide. If a caller asks to book an appointment, collect their name, date, and time, then confirm you will forward the request to the owner. If you don't know an answer, respond kindly and let the caller know you will pass their question to the business owner."</p>
+          </div>
+
           <textarea id="knowledge" name="knowledge" placeholder="Example format:
 Company: Rowe AI
 Hours: Mon-Fri 9am-5pm EST
@@ -461,10 +582,14 @@ Language: English only
       </section>
 
       <section class="card history">
-        <div class="toolbar" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div class="history-toolbar">
           <h2 style="margin:0;">Call History</h2>
-          <span class="status" id="history-status"></span>
+          <div class="history-actions">
+            <button class="secondary" id="export-history-btn" type="button">Save Chat History (.txt)</button>
+            <button class="danger" id="delete-history-btn" type="button">Delete Chat History</button>
+          </div>
         </div>
+        <span class="status" id="history-status"></span>
         <div class="call-list" id="call-history"></div>
       </section>
 
@@ -481,6 +606,16 @@ Language: English only
       </section>
     </div>
   </main>
+
+  <div class="modal-backdrop" id="delete-history-modal" role="dialog" aria-modal="true" aria-labelledby="delete-history-modal-title">
+    <div class="modal">
+      <h2 id="delete-history-modal-title">Are you sure you want to delete all chat history?</h2>
+      <div class="modal-actions">
+        <button class="secondary" id="delete-history-cancel-btn" type="button">Cancel</button>
+        <button class="danger" id="delete-history-confirm-btn" type="button">Confirm</button>
+      </div>
+    </div>
+  </div>
 
   <script src="js/app-config.js"></script>
   <script src="js/client-dashboard-support.js"></script>

@@ -1,5 +1,7 @@
 const API_URL = window.RoweAppConfig?.API_URL || "https://ai-platform-backend-ulqs.onrender.com";
 
+let cachedCalls = [];
+
 const els = {
   businessName: document.getElementById("business-name"),
   pageStatus: document.getElementById("page-status"),
@@ -28,6 +30,12 @@ const els = {
   businessPhoneForm: document.getElementById("business-phone-form"),
   businessPhoneInput: document.getElementById("business-phone"),
   businessPhoneStatus: document.getElementById("business-phone-status"),
+  voiceSetupRow: document.getElementById("voice-setup-row"),
+  exportHistoryBtn: document.getElementById("export-history-btn"),
+  deleteHistoryBtn: document.getElementById("delete-history-btn"),
+  deleteHistoryModal: document.getElementById("delete-history-modal"),
+  deleteHistoryCancelBtn: document.getElementById("delete-history-cancel-btn"),
+  deleteHistoryConfirmBtn: document.getElementById("delete-history-confirm-btn"),
 };
 
 function getToken() {
@@ -97,11 +105,102 @@ async function apiRequest(path, options = {}) {
   return data;
 }
 
+function normalizeUtcDate(value) {
+  if (!value) return null;
+  if (typeof value === "string" && !value.endsWith("Z") && !value.includes("+")) {
+    return `${value}Z`;
+  }
+  return value;
+}
+
 function formatDateTime(value) {
   if (!value) return "Unknown time";
-  const date = new Date(value);
+  const date = new Date(normalizeUtcDate(value));
   if (Number.isNaN(date.getTime())) return value;
-  return date.toLocaleString();
+
+  const datePart = new Intl.DateTimeFormat(undefined, {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  }).format(date);
+  const timePart = new Intl.DateTimeFormat(undefined, {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  }).format(date);
+  const tzPart = new Intl.DateTimeFormat(undefined, {
+    timeZoneName: "short",
+  })
+    .formatToParts(date)
+    .find(part => part.type === "timeZoneName")?.value;
+
+  return `${datePart} — ${timePart}${tzPart ? ` (${tzPart})` : ""}`;
+}
+
+function exportTimestamp() {
+  const now = new Date();
+  const pad = n => String(n).padStart(2, "0");
+  return `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+}
+
+function buildHistoryExportText(calls) {
+  if (!calls.length) {
+    return "No call history available.";
+  }
+
+  const sections = [...calls]
+    .sort((a, b) => new Date(normalizeUtcDate(a.started_at)) - new Date(normalizeUtcDate(b.started_at)))
+    .map(call => {
+      const header = [
+        `Call started: ${formatDateTime(call.started_at)}`,
+        `Call ended: ${formatDateTime(call.ended_at)}`,
+        `Caller: ${call.caller_number || "Unknown"}`,
+      ].join("\n");
+      const transcript = (call.transcript || "").trim() || "No transcript captured for this call.";
+      return `${header}\n\n${transcript}`;
+    });
+
+  return sections.join("\n\n------------------------------\n\n");
+}
+
+function exportCallHistory() {
+  if (!cachedCalls.length) {
+    setStatus(els.historyStatus, "No call history to export.", "error");
+    return;
+  }
+
+  const content = buildHistoryExportText(cachedCalls);
+  const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `voicebot_chat_history_${exportTimestamp()}.txt`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  URL.revokeObjectURL(url);
+  setStatus(els.historyStatus, "Call history exported.", "success");
+}
+
+function openDeleteHistoryModal() {
+  els.deleteHistoryModal?.classList.add("open");
+}
+
+function closeDeleteHistoryModal() {
+  els.deleteHistoryModal?.classList.remove("open");
+}
+
+async function confirmDeleteCallHistory() {
+  try {
+    setStatus(els.historyStatus, "Deleting call history...");
+    await apiRequest("/client/voice_call_history", { method: "DELETE" });
+    cachedCalls = [];
+    renderCallHistory([]);
+    closeDeleteHistoryModal();
+    setStatus(els.historyStatus, "Call history deleted.", "success");
+  } catch (err) {
+    setStatus(els.historyStatus, err.message || "Unable to delete call history.", "error");
+  }
 }
 
 function renderAnalytics(payload) {
@@ -123,12 +222,13 @@ function renderAnalytics(payload) {
 }
 
 function renderCallHistory(calls) {
-  if (!calls.length) {
+  cachedCalls = calls || [];
+  if (!cachedCalls.length) {
     els.callHistory.innerHTML = `<p class="help-text">No calls recorded yet. Incoming calls will appear here with date, time, and transcript.</p>`;
     return;
   }
 
-  els.callHistory.innerHTML = calls
+  els.callHistory.innerHTML = cachedCalls
     .map(call => {
       const transcript = (call.transcript || "").trim() || "No transcript captured for this call.";
       return `
@@ -165,8 +265,7 @@ function applySubscription(subscription) {
   els.chatDashboardBtn?.classList.toggle("hidden", !showChat);
   els.chatDashboardNav?.classList.toggle("hidden", !showChat);
   const showVoiceSections = hasVoiceAccess(subscription);
-  els.businessPhoneCard?.classList.toggle("hidden", !showVoiceSections);
-  els.callForwardingCard?.classList.toggle("hidden", !showVoiceSections);
+  els.voiceSetupRow?.classList.toggle("hidden", !showVoiceSections);
 }
 
 async function loadDashboard() {
@@ -317,6 +416,15 @@ document.addEventListener("DOMContentLoaded", () => {
   els.kbUploadBtn.addEventListener("click", uploadKnowledgeFile);
   els.cancelServiceBtn.addEventListener("click", showCancelConfirmation);
   els.confirmCancelBtn.addEventListener("click", confirmCancellation);
+  els.exportHistoryBtn?.addEventListener("click", exportCallHistory);
+  els.deleteHistoryBtn?.addEventListener("click", openDeleteHistoryModal);
+  els.deleteHistoryCancelBtn?.addEventListener("click", closeDeleteHistoryModal);
+  els.deleteHistoryConfirmBtn?.addEventListener("click", confirmDeleteCallHistory);
+  els.deleteHistoryModal?.addEventListener("click", event => {
+    if (event.target === els.deleteHistoryModal) {
+      closeDeleteHistoryModal();
+    }
+  });
 
   loadDashboard().catch(err => {
     if (err.message.includes("voicebot dashboard")) {
