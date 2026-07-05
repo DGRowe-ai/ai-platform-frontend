@@ -9,6 +9,7 @@ const els = {
   settingsForm: document.getElementById("settings-form"),
   settingsStatus: document.getElementById("settings-status"),
   tone: document.getElementById("tone"),
+  voiceBusinessName: document.getElementById("voice-business-name"),
   knowledge: document.getElementById("knowledge"),
   spellName: document.getElementById("spell-name"),
   kbFileInput: document.getElementById("kb-file"),
@@ -188,6 +189,10 @@ async function loadDashboard() {
   }
 
   els.tone.value = settings.tone || "friendly";
+  if (els.voiceBusinessName) {
+    els.voiceBusinessName.value =
+      settings.voiceBusinessName || settings.businessName || settings.business_name || "";
+  }
   els.knowledge.value = settings.knowledge || settings.custom_instructions || "";
   els.spellName.checked = Boolean(settings.spell_name);
   if (els.businessPhoneInput) {
@@ -223,6 +228,7 @@ async function saveSettings(event) {
       method: "POST",
       body: JSON.stringify({
         tone: els.tone.value,
+        businessName: els.voiceBusinessName?.value.trim() || "",
         knowledge: els.knowledge.value.trim(),
         spell_name: els.spellName.checked,
       }),

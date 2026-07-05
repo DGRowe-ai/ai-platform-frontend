@@ -426,8 +426,17 @@
             <option value="enthusiastic">Enthusiastic</option>
           </select>
 
+          <label for="voice-business-name">Business Name (on phone calls)</label>
+          <input id="voice-business-name" name="voiceBusinessName" type="text" placeholder="Rowe AI">
+          <p class="help-text">This is the exact company name callers should hear — e.g. <strong>Rowe AI</strong>, not a shortened version.</p>
+
           <label for="knowledge">Knowledge &amp; Instructions</label>
-          <textarea id="knowledge" name="knowledge" placeholder="Tell the voicebot about your business hours, services, policies, and how to handle common caller questions."></textarea>
+          <textarea id="knowledge" name="knowledge" placeholder="Example format:
+Company: Rowe AI
+Hours: Mon-Fri 9am-5pm EST
+Service area: Guelph area and worldwide (online)
+Language: English only
+..."></textarea>
 
           <div class="checkbox-row">
             <input id="spell-name" name="spell_name" type="checkbox">
