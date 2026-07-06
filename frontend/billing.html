@@ -123,39 +123,24 @@
 
     .hidden { display: none; }
 
-    .coupon-panel {
-      background: #f0fdfa;
-      border: 1px solid #99f6e4;
-      border-radius: 14px;
-      margin: 24px auto 0;
+    .login-link { margin-top: 24px; text-align: center; }
+
+    .voicebot-coupon-wrap {
+      margin: 20px auto 0;
       max-width: 420px;
-      padding: 18px 20px;
       text-align: left;
     }
 
-    .coupon-panel label {
-      display: block;
-      font-weight: 700;
-      margin-bottom: 8px;
+    .voicebot-coupon-wrap .form-field {
+      margin-bottom: 0;
     }
 
-    .coupon-panel input {
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      font-size: 16px;
-      min-height: 44px;
-      padding: 10px 12px;
-      width: 100%;
-    }
-
-    .coupon-panel p {
+    .coupon-note {
       color: var(--muted);
       font-size: 13px;
       line-height: 1.5;
-      margin: 10px 0 0;
+      margin: 8px 0 0;
     }
-
-    .login-link { margin-top: 24px; text-align: center; }
 
     @media (max-width: 900px) {
       .plan-grid { grid-template-columns: 1fr; }
@@ -218,10 +203,17 @@
         </article>
       </div>
 
-      <div class="coupon-panel hidden" id="voicebot-coupon-panel">
-        <label for="coupon-code">Voicebot coupon code (optional)</label>
-        <input id="coupon-code" type="text" placeholder="Enter coupon code" autocomplete="off">
-        <p>Coupons apply to Voicebot checkout only. Invalid codes are ignored and full price is charged.</p>
+      <div class="voicebot-coupon-wrap hidden" id="voicebot-coupon-wrap">
+        <div class="form-field">
+          <label for="voicebot-coupon-code">Coupon Code (optional)</label>
+          <input
+            id="voicebot-coupon-code"
+            type="text"
+            placeholder="Enter coupon code"
+            autocomplete="off"
+          />
+          <p class="coupon-note">Voicebot coupons only. Invalid codes are ignored and full price is charged.</p>
+        </div>
       </div>
 
       <div class="billing-status" id="billing-status"></div>
@@ -258,15 +250,15 @@
     const statusEl = document.getElementById("billing-status");
     const deletedBanner = document.getElementById("account-deleted-banner");
     const planCards = document.querySelectorAll(".plan-card");
-    const couponPanel = document.getElementById("voicebot-coupon-panel");
-    const couponInput = document.getElementById("coupon-code");
+    const couponWrap = document.getElementById("voicebot-coupon-wrap");
+    const couponInput = document.getElementById("voicebot-coupon-code");
 
     function setSelectedPlan(plan) {
       selectedPlan = plan;
       planCards.forEach(card => {
         card.classList.toggle("selected", card.dataset.plan === plan);
       });
-      couponPanel?.classList.toggle("hidden", plan !== "voicebot");
+      couponWrap?.classList.toggle("hidden", plan !== "voicebot");
     }
 
     setSelectedPlan(selectedPlan);
@@ -332,7 +324,6 @@
 
         window.location.href = data.url;
       } catch (err) {
-        console.error("Checkout error:", err);
         statusEl.textContent = err.message || "Unable to start checkout. Please try again.";
         planCards.forEach(card => {
           card.querySelector("button").disabled = false;
