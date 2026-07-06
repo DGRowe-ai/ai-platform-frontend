@@ -125,6 +125,23 @@
 
     .login-link { margin-top: 24px; text-align: center; }
 
+    .voicebot-coupon-wrap {
+      margin: 20px auto 0;
+      max-width: 420px;
+      text-align: left;
+    }
+
+    .voicebot-coupon-wrap .form-field {
+      margin-bottom: 0;
+    }
+
+    .coupon-note {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+      margin: 8px 0 0;
+    }
+
     @media (max-width: 900px) {
       .plan-grid { grid-template-columns: 1fr; }
     }
@@ -186,6 +203,19 @@
         </article>
       </div>
 
+      <div class="voicebot-coupon-wrap hidden" id="voicebot-coupon-wrap">
+        <div class="form-field">
+          <label for="voicebot-coupon-code">Coupon Code (optional)</label>
+          <input
+            id="voicebot-coupon-code"
+            type="text"
+            placeholder="Enter coupon code"
+            autocomplete="off"
+          />
+          <p class="coupon-note">If you have a coupon code, enter it here to apply your discount.</p>
+        </div>
+      </div>
+
       <div class="billing-status" id="billing-status"></div>
 
       <p class="security-note">
@@ -220,12 +250,17 @@
     const statusEl = document.getElementById("billing-status");
     const deletedBanner = document.getElementById("account-deleted-banner");
     const planCards = document.querySelectorAll(".plan-card");
+    const couponWrap = document.getElementById("voicebot-coupon-wrap");
+    const couponInput = document.getElementById("voicebot-coupon-code");
 
     function setSelectedPlan(plan) {
       selectedPlan = plan;
       planCards.forEach(card => {
         card.classList.toggle("selected", card.dataset.plan === plan);
       });
+      if (couponWrap) {
+        couponWrap.classList.toggle("hidden", plan !== "voicebot");
+      }
     }
 
     setSelectedPlan(selectedPlan);
@@ -261,14 +296,20 @@
 
       try {
         const deviceFingerprint = await RoweDeviceFingerprint.getDeviceFingerprint();
+        const payload = {
+          referral_code: referralCode || null,
+          device_fingerprint: deviceFingerprint,
+          plan_type: planType,
+        };
+
+        if (planType === "voicebot" && couponInput) {
+          payload.couponCode = couponInput.value.trim();
+        }
+
         const response = await fetch(`${API_URL}/create-checkout-session`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            referral_code: referralCode || null,
-            device_fingerprint: deviceFingerprint,
-            plan_type: planType,
-          }),
+          body: JSON.stringify(payload),
         });
 
         const data = await response.json();
@@ -283,7 +324,6 @@
 
         window.location.href = data.url;
       } catch (err) {
-        console.error("Checkout error:", err);
         statusEl.textContent = err.message || "Unable to start checkout. Please try again.";
         planCards.forEach(card => {
           card.querySelector("button").disabled = false;
