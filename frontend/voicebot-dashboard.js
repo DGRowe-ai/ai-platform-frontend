@@ -36,7 +36,19 @@ const els = {
   deleteHistoryModal: document.getElementById("delete-history-modal"),
   deleteHistoryCancelBtn: document.getElementById("delete-history-cancel-btn"),
   deleteHistoryConfirmBtn: document.getElementById("delete-history-confirm-btn"),
+  appointmentRequests: document.getElementById("appointment-requests"),
+  appointmentsStatus: document.getElementById("appointments-status"),
+  appointmentSettingsForm: document.getElementById("appointment-settings-form"),
+  appointmentSettingsStatus: document.getElementById("appointment-settings-status"),
+  appointmentTimezone: document.getElementById("appointment-timezone"),
+  appointmentNotifyMethod: document.getElementById("appointment-notify-method"),
+  appointmentNotifyEmail: document.getElementById("appointment-notify-email"),
+  appointmentWebhookUrl: document.getElementById("appointment-webhook-url"),
+  appointmentEmailWrap: document.getElementById("appointment-email-wrap"),
+  appointmentWebhookWrap: document.getElementById("appointment-webhook-wrap"),
 };
+
+let appointmentDashboard = null;
 
 function getToken() {
   return localStorage.getItem("token") || localStorage.getItem("access_token");
@@ -278,6 +290,13 @@ async function loadDashboard() {
     apiRequest("/client/subscription"),
   ]);
 
+  const appointmentLoads = appointmentDashboard
+    ? Promise.all([
+        appointmentDashboard.loadAppointments(),
+        appointmentDashboard.loadAppointmentSettings(),
+      ])
+    : Promise.resolve();
+
   els.businessName.textContent = dashboard.business?.name || "Your Business";
   renderAnalytics(dashboard);
   applySubscription(subscription);
@@ -300,6 +319,7 @@ async function loadDashboard() {
 
   renderCallHistory(history.calls || []);
   renderKnowledgeFiles(files.files || []);
+  await appointmentLoads;
   setStatus(els.pageStatus, "", "");
 }
 
@@ -403,6 +423,16 @@ document.addEventListener("DOMContentLoaded", () => {
   if (!getToken()) {
     redirectToLogin();
     return;
+  }
+
+  if (window.RoweAppointmentDashboard) {
+    appointmentDashboard = window.RoweAppointmentDashboard.init({
+      apiRequest,
+      setStatus,
+      els,
+      emptyMessage:
+        "No appointment requests yet. Customers can request one through your voicebot or chatbot.",
+    });
   }
 
   els.logoutBtn.addEventListener("click", logout);

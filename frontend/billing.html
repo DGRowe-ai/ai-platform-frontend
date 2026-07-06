@@ -123,6 +123,38 @@
 
     .hidden { display: none; }
 
+    .coupon-panel {
+      background: #f0fdfa;
+      border: 1px solid #99f6e4;
+      border-radius: 14px;
+      margin: 24px auto 0;
+      max-width: 420px;
+      padding: 18px 20px;
+      text-align: left;
+    }
+
+    .coupon-panel label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .coupon-panel input {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-size: 16px;
+      min-height: 44px;
+      padding: 10px 12px;
+      width: 100%;
+    }
+
+    .coupon-panel p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+      margin: 10px 0 0;
+    }
+
     .login-link { margin-top: 24px; text-align: center; }
 
     @media (max-width: 900px) {
@@ -186,6 +218,12 @@
         </article>
       </div>
 
+      <div class="coupon-panel hidden" id="voicebot-coupon-panel">
+        <label for="coupon-code">Voicebot coupon code (optional)</label>
+        <input id="coupon-code" type="text" placeholder="Enter coupon code" autocomplete="off">
+        <p>Coupons apply to Voicebot checkout only. Invalid codes are ignored and full price is charged.</p>
+      </div>
+
       <div class="billing-status" id="billing-status"></div>
 
       <p class="security-note">
@@ -220,12 +258,15 @@
     const statusEl = document.getElementById("billing-status");
     const deletedBanner = document.getElementById("account-deleted-banner");
     const planCards = document.querySelectorAll(".plan-card");
+    const couponPanel = document.getElementById("voicebot-coupon-panel");
+    const couponInput = document.getElementById("coupon-code");
 
     function setSelectedPlan(plan) {
       selectedPlan = plan;
       planCards.forEach(card => {
         card.classList.toggle("selected", card.dataset.plan === plan);
       });
+      couponPanel?.classList.toggle("hidden", plan !== "voicebot");
     }
 
     setSelectedPlan(selectedPlan);
@@ -258,17 +299,25 @@
       });
 
       const referralCode = sessionStorage.getItem("rowe_referral_code") || referralFromUrl;
+      const couponCode = planType === "voicebot"
+        ? (couponInput?.value || "").trim()
+        : "";
 
       try {
         const deviceFingerprint = await RoweDeviceFingerprint.getDeviceFingerprint();
+        const payload = {
+          referral_code: referralCode || null,
+          device_fingerprint: deviceFingerprint,
+          plan_type: planType,
+        };
+        if (couponCode) {
+          payload.couponCode = couponCode;
+        }
+
         const response = await fetch(`${API_URL}/create-checkout-session`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            referral_code: referralCode || null,
-            device_fingerprint: deviceFingerprint,
-            plan_type: planType,
-          }),
+          body: JSON.stringify(payload),
         });
 
         const data = await response.json();

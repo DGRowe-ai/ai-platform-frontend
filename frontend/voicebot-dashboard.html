@@ -126,8 +126,91 @@
 
     .card h2 { margin: 0 0 16px; font-size: 21px; }
 
-    .analytics, .settings, .knowledge, .history, .cancel-service, .voice-setup-row {
+    .analytics, .settings, .knowledge, .history, .cancel-service, .voice-setup-row, .appointments {
       grid-column: span 12;
+    }
+
+    .appointment-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .appointment-item {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+    }
+
+    .appointment-item header {
+      align-items: center;
+      background: transparent;
+      box-shadow: none;
+      color: inherit;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: space-between;
+      padding: 0 0 10px;
+    }
+
+    .appointment-item h3 {
+      font-size: 18px;
+      margin: 0;
+    }
+
+    .appointment-meta {
+      color: var(--muted);
+      display: flex;
+      flex-wrap: wrap;
+      font-size: 13px;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .appointment-actions {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .appointment-actions select {
+      min-width: 140px;
+      width: auto;
+    }
+
+    .status-badge {
+      border-radius: 999px;
+      display: inline-flex;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 5px 10px;
+    }
+
+    .status-badge.pending { background: #fffbeb; color: #b45309; }
+    .status-badge.confirmed { background: #ecfdf5; color: #047857; }
+    .status-badge.rejected { background: #fef2f2; color: #dc2626; }
+    .status-badge.done { background: #eef2ff; color: #3730a3; }
+
+    .appointment-settings-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-bottom: 18px;
+    }
+
+    .appointment-settings-grid .full {
+      grid-column: span 2;
+    }
+
+    .appointments-toolbar {
+      align-items: flex-start;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: space-between;
+      margin-bottom: 12px;
     }
 
     .voice-setup-row {
@@ -405,6 +488,8 @@
       .voice-setup-row { grid-template-columns: 1fr; }
       .carrier-grid { grid-template-columns: 1fr; }
       .brand-logo { height: 140px; }
+      .appointment-settings-grid { grid-template-columns: 1fr; }
+      .appointment-settings-grid .full { grid-column: span 1; }
     }
   </style>
 </head>
@@ -593,6 +678,57 @@ Language: English only
         <div class="call-list" id="call-history"></div>
       </section>
 
+      <section class="card appointments">
+        <div class="appointments-toolbar">
+          <div>
+            <h2 style="margin:0;">Appointment Requests</h2>
+            <p class="help-text">When callers book through your voicebot, requests appear here. Set your notification email to get alerts.</p>
+          </div>
+          <span class="status" id="appointments-status"></span>
+        </div>
+
+        <form id="appointment-settings-form" class="appointment-settings-grid">
+          <div>
+            <label for="appointment-timezone">Business Timezone</label>
+            <select id="appointment-timezone">
+              <option value="America/Toronto">America/Toronto (Eastern)</option>
+              <option value="America/Vancouver">America/Vancouver (Pacific)</option>
+              <option value="America/Edmonton">America/Edmonton (Mountain)</option>
+              <option value="America/Winnipeg">America/Winnipeg (Central)</option>
+              <option value="America/Halifax">America/Halifax (Atlantic)</option>
+              <option value="America/St_Johns">America/St_Johns (Newfoundland)</option>
+              <option value="America/New_York">America/New_York</option>
+              <option value="America/Chicago">America/Chicago</option>
+              <option value="America/Denver">America/Denver</option>
+              <option value="America/Los_Angeles">America/Los_Angeles</option>
+              <option value="UTC">UTC</option>
+            </select>
+          </div>
+          <div>
+            <label for="appointment-notify-method">Notify Me Via</label>
+            <select id="appointment-notify-method">
+              <option value="email">Email</option>
+              <option value="webhook">Webhook</option>
+              <option value="none">None</option>
+            </select>
+          </div>
+          <div id="appointment-email-wrap">
+            <label for="appointment-notify-email">Notification Email</label>
+            <input id="appointment-notify-email" type="email" placeholder="you@company.com" autocomplete="email">
+          </div>
+          <div id="appointment-webhook-wrap" class="hidden">
+            <label for="appointment-webhook-url">Webhook URL</label>
+            <input id="appointment-webhook-url" type="url" placeholder="https://example.com/webhook">
+          </div>
+          <div class="full">
+            <button id="save-appointment-settings-btn" type="submit">Save Appointment Settings</button>
+            <div class="status" id="appointment-settings-status"></div>
+          </div>
+        </form>
+
+        <div class="appointment-list" id="appointment-requests"></div>
+      </section>
+
       <section class="card cancel-service">
         <h2>Cancel Voicebot Service</h2>
         <p class="help-text">
@@ -619,6 +755,7 @@ Language: English only
 
   <script src="js/app-config.js"></script>
   <script src="js/client-dashboard-support.js"></script>
+  <script src="js/appointment-dashboard.js"></script>
   <script src="voicebot-dashboard.js"></script>
 </body>
 </html>

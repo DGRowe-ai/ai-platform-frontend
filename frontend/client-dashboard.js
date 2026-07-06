@@ -376,7 +376,8 @@ function renderAppointmentSettings(settings = {}) {
     els.appointmentNotifyMethod.value = settings.notification_method || "email";
   }
   if (els.appointmentNotifyEmail) {
-    els.appointmentNotifyEmail.value = settings.notification_email || "";
+    els.appointmentNotifyEmail.value =
+      settings.ownerNotificationEmail || settings.notification_email || "";
   }
   if (els.appointmentWebhookUrl) {
     els.appointmentWebhookUrl.value = settings.webhook_url || "";
@@ -394,7 +395,7 @@ function renderAppointmentRequests(payload) {
 
   if (!requests.length) {
     els.appointmentRequests.appendChild(
-      createEmpty("No appointment requests yet. Customers can request one through your chatbot."),
+      createEmpty("No appointment requests yet. Customers can request one through your chatbot or voicebot."),
     );
     return;
   }
@@ -493,6 +494,7 @@ async function saveAppointmentSettings(event) {
       body: JSON.stringify({
         timezone: els.appointmentTimezone.value,
         notification_method: els.appointmentNotifyMethod.value,
+        ownerNotificationEmail: els.appointmentNotifyEmail.value.trim(),
         notification_email: els.appointmentNotifyEmail.value.trim(),
         webhook_url: els.appointmentWebhookUrl.value.trim(),
       }),
