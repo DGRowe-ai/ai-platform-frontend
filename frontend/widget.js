@@ -26,10 +26,10 @@
     }
 
     const PROACTIVE_TEASER_TEXT = "Hi! I'm here if you need me.";
-    const PROACTIVE_TEASER_STORAGE_KEY = `rowe_chatbot_proactive_teaser_${businessId}`;
 
     let proactiveTeaserTimeout = null;
     let chatHasBeenOpened = false;
+    let teaserScheduled = false;
 
     const style = document.createElement("style");
     style.textContent = `
@@ -205,27 +205,22 @@
         }
 
         teaser.classList.remove("visible");
-        sessionStorage.setItem(PROACTIVE_TEASER_STORAGE_KEY, "1");
     }
 
     function showProactiveTeaser() {
-        if (sessionStorage.getItem(PROACTIVE_TEASER_STORAGE_KEY) === "1") {
-            return;
-        }
-
         if (chatHasBeenOpened) {
             return;
         }
 
         teaser.classList.add("visible");
-        sessionStorage.setItem(PROACTIVE_TEASER_STORAGE_KEY, "1");
     }
 
     function scheduleProactiveTeaser() {
-        if (sessionStorage.getItem(PROACTIVE_TEASER_STORAGE_KEY) === "1") {
+        if (teaserScheduled || chatHasBeenOpened) {
             return;
         }
 
+        teaserScheduled = true;
         const delayMs = 1000 + Math.floor(Math.random() * 2001);
         proactiveTeaserTimeout = setTimeout(() => {
             proactiveTeaserTimeout = null;
@@ -291,21 +286,25 @@
             console.warn("[Rowe AI Widget] Using default widget settings.", err);
         }
 
-        if (window.RoweWidgetSettings) {
-            const resolved = window.RoweWidgetSettings.mergeWidgetSettings(settings);
-            launcher.dataset.position = resolved.position || "bottom-right";
+        try {
+            if (window.RoweWidgetSettings) {
+                const resolved = window.RoweWidgetSettings.mergeWidgetSettings(settings);
+                launcher.dataset.position = resolved.position || "bottom-right";
 
-            window.RoweWidgetSettings.applyLauncherStyles({
-                launcher,
-                bubble,
-                iframe,
-                settings,
-                fallbackAvatarUrl,
-            });
+                window.RoweWidgetSettings.applyLauncherStyles({
+                    launcher,
+                    bubble,
+                    iframe,
+                    settings,
+                    fallbackAvatarUrl,
+                });
+            }
+        } catch (err) {
+            console.warn("[Rowe AI Widget] Failed to apply launcher styles.", err);
         }
-
-        scheduleProactiveTeaser();
     }
+
+    scheduleProactiveTeaser();
 
     const sharedScript = document.createElement("script");
     sharedScript.src = `${baseUrl}/js/widget-settings-shared.js`;
