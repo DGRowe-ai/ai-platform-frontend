@@ -61,6 +61,11 @@ window.addEventListener("DOMContentLoaded", async () => {
     let lokiFrameIndex = 0;
     let lokiInterval = null;
     let typingTimeout = null;
+    let proactiveGreetingTimeout = null;
+    let userHasSentMessage = false;
+
+    const PROACTIVE_GREETING = "Hey there! I'm here if you need me.";
+    const PROACTIVE_GREETING_STORAGE_KEY = `rowe_chatbot_proactive_greeting_${BUSINESS_ID}`;
 
     function setLokiState(newState) {
         if (!enableTypingAnimation) {
@@ -88,11 +93,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         }
     }
 
-    if (!enableTypingAnimation) {
-        setLokiState("idle");
-    } else {
-        setLokiState("idle");
-    }
+    setLokiState("idle");
 
     /* -----------------------------
        Chat UI Helpers
@@ -124,20 +125,45 @@ window.addEventListener("DOMContentLoaded", async () => {
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
     }
 
-    async function playWelcomeMessage() {
-        const welcomeMessage =
-            widgetSettings?.welcomeMessage ||
-            "Hi there! How can I help you today?";
-
-        if (enableTypingAnimation) {
-            setLokiState("talking");
+    function scheduleProactiveGreeting() {
+        if (sessionStorage.getItem(PROACTIVE_GREETING_STORAGE_KEY) === "1") {
+            return;
         }
 
-        addMessage(welcomeMessage, "bot");
+        const delayMs = 1000 + Math.floor(Math.random() * 2001);
 
-        if (enableTypingAnimation) {
-            setTimeout(() => setLokiState("idle"), 1500);
+        proactiveGreetingTimeout = setTimeout(() => {
+            proactiveGreetingTimeout = null;
+
+            if (userHasSentMessage) {
+                return;
+            }
+
+            if (sessionStorage.getItem(PROACTIVE_GREETING_STORAGE_KEY) === "1") {
+                return;
+            }
+
+            sessionStorage.setItem(PROACTIVE_GREETING_STORAGE_KEY, "1");
+
+            if (enableTypingAnimation) {
+                setLokiState("talking");
+            }
+
+            addMessage(PROACTIVE_GREETING, "bot");
+
+            if (enableTypingAnimation) {
+                setTimeout(() => setLokiState("idle"), 1500);
+            }
+        }, delayMs);
+    }
+
+    function cancelProactiveGreeting() {
+        if (proactiveGreetingTimeout) {
+            clearTimeout(proactiveGreetingTimeout);
+            proactiveGreetingTimeout = null;
         }
+
+        sessionStorage.setItem(PROACTIVE_GREETING_STORAGE_KEY, "1");
     }
 
     /* -----------------------------
@@ -147,6 +173,9 @@ window.addEventListener("DOMContentLoaded", async () => {
     async function sendMessage() {
         const text = userInput.value.trim();
         if (!text) return;
+
+        userHasSentMessage = true;
+        cancelProactiveGreeting();
 
         addMessage(text, "user");
         userInput.value = "";
@@ -213,7 +242,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         }
     });
 
-    playWelcomeMessage();
+    scheduleProactiveGreeting();
 });
 
 async function loadWidgetSettings(elements) {
