@@ -36,9 +36,22 @@
         #rowe-chat-launcher {
             position: fixed;
             z-index: 999999;
-            overflow: visible;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 14px;
+            width: max-content;
+            max-width: calc(100vw - 24px);
+        }
+        #rowe-chat-launcher[data-position="bottom-left"],
+        #rowe-chat-launcher[data-position="top-left"] {
+            align-items: flex-start;
+        }
+        #rowe-chat-launcher[data-position^="top"] {
+            flex-direction: column-reverse;
         }
         #chat-bubble {
+            flex-shrink: 0;
             position: relative;
             z-index: 1;
             cursor: pointer;
@@ -57,11 +70,13 @@
             display: block;
         }
         #rowe-chat-teaser {
-            position: absolute;
+            display: none;
+            position: relative;
             z-index: 2;
             box-sizing: border-box;
-            width: 230px;
-            max-width: calc(100vw - 32px);
+            width: max-content;
+            min-width: 220px;
+            max-width: min(280px, calc(100vw - 40px));
             padding: 10px 34px 10px 14px;
             border-radius: 14px;
             background: #ffffff;
@@ -72,48 +87,30 @@
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
             border: 1px solid rgba(0, 0, 0, 0.08);
             opacity: 0;
-            transform: translateY(8px);
+            transform: translateY(6px);
             pointer-events: none;
             transition: opacity 0.25s ease, transform 0.25s ease;
-            right: 0;
-            bottom: calc(100% + 18px);
         }
         #rowe-chat-teaser-text {
             display: block;
-        }
-        #rowe-chat-launcher[data-position="bottom-left"] #rowe-chat-teaser,
-        #rowe-chat-launcher[data-position="top-left"] #rowe-chat-teaser {
-            right: auto;
-            left: 0;
-        }
-        #rowe-chat-launcher[data-position^="top"] #rowe-chat-teaser {
-            bottom: auto;
-            top: calc(100% + 18px);
-            transform: translateY(-8px);
-        }
-        #rowe-chat-launcher[data-position^="top"] #rowe-chat-teaser.visible {
-            transform: translateY(0);
-        }
-        @media (max-width: 520px) {
-            #rowe-chat-teaser {
-                width: min(230px, calc(100vw - 32px));
-                right: 0;
-                bottom: calc(100% + 18px);
-            }
-            #rowe-chat-launcher[data-position="bottom-left"] #rowe-chat-teaser {
-                right: auto;
-                left: 0;
-            }
+            white-space: normal;
         }
         #rowe-chat-teaser.visible {
+            display: block;
             opacity: 1;
             transform: translateY(0);
             pointer-events: auto;
         }
+        #rowe-chat-launcher[data-position^="top"] #rowe-chat-teaser {
+            transform: translateY(-6px);
+        }
+        #rowe-chat-launcher[data-position^="top"] #rowe-chat-teaser.visible {
+            transform: translateY(0);
+        }
         #rowe-chat-teaser::after {
             content: "";
             position: absolute;
-            right: 20px;
+            right: 24px;
             bottom: -7px;
             width: 14px;
             height: 14px;
@@ -121,12 +118,11 @@
             border-right: 1px solid rgba(0, 0, 0, 0.08);
             border-bottom: 1px solid rgba(0, 0, 0, 0.08);
             transform: rotate(45deg);
-            z-index: -1;
         }
         #rowe-chat-launcher[data-position="bottom-left"] #rowe-chat-teaser::after,
         #rowe-chat-launcher[data-position="top-left"] #rowe-chat-teaser::after {
             right: auto;
-            left: 20px;
+            left: 24px;
         }
         #rowe-chat-launcher[data-position^="top"] #rowe-chat-teaser::after {
             bottom: auto;
