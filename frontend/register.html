@@ -367,6 +367,12 @@ By creating an account and activating this service, you acknowledge that you hav
 
     syncReferralField();
 
+    function billingUrlWithReferral() {
+      return RoweReferral.getStoredReferralCode()
+        ? RoweReferral.appendReferralToHref("billing.html")
+        : "billing.html";
+    }
+
     const statusBanner = document.createElement("p");
     statusBanner.className = "help-text";
     statusBanner.id = "billing-gate-status";
@@ -374,10 +380,7 @@ By creating an account and activating this service, you acknowledge that you hav
 
     async function enforceBillingGate() {
       if (!checkoutSessionId) {
-        const ref = RoweReferral.getStoredReferralCode();
-        window.location.href = ref
-          ? RoweReferral.appendReferralToHref("billing.html")
-          : "billing.html";
+        window.location.href = billingUrlWithReferral();
         return false;
       }
 
@@ -390,7 +393,7 @@ By creating an account and activating this service, you acknowledge that you hav
         const data = await response.json();
 
         if (!response.ok || !data.valid) {
-          window.location.href = "billing.html";
+          window.location.href = billingUrlWithReferral();
           return false;
         }
 
@@ -401,8 +404,7 @@ By creating an account and activating this service, you acknowledge that you hav
         statusBanner.textContent = "Billing verified. Complete your account details below.";
         return true;
       } catch (err) {
-        console.error("Billing verification failed:", err);
-        window.location.href = "billing.html";
+        window.location.href = billingUrlWithReferral();
         return false;
       }
     }
@@ -418,7 +420,7 @@ By creating an account and activating this service, you acknowledge that you hav
 
     document.getElementById("register-btn").onclick = async () => {
       if (!checkoutSessionId) {
-        window.location.href = "billing.html";
+        window.location.href = billingUrlWithReferral();
         return;
       }
 

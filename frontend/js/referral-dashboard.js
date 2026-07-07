@@ -30,8 +30,8 @@
       const data = await apiRequest("/client/referral-stats");
       const code = data.referralCode || "";
       const link =
-        (global.RoweReferral && global.RoweReferral.buildPublicReferralLink(code)) ||
         data.referralLink ||
+        (global.RoweReferral && global.RoweReferral.buildPublicReferralLink(code)) ||
         "";
 
       els.referralLink.value = link;
