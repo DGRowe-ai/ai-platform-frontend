@@ -36,8 +36,11 @@
         #rowe-chat-launcher {
             position: fixed;
             z-index: 999999;
+            overflow: visible;
         }
         #chat-bubble {
+            position: relative;
+            z-index: 1;
             cursor: pointer;
             width: 60px;
             height: 60px;
@@ -55,22 +58,52 @@
         }
         #rowe-chat-teaser {
             position: absolute;
-            bottom: calc(100% + 12px);
-            right: 0;
-            max-width: min(260px, calc(100vw - 48px));
+            z-index: 2;
+            box-sizing: border-box;
+            width: 230px;
+            max-width: calc(100vw - 32px);
             padding: 10px 34px 10px 14px;
             border-radius: 14px;
             background: #ffffff;
             color: #1f2937;
             font-family: Inter, Arial, sans-serif;
             font-size: 14px;
-            line-height: 1.4;
+            line-height: 1.45;
             box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
             border: 1px solid rgba(0, 0, 0, 0.08);
             opacity: 0;
             transform: translateY(8px);
             pointer-events: none;
             transition: opacity 0.25s ease, transform 0.25s ease;
+            right: 0;
+            bottom: calc(100% + 18px);
+        }
+        #rowe-chat-teaser-text {
+            display: block;
+        }
+        #rowe-chat-launcher[data-position="bottom-left"] #rowe-chat-teaser,
+        #rowe-chat-launcher[data-position="top-left"] #rowe-chat-teaser {
+            right: auto;
+            left: 0;
+        }
+        #rowe-chat-launcher[data-position^="top"] #rowe-chat-teaser {
+            bottom: auto;
+            top: calc(100% + 18px);
+            transform: translateY(-8px);
+        }
+        #rowe-chat-launcher[data-position^="top"] #rowe-chat-teaser.visible {
+            transform: translateY(0);
+        }
+        @media (max-width: 520px) {
+            #rowe-chat-teaser {
+                width: min(230px, calc(100vw - 32px));
+                right: 0;
+                bottom: calc(100% + 18px);
+            }
+            #rowe-chat-launcher[data-position="bottom-left"] #rowe-chat-teaser {
+                right: auto;
+                left: 0;
+            }
         }
         #rowe-chat-teaser.visible {
             opacity: 1;
@@ -80,14 +113,27 @@
         #rowe-chat-teaser::after {
             content: "";
             position: absolute;
-            right: 18px;
-            bottom: -8px;
+            right: 20px;
+            bottom: -7px;
             width: 14px;
             height: 14px;
             background: #ffffff;
             border-right: 1px solid rgba(0, 0, 0, 0.08);
             border-bottom: 1px solid rgba(0, 0, 0, 0.08);
             transform: rotate(45deg);
+            z-index: -1;
+        }
+        #rowe-chat-launcher[data-position="bottom-left"] #rowe-chat-teaser::after,
+        #rowe-chat-launcher[data-position="top-left"] #rowe-chat-teaser::after {
+            right: auto;
+            left: 20px;
+        }
+        #rowe-chat-launcher[data-position^="top"] #rowe-chat-teaser::after {
+            bottom: auto;
+            top: -7px;
+            border-right: 1px solid rgba(0, 0, 0, 0.08);
+            border-bottom: none;
+            border-top: 1px solid rgba(0, 0, 0, 0.08);
         }
         #rowe-chat-teaser-dismiss {
             position: absolute;
@@ -246,6 +292,9 @@
         }
 
         if (window.RoweWidgetSettings) {
+            const resolved = window.RoweWidgetSettings.mergeWidgetSettings(settings);
+            launcher.dataset.position = resolved.position || "bottom-right";
+
             window.RoweWidgetSettings.applyLauncherStyles({
                 launcher,
                 bubble,
