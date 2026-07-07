@@ -34,26 +34,18 @@
     const style = document.createElement("style");
     style.textContent = `
         #rowe-chat-launcher {
-            position: fixed;
-            z-index: 999999;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-end;
-            gap: 14px;
-            width: max-content;
-            max-width: calc(100vw - 24px);
-        }
-        #rowe-chat-launcher[data-position="bottom-left"],
-        #rowe-chat-launcher[data-position="top-left"] {
-            align-items: flex-start;
-        }
-        #rowe-chat-launcher[data-position^="top"] {
-            flex-direction: column-reverse;
+            position: fixed !important;
+            z-index: 999999 !important;
+            display: block !important;
+            width: auto !important;
+            height: auto !important;
+            margin: 0 !important;
+            padding: 0 !important;
         }
         #chat-bubble {
-            flex-shrink: 0;
-            position: relative;
-            z-index: 1;
+            position: relative !important;
+            display: block !important;
+            z-index: 999999 !important;
             cursor: pointer;
             width: 60px;
             height: 60px;
@@ -71,47 +63,46 @@
         }
         #rowe-chat-teaser {
             display: none;
-            position: relative;
-            z-index: 2;
-            box-sizing: border-box;
-            width: max-content;
-            min-width: 220px;
-            max-width: min(280px, calc(100vw - 40px));
-            padding: 10px 34px 10px 14px;
-            border-radius: 14px;
-            background: #ffffff;
-            color: #1f2937;
-            font-family: Inter, Arial, sans-serif;
-            font-size: 14px;
-            line-height: 1.45;
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
-            border: 1px solid rgba(0, 0, 0, 0.08);
+            position: fixed !important;
+            z-index: 1000000 !important;
+            box-sizing: border-box !important;
+            width: 260px !important;
+            max-width: calc(100vw - 24px) !important;
+            margin: 0 !important;
+            padding: 10px 34px 10px 14px !important;
+            border-radius: 14px !important;
+            background: #ffffff !important;
+            color: #1f2937 !important;
+            font-family: Inter, Arial, sans-serif !important;
+            font-size: 14px !important;
+            line-height: 1.45 !important;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18) !important;
+            border: 1px solid rgba(0, 0, 0, 0.08) !important;
             opacity: 0;
             transform: translateY(6px);
             pointer-events: none;
             transition: opacity 0.25s ease, transform 0.25s ease;
+            float: none !important;
         }
         #rowe-chat-teaser-text {
-            display: block;
-            white-space: normal;
+            display: block !important;
+            white-space: normal !important;
         }
         #rowe-chat-teaser.visible {
-            display: block;
+            display: block !important;
             opacity: 1;
             transform: translateY(0);
             pointer-events: auto;
         }
-        #rowe-chat-launcher[data-position^="top"] #rowe-chat-teaser {
+        #rowe-chat-teaser.teaser-below {
             transform: translateY(-6px);
         }
-        #rowe-chat-launcher[data-position^="top"] #rowe-chat-teaser.visible {
+        #rowe-chat-teaser.teaser-below.visible {
             transform: translateY(0);
         }
         #rowe-chat-teaser::after {
             content: "";
             position: absolute;
-            right: 24px;
-            bottom: -7px;
             width: 14px;
             height: 14px;
             background: #ffffff;
@@ -119,17 +110,39 @@
             border-bottom: 1px solid rgba(0, 0, 0, 0.08);
             transform: rotate(45deg);
         }
-        #rowe-chat-launcher[data-position="bottom-left"] #rowe-chat-teaser::after,
-        #rowe-chat-launcher[data-position="top-left"] #rowe-chat-teaser::after {
+        #rowe-chat-teaser.teaser-above::after {
+            right: 24px;
+            bottom: -7px;
+        }
+        #rowe-chat-teaser.teaser-above.teaser-align-left::after {
             right: auto;
             left: 24px;
         }
-        #rowe-chat-launcher[data-position^="top"] #rowe-chat-teaser::after {
-            bottom: auto;
+        #rowe-chat-teaser.teaser-below::after {
+            right: 24px;
             top: -7px;
             border-right: 1px solid rgba(0, 0, 0, 0.08);
             border-bottom: none;
             border-top: 1px solid rgba(0, 0, 0, 0.08);
+        }
+        #rowe-chat-teaser.teaser-below.teaser-align-left::after {
+            right: auto;
+            left: 24px;
+        }
+        #rowe-chat-teaser.teaser-beside::after {
+            right: -7px;
+            top: 50%;
+            margin-top: -7px;
+            border-right: 1px solid rgba(0, 0, 0, 0.08);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            border-top: none;
+            border-left: none;
+        }
+        #rowe-chat-teaser.teaser-beside.teaser-align-left::after {
+            right: auto;
+            left: -7px;
+            border-left: 1px solid rgba(0, 0, 0, 0.08);
+            border-right: none;
         }
         #rowe-chat-teaser-dismiss {
             position: absolute;
@@ -184,9 +197,100 @@
     bubble.setAttribute("aria-label", "Open chat");
     bubble.innerHTML = `<img src="${baseUrl}/images/loki/idle/idle.png" alt="Chat" width="60" height="60">`;
 
-    launcher.appendChild(teaser);
     launcher.appendChild(bubble);
     document.body.appendChild(launcher);
+    document.body.appendChild(teaser);
+
+    const TEASER_WIDTH = 260;
+    const TEASER_GAP = 14;
+    const VIEWPORT_PADDING = 12;
+
+    function getLauncherPosition() {
+        return launcher.dataset.position || "bottom-right";
+    }
+
+    function positionProactiveTeaser() {
+        const position = getLauncherPosition();
+        const rect = bubble.getBoundingClientRect();
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+        const alignLeft = position.endsWith("left");
+
+        teaser.classList.remove("teaser-above", "teaser-below", "teaser-beside", "teaser-align-left");
+        if (alignLeft) {
+            teaser.classList.add("teaser-align-left");
+        }
+
+        teaser.style.width = `${TEASER_WIDTH}px`;
+        teaser.style.maxWidth = `calc(100vw - ${VIEWPORT_PADDING * 2}px)`;
+        teaser.style.top = "auto";
+        teaser.style.right = "auto";
+        teaser.style.bottom = "auto";
+        teaser.style.left = "auto";
+
+        const spaceAbove = rect.top - VIEWPORT_PADDING;
+        const spaceLeft = rect.left - VIEWPORT_PADDING;
+        const spaceRight = viewportWidth - rect.right - VIEWPORT_PADDING;
+        const canFitAbove = spaceAbove >= 72;
+        const canFitBesideLeft = spaceLeft >= TEASER_WIDTH + TEASER_GAP;
+        const canFitBesideRight = spaceRight >= TEASER_WIDTH + TEASER_GAP;
+
+        if (position.startsWith("bottom") && canFitAbove) {
+            teaser.classList.add("teaser-above");
+            const left = Math.min(
+                Math.max(VIEWPORT_PADDING, rect.right - TEASER_WIDTH),
+                viewportWidth - TEASER_WIDTH - VIEWPORT_PADDING
+            );
+            teaser.style.left = `${left}px`;
+            teaser.style.bottom = `${viewportHeight - rect.top + TEASER_GAP}px`;
+            return;
+        }
+
+        if (position.startsWith("top")) {
+            teaser.classList.add("teaser-below");
+            const left = Math.min(
+                Math.max(VIEWPORT_PADDING, rect.right - TEASER_WIDTH),
+                viewportWidth - TEASER_WIDTH - VIEWPORT_PADDING
+            );
+            teaser.style.left = `${left}px`;
+            teaser.style.top = `${rect.bottom + TEASER_GAP}px`;
+            return;
+        }
+
+        if (!alignLeft && canFitBesideLeft) {
+            teaser.classList.add("teaser-beside");
+            teaser.style.left = `${rect.left - TEASER_WIDTH - TEASER_GAP}px`;
+            teaser.style.bottom = `${viewportHeight - rect.bottom}px`;
+            return;
+        }
+
+        if (alignLeft && canFitBesideRight) {
+            teaser.classList.add("teaser-beside", "teaser-align-left");
+            teaser.style.left = `${rect.right + TEASER_GAP}px`;
+            teaser.style.bottom = `${viewportHeight - rect.bottom}px`;
+            return;
+        }
+
+        teaser.classList.add("teaser-above");
+        const fallbackLeft = Math.min(
+            Math.max(VIEWPORT_PADDING, rect.right - TEASER_WIDTH),
+            viewportWidth - TEASER_WIDTH - VIEWPORT_PADDING
+        );
+        teaser.style.left = `${fallbackLeft}px`;
+        if (position.startsWith("top")) {
+            teaser.classList.remove("teaser-above");
+            teaser.classList.add("teaser-below");
+            teaser.style.top = `${rect.bottom + TEASER_GAP}px`;
+        } else {
+            teaser.style.bottom = `${viewportHeight - rect.top + TEASER_GAP}px`;
+        }
+    }
+
+    window.addEventListener("resize", () => {
+        if (teaser.classList.contains("visible")) {
+            positionProactiveTeaser();
+        }
+    });
 
     const iframe = document.createElement("iframe");
     iframe.id = "rowe-ai-chat-widget";
@@ -208,7 +312,9 @@
             return;
         }
 
+        positionProactiveTeaser();
         teaser.classList.add("visible");
+        requestAnimationFrame(positionProactiveTeaser);
     }
 
     function scheduleProactiveTeaser() {
@@ -294,6 +400,10 @@
                     settings,
                     fallbackAvatarUrl,
                 });
+
+                if (teaser.classList.contains("visible")) {
+                    positionProactiveTeaser();
+                }
             }
         } catch (err) {
             console.warn("[Rowe AI Widget] Failed to apply launcher styles.", err);
