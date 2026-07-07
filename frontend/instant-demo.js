@@ -16,6 +16,14 @@ function resolveApiUrl() {
 const API_URL = resolveApiUrl();
 const REGISTER_URL = "billing.html";
 
+function getRegisterUrl() {
+  if (window.RoweReferral) {
+    RoweReferral.captureReferralFromUrl();
+    return RoweReferral.appendReferralToHref(REGISTER_URL);
+  }
+  return REGISTER_URL;
+}
+
 console.info("[Instant Demo] API base URL:", API_URL);
 
 const state = {
@@ -39,7 +47,7 @@ const els = {
   registerLink: document.getElementById("register-link"),
 };
 
-els.registerLink.href = REGISTER_URL;
+els.registerLink.href = getRegisterUrl();
 
 function setStatus(message, type = "") {
   els.status.textContent = message || "";

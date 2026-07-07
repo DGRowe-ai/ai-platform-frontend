@@ -36,8 +36,11 @@
 </section>
 
 <script src="js/app-config.js"></script>
+<script src="js/referral-utils.js"></script>
 <script src="js/product-login.js"></script>
 <script>
+  RoweReferral.captureReferralFromUrl();
+  RoweReferral.applyReferralToLinks('a[href="billing.html"]');
   RoweProductLogin.init({
     product: "voicebot",
     dashboardUrl: "voicebot-dashboard.html",

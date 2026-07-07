@@ -886,28 +886,15 @@ async function sendTestChatMessage() {
 }
 
 async function loadReferralStats() {
-  if (!els.referralLink) {
+  if (!els.referralLink || !window.RoweReferralDashboard) {
     return;
   }
 
-  try {
-    const data = await apiRequest("/client/referral-stats");
-    els.referralLink.value = data.referralLink || "";
-    if (els.referralCount) {
-      els.referralCount.textContent = String(data.successfulReferrals ?? 0);
-    }
-    if (els.freeMonthsEarned) {
-      els.freeMonthsEarned.textContent = String(data.freeMonthsEarned ?? 0);
-    }
-    setStatus(els.referralStatus, "");
-  } catch (err) {
-    console.error("Referral stats unavailable:", err);
-    setStatus(
-      els.referralStatus,
-      err.message || "Referral rewards are unavailable right now.",
-      "error",
-    );
-  }
+  await window.RoweReferralDashboard.loadReferralStats({
+    apiRequest,
+    setStatus,
+    els,
+  });
 }
 
 async function loadSubscription() {
@@ -1144,7 +1131,10 @@ document.addEventListener("DOMContentLoaded", () => {
   els.copyEmbedBtn.addEventListener("click", () => copyToClipboard(els.embedCode.value, els.copyEmbedStatus));
   if (els.copyReferralBtn) {
     els.copyReferralBtn.addEventListener("click", () =>
-      copyToClipboard(els.referralLink.value, els.copyReferralStatus),
+      window.RoweReferralDashboard?.copyReferralLink(
+        els.referralLink.value,
+        els.copyReferralStatus,
+      ),
     );
   }
   els.settingsForm.addEventListener("submit", saveSettings);

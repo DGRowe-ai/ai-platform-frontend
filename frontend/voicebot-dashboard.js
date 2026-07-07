@@ -46,6 +46,12 @@ const els = {
   appointmentWebhookUrl: document.getElementById("appointment-webhook-url"),
   appointmentEmailWrap: document.getElementById("appointment-email-wrap"),
   appointmentWebhookWrap: document.getElementById("appointment-webhook-wrap"),
+  referralLink: document.getElementById("referral-link"),
+  copyReferralBtn: document.getElementById("copy-referral-btn"),
+  copyReferralStatus: document.getElementById("copy-referral-status"),
+  referralCount: document.getElementById("referral-count"),
+  freeMonthsEarned: document.getElementById("free-months-earned"),
+  referralStatus: document.getElementById("referral-status"),
 };
 
 let appointmentDashboard = null;
@@ -463,4 +469,12 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     setStatus(els.pageStatus, err.message || "Unable to load dashboard.", "error");
   });
+
+  if (window.RoweReferralDashboard) {
+    window.RoweReferralDashboard.initReferralDashboard({
+      apiRequest,
+      setStatus,
+      els,
+    });
+  }
 });

@@ -4,11 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Redirecting…</title>
+  <script src="js/referral-utils.js"></script>
   <script>
-    window.location.replace("billing.html");
+    RoweReferral.captureReferralFromUrl();
+    window.location.replace(RoweReferral.appendReferralToHref("billing.html"));
   </script>
 </head>
 <body>
-  <p>Redirecting to <a href="billing.html">Start your free trial</a>…</p>
+  <p>Redirecting to <a id="billing-link" href="billing.html">Start your free trial</a>…</p>
+  <script>
+    document.getElementById("billing-link").href = RoweReferral.appendReferralToHref("billing.html");
+  </script>
 </body>
 </html>

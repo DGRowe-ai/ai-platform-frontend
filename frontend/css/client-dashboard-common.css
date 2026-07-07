@@ -124,3 +124,41 @@
     left: 24px;
   }
 }
+
+.referrals-card .copy-row {
+  align-items: stretch;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.referrals-card .stats-grid {
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 16px;
+}
+
+.referrals-card .stat {
+  background: #f8fafc;
+  border: 1px solid var(--border, #d9e2ef);
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.referrals-card .stat .label {
+  color: var(--muted, #667085);
+  font-size: 13px;
+  margin-bottom: 8px;
+}
+
+.referrals-card .stat .value {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+@media (max-width: 768px) {
+  .referrals-card .copy-row {
+    grid-template-columns: 1fr;
+  }
+}

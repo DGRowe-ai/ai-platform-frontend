@@ -41,6 +41,12 @@
         <input id="business_phone" type="tel" placeholder="(555) 123-4567" autocomplete="tel" required>
       </div>
 
+      <div class="form-field">
+        <label for="referral_code">Referral Code (optional)</label>
+        <input id="referral_code" type="text" placeholder="Friend's referral code" autocomplete="off">
+        <p class="help-text" id="referral-code-help">If you signed up through a referral link, your code is already saved.</p>
+      </div>
+
       <button id="register-btn" type="button">Create Account</button>
 
       <p class="login-link">
@@ -328,15 +334,38 @@ By creating an account and activating this service, you acknowledge that you hav
   </footer>
 
   <script src="js/device-fingerprint.js"></script>
+  <script src="js/referral-utils.js"></script>
   <script>
     const API_URL = "https://ai-platform-backend-ulqs.onrender.com";
     const urlParams = new URLSearchParams(window.location.search);
     const checkoutSessionId = urlParams.get("session_id");
-    const referralFromUrl = urlParams.get("ref");
+    RoweReferral.captureReferralFromUrl(urlParams);
 
-    if (referralFromUrl) {
-      sessionStorage.setItem("rowe_referral_code", referralFromUrl.trim());
+    const referralInput = document.getElementById("referral_code");
+    const referralHelp = document.getElementById("referral-code-help");
+
+    function syncReferralField() {
+      const stored = RoweReferral.getStoredReferralCode(false);
+      if (referralInput && stored) {
+        referralInput.value = stored;
+        if (referralHelp) {
+          referralHelp.textContent = "Referral code applied from your signup link.";
+        }
+      }
     }
+
+    if (referralInput) {
+      referralInput.addEventListener("change", () => {
+        RoweReferral.setStoredReferralCode(referralInput.value);
+        syncReferralField();
+      });
+      referralInput.addEventListener("blur", () => {
+        RoweReferral.setStoredReferralCode(referralInput.value);
+        syncReferralField();
+      });
+    }
+
+    syncReferralField();
 
     const statusBanner = document.createElement("p");
     statusBanner.className = "help-text";
@@ -345,9 +374,9 @@ By creating an account and activating this service, you acknowledge that you hav
 
     async function enforceBillingGate() {
       if (!checkoutSessionId) {
-        const ref = sessionStorage.getItem("rowe_referral_code") || referralFromUrl;
+        const ref = RoweReferral.getStoredReferralCode();
         window.location.href = ref
-          ? `billing.html?ref=${encodeURIComponent(ref)}`
+          ? RoweReferral.appendReferralToHref("billing.html")
           : "billing.html";
         return false;
       }
@@ -397,7 +426,10 @@ By creating an account and activating this service, you acknowledge that you hav
       const password = document.getElementById("password").value;
       const business_name = document.getElementById("business_name").value.trim();
       const business_phone = document.getElementById("business_phone").value.trim();
-      const referral_code = sessionStorage.getItem("rowe_referral_code") || referralFromUrl;
+      const referral_code =
+        RoweReferral.getStoredReferralCode() ||
+        (referralInput?.value || "").trim() ||
+        null;
 
       if (!email || !password || !business_name || !business_phone) {
         alert("Please complete all required fields, including your business phone number.");
@@ -426,7 +458,7 @@ By creating an account and activating this service, you acknowledge that you hav
       });
 
       if (res.ok) {
-        sessionStorage.removeItem("rowe_referral_code");
+        RoweReferral.setStoredReferralCode("");
         alert("Account created! Now log in.");
         window.location.href = "login.html";
       } else {

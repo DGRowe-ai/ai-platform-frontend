@@ -216,6 +216,21 @@
         </div>
       </div>
 
+      <div class="voicebot-coupon-wrap" id="referral-code-wrap">
+        <div class="form-field">
+          <label for="referral-code-input">Referral Code (optional)</label>
+          <input
+            id="referral-code-input"
+            type="text"
+            placeholder="Enter a friend's referral code"
+            autocomplete="off"
+          />
+          <p class="coupon-note" id="referral-code-note">
+            Have a referral link? Your code is saved automatically when you use it.
+          </p>
+        </div>
+      </div>
+
       <div class="billing-status" id="billing-status"></div>
 
       <p class="security-note">
@@ -237,21 +252,44 @@
 
   <script src="js/device-fingerprint.js"></script>
   <script src="js/app-config.js"></script>
+  <script src="js/referral-utils.js"></script>
   <script>
     const API_URL = window.RoweAppConfig?.API_URL || "https://ai-platform-backend-ulqs.onrender.com";
     const urlParams = new URLSearchParams(window.location.search);
-    const referralFromUrl = urlParams.get("ref");
+    RoweReferral.captureReferralFromUrl(urlParams);
     let selectedPlan = urlParams.get("plan") || "chatbot";
-
-    if (referralFromUrl) {
-      sessionStorage.setItem("rowe_referral_code", referralFromUrl.trim());
-    }
 
     const statusEl = document.getElementById("billing-status");
     const deletedBanner = document.getElementById("account-deleted-banner");
     const planCards = document.querySelectorAll(".plan-card");
     const couponWrap = document.getElementById("voicebot-coupon-wrap");
     const couponInput = document.getElementById("voicebot-coupon-code");
+    const referralInput = document.getElementById("referral-code-input");
+    const referralNote = document.getElementById("referral-code-note");
+
+    function syncReferralInputFromStorage() {
+      const stored = RoweReferral.getStoredReferralCode(false);
+      if (referralInput && stored) {
+        referralInput.value = stored;
+        if (referralNote) {
+          referralNote.textContent = "Referral code applied. Your referrer will be credited after you become a paying customer.";
+        }
+      }
+    }
+
+    if (referralInput) {
+      referralInput.addEventListener("change", () => {
+        RoweReferral.setStoredReferralCode(referralInput.value);
+        syncReferralInputFromStorage();
+      });
+      referralInput.addEventListener("blur", () => {
+        RoweReferral.setStoredReferralCode(referralInput.value);
+        syncReferralInputFromStorage();
+      });
+    }
+
+    syncReferralInputFromStorage();
+    RoweReferral.applyReferralToLinks('a[href="login-chatbot.html"], a[href="login-voicebot.html"]');
 
     function setSelectedPlan(plan) {
       selectedPlan = plan;
@@ -290,7 +328,10 @@
         card.querySelector("button").disabled = true;
       });
 
-      const referralCode = sessionStorage.getItem("rowe_referral_code") || referralFromUrl;
+      const referralCode =
+        RoweReferral.getStoredReferralCode() ||
+        (referralInput?.value || "").trim() ||
+        null;
       const couponCode = planType === "voicebot"
         ? (couponInput?.value || "").trim()
         : "";
