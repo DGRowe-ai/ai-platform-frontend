@@ -61,11 +61,9 @@ window.addEventListener("DOMContentLoaded", async () => {
     let lokiFrameIndex = 0;
     let lokiInterval = null;
     let typingTimeout = null;
-    let proactiveGreetingTimeout = null;
-    let userHasSentMessage = false;
+    let welcomePlayed = false;
 
-    const PROACTIVE_GREETING = "Hey there! I'm here if you need me.";
-    const PROACTIVE_GREETING_STORAGE_KEY = `rowe_chatbot_proactive_greeting_${BUSINESS_ID}`;
+    const isEmbedded = urlParams.get("embed") === "1";
 
     function setLokiState(newState) {
         if (!enableTypingAnimation) {
@@ -125,45 +123,26 @@ window.addEventListener("DOMContentLoaded", async () => {
         messagesDiv.scrollTop = messagesDiv.scrollHeight;
     }
 
-    function scheduleProactiveGreeting() {
-        if (sessionStorage.getItem(PROACTIVE_GREETING_STORAGE_KEY) === "1") {
+    function playWelcomeMessage() {
+        if (welcomePlayed) {
             return;
         }
 
-        const delayMs = 1000 + Math.floor(Math.random() * 2001);
+        welcomePlayed = true;
 
-        proactiveGreetingTimeout = setTimeout(() => {
-            proactiveGreetingTimeout = null;
+        const welcomeMessage =
+            widgetSettings?.welcomeMessage ||
+            "Hi there! How can I help you today?";
 
-            if (userHasSentMessage) {
-                return;
-            }
-
-            if (sessionStorage.getItem(PROACTIVE_GREETING_STORAGE_KEY) === "1") {
-                return;
-            }
-
-            sessionStorage.setItem(PROACTIVE_GREETING_STORAGE_KEY, "1");
-
-            if (enableTypingAnimation) {
-                setLokiState("talking");
-            }
-
-            addMessage(PROACTIVE_GREETING, "bot");
-
-            if (enableTypingAnimation) {
-                setTimeout(() => setLokiState("idle"), 1500);
-            }
-        }, delayMs);
-    }
-
-    function cancelProactiveGreeting() {
-        if (proactiveGreetingTimeout) {
-            clearTimeout(proactiveGreetingTimeout);
-            proactiveGreetingTimeout = null;
+        if (enableTypingAnimation) {
+            setLokiState("talking");
         }
 
-        sessionStorage.setItem(PROACTIVE_GREETING_STORAGE_KEY, "1");
+        addMessage(welcomeMessage, "bot");
+
+        if (enableTypingAnimation) {
+            setTimeout(() => setLokiState("idle"), 1500);
+        }
     }
 
     /* -----------------------------
@@ -173,9 +152,6 @@ window.addEventListener("DOMContentLoaded", async () => {
     async function sendMessage() {
         const text = userInput.value.trim();
         if (!text) return;
-
-        userHasSentMessage = true;
-        cancelProactiveGreeting();
 
         addMessage(text, "user");
         userInput.value = "";
@@ -242,7 +218,20 @@ window.addEventListener("DOMContentLoaded", async () => {
         }
     });
 
-    scheduleProactiveGreeting();
+    if (isEmbedded) {
+        window.addEventListener("message", (event) => {
+            if (event.source !== window.parent) {
+                return;
+            }
+
+            const payload = event.data;
+            if (payload && payload.type === "rowe-widget-open") {
+                playWelcomeMessage();
+            }
+        });
+    } else {
+        playWelcomeMessage();
+    }
 });
 
 async function loadWidgetSettings(elements) {

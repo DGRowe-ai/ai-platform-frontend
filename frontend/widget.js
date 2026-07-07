@@ -25,11 +25,19 @@
         console.warn("[Rowe AI Widget] Using default frontend URL.", err);
     }
 
+    const PROACTIVE_TEASER_TEXT = "Hi! I'm here if you need me.";
+    const PROACTIVE_TEASER_STORAGE_KEY = `rowe_chatbot_proactive_teaser_${businessId}`;
+
+    let proactiveTeaserTimeout = null;
+    let chatHasBeenOpened = false;
+
     const style = document.createElement("style");
     style.textContent = `
-        #chat-bubble {
+        #rowe-chat-launcher {
             position: fixed;
             z-index: 999999;
+        }
+        #chat-bubble {
             cursor: pointer;
             width: 60px;
             height: 60px;
@@ -44,6 +52,61 @@
             height: 100%;
             object-fit: cover;
             display: block;
+        }
+        #rowe-chat-teaser {
+            position: absolute;
+            bottom: calc(100% + 12px);
+            right: 0;
+            max-width: min(260px, calc(100vw - 48px));
+            padding: 10px 34px 10px 14px;
+            border-radius: 14px;
+            background: #ffffff;
+            color: #1f2937;
+            font-family: Inter, Arial, sans-serif;
+            font-size: 14px;
+            line-height: 1.4;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            opacity: 0;
+            transform: translateY(8px);
+            pointer-events: none;
+            transition: opacity 0.25s ease, transform 0.25s ease;
+        }
+        #rowe-chat-teaser.visible {
+            opacity: 1;
+            transform: translateY(0);
+            pointer-events: auto;
+        }
+        #rowe-chat-teaser::after {
+            content: "";
+            position: absolute;
+            right: 18px;
+            bottom: -8px;
+            width: 14px;
+            height: 14px;
+            background: #ffffff;
+            border-right: 1px solid rgba(0, 0, 0, 0.08);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            transform: rotate(45deg);
+        }
+        #rowe-chat-teaser-dismiss {
+            position: absolute;
+            top: 6px;
+            right: 8px;
+            width: 22px;
+            height: 22px;
+            border: none;
+            border-radius: 50%;
+            background: transparent;
+            color: #6b7280;
+            font-size: 16px;
+            line-height: 1;
+            cursor: pointer;
+            padding: 0;
+        }
+        #rowe-chat-teaser-dismiss:hover {
+            color: #111827;
+            background: rgba(0, 0, 0, 0.05);
         }
         #rowe-ai-chat-widget {
             position: fixed;
@@ -60,12 +123,28 @@
     `;
     (document.head || document.documentElement).appendChild(style);
 
+    const launcher = document.createElement("div");
+    launcher.id = "rowe-chat-launcher";
+
+    const teaser = document.createElement("div");
+    teaser.id = "rowe-chat-teaser";
+    teaser.setAttribute("role", "status");
+    teaser.setAttribute("aria-live", "polite");
+    teaser.innerHTML = `
+        <span id="rowe-chat-teaser-text"></span>
+        <button type="button" id="rowe-chat-teaser-dismiss" aria-label="Dismiss">&times;</button>
+    `;
+    teaser.querySelector("#rowe-chat-teaser-text").textContent = PROACTIVE_TEASER_TEXT;
+
     const bubble = document.createElement("div");
     bubble.id = "chat-bubble";
     bubble.setAttribute("role", "button");
     bubble.setAttribute("aria-label", "Open chat");
     bubble.innerHTML = `<img src="${baseUrl}/images/loki/idle/idle.png" alt="Chat" width="60" height="60">`;
-    document.body.appendChild(bubble);
+
+    launcher.appendChild(teaser);
+    launcher.appendChild(bubble);
+    document.body.appendChild(launcher);
 
     const iframe = document.createElement("iframe");
     iframe.id = "rowe-ai-chat-widget";
@@ -73,9 +152,81 @@
     iframe.src = `${baseUrl}/widget-frame.html?business=${encodeURIComponent(businessId)}&embed=1`;
     document.body.appendChild(iframe);
 
+    function hideProactiveTeaser() {
+        if (proactiveTeaserTimeout) {
+            clearTimeout(proactiveTeaserTimeout);
+            proactiveTeaserTimeout = null;
+        }
+
+        teaser.classList.remove("visible");
+        sessionStorage.setItem(PROACTIVE_TEASER_STORAGE_KEY, "1");
+    }
+
+    function showProactiveTeaser() {
+        if (sessionStorage.getItem(PROACTIVE_TEASER_STORAGE_KEY) === "1") {
+            return;
+        }
+
+        if (chatHasBeenOpened) {
+            return;
+        }
+
+        teaser.classList.add("visible");
+        sessionStorage.setItem(PROACTIVE_TEASER_STORAGE_KEY, "1");
+    }
+
+    function scheduleProactiveTeaser() {
+        if (sessionStorage.getItem(PROACTIVE_TEASER_STORAGE_KEY) === "1") {
+            return;
+        }
+
+        const delayMs = 1000 + Math.floor(Math.random() * 2001);
+        proactiveTeaserTimeout = setTimeout(() => {
+            proactiveTeaserTimeout = null;
+            showProactiveTeaser();
+        }, delayMs);
+    }
+
+    function notifyIframeOpened() {
+        try {
+            iframe.contentWindow.postMessage({ type: "rowe-widget-open" }, baseUrl);
+        } catch (err) {
+            console.warn("[Rowe AI Widget] Could not notify chat frame.", err);
+        }
+    }
+
+    function openChat() {
+        iframe.style.display = "block";
+        chatHasBeenOpened = true;
+        hideProactiveTeaser();
+        notifyIframeOpened();
+    }
+
+    function closeChat() {
+        iframe.style.display = "none";
+    }
+
     bubble.addEventListener("click", () => {
         const isHidden = iframe.style.display === "none" || !iframe.style.display;
-        iframe.style.display = isHidden ? "block" : "none";
+        if (isHidden) {
+            openChat();
+        } else {
+            closeChat();
+        }
+    });
+
+    teaser.addEventListener("click", (event) => {
+        if (event.target.id === "rowe-chat-teaser-dismiss") {
+            hideProactiveTeaser();
+            return;
+        }
+
+        openChat();
+    });
+
+    teaser.querySelector("#rowe-chat-teaser-dismiss").addEventListener("click", (event) => {
+        event.stopPropagation();
+        hideProactiveTeaser();
     });
 
     async function loadWidgetSettings() {
@@ -96,12 +247,15 @@
 
         if (window.RoweWidgetSettings) {
             window.RoweWidgetSettings.applyLauncherStyles({
+                launcher,
                 bubble,
                 iframe,
                 settings,
                 fallbackAvatarUrl,
             });
         }
+
+        scheduleProactiveTeaser();
     }
 
     const sharedScript = document.createElement("script");

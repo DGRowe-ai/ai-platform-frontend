@@ -53,6 +53,7 @@
   }
 
   function applyLauncherStyles({
+    launcher,
     bubble,
     iframe,
     settings,
@@ -63,12 +64,16 @@
     const resolved = mergeWidgetSettings(settings);
     const launcherPosition = positionStyles(resolved.position);
     const size = bubbleSize(resolved.widgetShape);
+    const positionTarget = launcher || bubble;
 
-    Object.assign(bubble.style, {
+    Object.assign(positionTarget.style, {
       top: launcherPosition.top,
       right: launcherPosition.right,
       bottom: launcherPosition.bottom,
       left: launcherPosition.left,
+    });
+
+    Object.assign(bubble.style, {
       width: size,
       height: size,
       borderRadius: shapeRadius(resolved.widgetShape),
