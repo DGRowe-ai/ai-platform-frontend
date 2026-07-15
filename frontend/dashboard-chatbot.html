@@ -381,6 +381,18 @@
       font-weight: 700;
     }
 
+    .referrals-card .stats-grid,
+    #referral-stats-grid {
+      grid-template-columns: 1fr !important;
+    }
+
+    @media (min-width: 560px) {
+      .referrals-card .stats-grid,
+      #referral-stats-grid {
+        grid-template-columns: repeat(2, minmax(160px, 1fr)) !important;
+      }
+    }
+
     .toolbar {
       display: flex;
       justify-content: space-between;

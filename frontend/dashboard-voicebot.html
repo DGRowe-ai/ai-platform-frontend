@@ -375,6 +375,18 @@
     .stat .label { color: var(--muted); font-size: 13px; margin-bottom: 8px; }
     .stat .value { font-size: 26px; font-weight: 700; }
 
+    .referrals-card .stats-grid,
+    #referral-stats-grid {
+      grid-template-columns: 1fr !important;
+    }
+
+    @media (min-width: 560px) {
+      .referrals-card .stats-grid,
+      #referral-stats-grid {
+        grid-template-columns: repeat(2, minmax(160px, 1fr)) !important;
+      }
+    }
+
     label { display: block; font-weight: 700; margin: 14px 0 6px; }
 
     input, select, textarea {
