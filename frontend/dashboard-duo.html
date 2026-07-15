@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Duo Dashboard | Rowe AI</title>
+  <link rel="stylesheet" href="css/responsive-base.css">
+  <link rel="stylesheet" href="css/client-dashboard-common.css">
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --primary: #0f9488;
+      --primary-dark: #0f766e;
+      --border: #d9e2ef;
+      --text: #172033;
+      --muted: #667085;
+      --card: #ffffff;
+      --shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      overflow-x: hidden;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    header {
+      background:
+        radial-gradient(circle at top right, rgba(153, 246, 228, 0.28), transparent 34%),
+        linear-gradient(135deg, #0f766e 0%, #0f9488 48%, #115e59 100%);
+      box-shadow: 0 18px 45px rgba(15, 118, 110, 0.22);
+      color: #ffffff;
+      padding: 28px clamp(16px, 5vw, 56px);
+    }
+
+    .header-brand {
+      align-items: center;
+      display: flex;
+      gap: 28px;
+    }
+
+    .brand-logo-wrap {
+      align-items: center;
+      background: #ffffff;
+      border-radius: 14px;
+      display: flex;
+      flex-shrink: 0;
+      justify-content: center;
+      padding: 18px 36px;
+    }
+
+    .brand-logo {
+      display: block;
+      height: 120px;
+      max-width: min(100%, 420px);
+      object-fit: contain;
+      width: auto;
+    }
+
+    header h1 {
+      margin: 0 0 6px;
+      font-size: clamp(28px, 4vw, 40px);
+    }
+
+    header p {
+      margin: 0;
+      color: #d7fffa;
+      max-width: 560px;
+      line-height: 1.5;
+    }
+
+    .duo-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 18px;
+    }
+
+    .duo-toolbar .meta {
+      color: #d7fffa;
+      font-size: 14px;
+    }
+
+    .duo-toolbar button {
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      border-radius: 999px;
+      color: #fff;
+      min-height: 42px;
+      padding: 8px 16px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .guide-banner {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      margin: 24px clamp(16px, 5vw, 56px) 8px;
+      padding: 20px 24px;
+    }
+
+    .guide-banner h2 {
+      margin: 0 0 8px;
+      font-size: clamp(20px, 3vw, 26px);
+      color: var(--primary-dark);
+    }
+
+    .guide-banner p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.6;
+      max-width: 720px;
+    }
+
+    .product-section {
+      margin: 28px clamp(16px, 5vw, 56px) 40px;
+    }
+
+    .product-heading {
+      margin: 0 0 16px;
+      padding: 18px 22px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #0f766e 0%, #0f9488 100%);
+      color: #ffffff;
+      font-size: clamp(28px, 5vw, 42px);
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .product-heading.voicebot {
+      background: linear-gradient(135deg, #115e59 0%, #0f766e 55%, #0d9488 100%);
+      margin-top: 12px;
+    }
+
+    .product-note {
+      text-align: center;
+      color: var(--muted);
+      margin: -6px 0 18px;
+      font-size: 15px;
+    }
+
+    .embed-frame {
+      display: block;
+      width: 100%;
+      border: 0;
+      border-radius: 16px;
+      background: transparent;
+      overflow: hidden;
+      min-height: 400px;
+    }
+
+    .status {
+      margin-top: 10px;
+      min-height: 18px;
+      font-size: 14px;
+    }
+
+    .status.error { color: #fecaca; }
+    .status.success { color: #a7f3d0; }
+
+    @media (max-width: 900px) {
+      .header-brand {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .brand-logo {
+        height: 90px;
+      }
+
+      .brand-logo-wrap {
+        padding: 14px 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-brand">
+      <div class="brand-logo-wrap">
+        <img class="brand-logo" src="images/loki/Logo/rowe-ai-logo.png" alt="Rowe AI">
+      </div>
+      <div>
+        <h1>Duo Dashboard</h1>
+        <p>Manage your website chatbot and phone receptionist in one place.</p>
+      </div>
+    </div>
+    <div class="duo-toolbar">
+      <div class="meta" id="duo-meta">Loading subscription...</div>
+      <button type="button" id="logout-btn">Log out</button>
+    </div>
+    <div class="status" id="page-status"></div>
+  </header>
+
+  <section class="guide-banner" aria-label="How to use this dashboard">
+    <h2>How this dashboard works</h2>
+    <p>
+      Control your chatbot and voicebot knowledge by scrolling down this page.
+      The top section is your <strong>Chatbot</strong>. Keep scrolling for your <strong>Voicebot</strong>.
+      Each section is saved separately, so updates to one do not change the other.
+    </p>
+  </section>
+
+  <section class="product-section" id="chatbot-section" aria-labelledby="chatbot-heading">
+    <h2 class="product-heading" id="chatbot-heading">Chatbot</h2>
+    <p class="product-note">Website chat widget, knowledge base, and chatbot personality</p>
+    <iframe
+      class="embed-frame"
+      id="chatbot-frame"
+      title="Chatbot settings"
+      src="dashboard-chatbot.html?embed=1"
+      scrolling="no"
+    ></iframe>
+  </section>
+
+  <section class="product-section" id="voicebot-section" aria-labelledby="voicebot-heading">
+    <h2 class="product-heading voicebot" id="voicebot-heading">Voicebot</h2>
+    <p class="product-note">Phone receptionist, call setup, voice knowledge, and voice personality</p>
+    <iframe
+      class="embed-frame"
+      id="voicebot-frame"
+      title="Voicebot settings"
+      src="dashboard-voicebot.html?embed=1"
+      scrolling="no"
+    ></iframe>
+  </section>
+
+  <script src="js/app-config.js"></script>
+  <script>
+    const API_URL = window.RoweAppConfig?.API_URL || "https://ai-platform-backend-ulqs.onrender.com";
+    const statusEl = document.getElementById("page-status");
+    const metaEl = document.getElementById("duo-meta");
+    const chatbotFrame = document.getElementById("chatbot-frame");
+    const voicebotFrame = document.getElementById("voicebot-frame");
+
+    function getToken() {
+      return localStorage.getItem("token") || localStorage.getItem("access_token");
+    }
+
+    function setStatus(message, type) {
+      statusEl.textContent = message || "";
+      statusEl.className = "status" + (type ? ` ${type}` : "");
+    }
+
+    async function apiRequest(path) {
+      const response = await fetch(`${API_URL}${path}`, {
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(data.detail || "Request failed");
+      }
+      return data;
+    }
+
+    function resizeFrame(frame) {
+      try {
+        const doc = frame.contentDocument || frame.contentWindow?.document;
+        if (!doc || !doc.body) return;
+        const height = Math.max(
+          doc.body.scrollHeight,
+          doc.documentElement.scrollHeight,
+          doc.body.offsetHeight,
+          400,
+        );
+        frame.style.height = `${height + 24}px`;
+      } catch (err) {
+        // Same-origin embeds only; ignore cross-origin failures.
+      }
+    }
+
+    function watchFrame(frame) {
+      const resize = () => resizeFrame(frame);
+      frame.addEventListener("load", () => {
+        resize();
+        try {
+          const doc = frame.contentDocument;
+          if (!doc) return;
+
+          // Hide duplicate chrome inside embeds so this page is the only scroller/header.
+          const style = doc.createElement("style");
+          style.textContent = `
+            html, body { overflow: hidden !important; height: auto !important; }
+            header, .client-nav, .topbar button#logout-btn, #logout-btn { display: none !important; }
+            main { padding-top: 8px !important; }
+          `;
+          doc.head.appendChild(style);
+
+          const observer = new ResizeObserver(resize);
+          observer.observe(doc.body);
+          doc.querySelectorAll("img").forEach(img => img.addEventListener("load", resize));
+          // Re-measure after late-loading dashboard content.
+          [300, 800, 1600, 3200].forEach(ms => setTimeout(resize, ms));
+        } catch (err) {
+          // Ignore.
+        }
+      });
+    }
+
+    async function boot() {
+      if (!getToken()) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      try {
+        setStatus("Loading duo dashboard...");
+        const subscription = await apiRequest("/client/subscription");
+        const productType = subscription.product_type || subscription.plan_type;
+        localStorage.setItem("product_type", productType);
+        localStorage.setItem("plan_type", productType);
+        localStorage.setItem("tier", subscription.tier || "");
+
+        if (
+          productType !== "duo" &&
+          !subscription.complimentary &&
+          localStorage.getItem("is_platform_admin") !== "1"
+        ) {
+          window.location.href = subscription.dashboard_url || "dashboard-chatbot.html";
+          return;
+        }
+
+        const tierLabel = (subscription.tier || "duo").replaceAll("_", " ");
+        metaEl.textContent = `Plan: ${tierLabel}`;
+        setStatus("", "");
+      } catch (err) {
+        setStatus(err.message || "Unable to load duo dashboard.", "error");
+      }
+    }
+
+    document.getElementById("logout-btn").addEventListener("click", () => {
+      localStorage.clear();
+      window.location.href = "login.html";
+    });
+
+    watchFrame(chatbotFrame);
+    watchFrame(voicebotFrame);
+    window.addEventListener("resize", () => {
+      resizeFrame(chatbotFrame);
+      resizeFrame(voicebotFrame);
+    });
+
+    boot();
+  </script>
+</body>
+</html>

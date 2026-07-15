@@ -132,24 +132,33 @@
   grid-template-columns: minmax(0, 1fr) auto;
 }
 
-.referrals-card .stats-grid {
-  display: grid;
+.referrals-card .stats-grid,
+#referral-stats-grid {
+  display: grid !important;
   gap: 14px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr !important;
   margin-top: 16px;
+  width: 100%;
 }
 
 .referrals-card .stat {
   background: #f8fafc;
   border: 1px solid var(--border, #d9e2ef);
   border-radius: 14px;
+  min-width: 0;
+  overflow: visible;
   padding: 16px;
 }
 
 .referrals-card .stat .label {
   color: var(--muted, #667085);
   font-size: 13px;
+  line-height: 1.4;
   margin-bottom: 8px;
+  overflow: visible;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: normal;
 }
 
 .referrals-card .stat .value {
@@ -157,8 +166,20 @@
   font-weight: 700;
 }
 
+@media (min-width: 560px) {
+  .referrals-card .stats-grid,
+  #referral-stats-grid {
+    grid-template-columns: repeat(2, minmax(160px, 1fr)) !important;
+  }
+}
+
 @media (max-width: 768px) {
   .referrals-card .copy-row {
     grid-template-columns: 1fr;
+  }
+
+  .referrals-card .stats-grid,
+  #referral-stats-grid {
+    grid-template-columns: 1fr !important;
   }
 }

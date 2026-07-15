@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -9,7 +9,7 @@
   <style>
     .billing-main {
       margin: 0 auto;
-      max-width: 980px;
+      max-width: 1100px;
       padding: 40px 20px 56px;
     }
 
@@ -37,11 +37,21 @@
       max-width: 620px;
     }
 
+    .plan-section {
+      margin-top: 28px;
+      text-align: left;
+    }
+
+    .plan-section h2 {
+      font-size: 18px;
+      margin: 0 0 14px;
+      color: #0f766e;
+    }
+
     .plan-grid {
       display: grid;
       gap: 18px;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      margin-top: 24px;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       text-align: left;
     }
 
@@ -53,6 +63,7 @@
       flex-direction: column;
       gap: 12px;
       padding: 22px;
+      cursor: pointer;
     }
 
     .plan-card.selected {
@@ -60,14 +71,14 @@
       box-shadow: 0 0 0 1px var(--teal);
     }
 
-    .plan-card h2 {
+    .plan-card h3 {
       margin: 0;
-      font-size: 22px;
+      font-size: 20px;
     }
 
     .plan-price {
       color: var(--teal-dark);
-      font-size: 28px;
+      font-size: 26px;
       font-weight: 700;
       margin: 0;
     }
@@ -76,6 +87,7 @@
       color: #334155;
       margin: 0;
       padding-left: 18px;
+      flex: 1;
     }
 
     .plan-card button {
@@ -84,7 +96,7 @@
       border-radius: 12px;
       color: #ffffff;
       cursor: pointer;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: 700;
       margin-top: auto;
       min-height: 48px;
@@ -116,7 +128,7 @@
       border-radius: 12px;
       color: #047857;
       margin: 0 auto 20px;
-      max-width: 980px;
+      max-width: 1100px;
       padding: 14px 18px;
       text-align: center;
     }
@@ -125,25 +137,19 @@
 
     .login-link { margin-top: 24px; text-align: center; }
 
-    .voicebot-coupon-wrap {
+    .coupon-wrap {
       margin: 20px auto 0;
       max-width: 420px;
       text-align: left;
     }
 
-    .voicebot-coupon-wrap .form-field {
-      margin-bottom: 0;
-    }
+    .coupon-wrap .form-field { margin-bottom: 0; }
 
     .coupon-note {
       color: var(--muted);
       font-size: 13px;
       line-height: 1.5;
       margin: 8px 0 0;
-    }
-
-    @media (max-width: 900px) {
-      .plan-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -168,55 +174,108 @@
         then you will create your account and launch your dashboard.
       </p>
 
-      <div class="plan-grid">
-        <article class="plan-card selected" data-plan="chatbot">
-          <h2>Chatbot</h2>
-          <p class="plan-price">$25/mo</p>
-          <ul>
-            <li>Website chat widget</li>
-            <li>Knowledge base uploads</li>
-            <li>Client dashboard</li>
-          </ul>
-          <button type="button" data-plan="chatbot">Start Chatbot Trial</button>
-        </article>
-
-        <article class="plan-card" data-plan="voicebot">
-          <h2>Voicebot</h2>
-          <p class="plan-price">$50/mo</p>
-          <ul>
-            <li>AI phone receptionist</li>
-            <li>Call history dashboard</li>
-            <li>Voice settings &amp; knowledge</li>
-          </ul>
-          <button type="button" data-plan="voicebot">Start Voicebot Trial</button>
-        </article>
-
-        <article class="plan-card" data-plan="duo">
-          <h2>Duo</h2>
-          <p class="plan-price">$65/mo</p>
-          <ul>
-            <li>Chatbot + Voicebot</li>
-            <li>Both dashboards included</li>
-            <li>Best value bundle</li>
-          </ul>
-          <button type="button" data-plan="duo">Start Duo Trial</button>
-        </article>
-      </div>
-
-      <div class="voicebot-coupon-wrap hidden" id="voicebot-coupon-wrap">
-        <div class="form-field">
-          <label for="voicebot-coupon-code">Coupon Code (optional)</label>
-          <input
-            id="voicebot-coupon-code"
-            type="text"
-            placeholder="Enter coupon code"
-            autocomplete="off"
-          />
-          <p class="coupon-note">Voicebot coupons only. Invalid codes are ignored and full price is charged.</p>
+      <div class="plan-section">
+        <h2>Chatbot</h2>
+        <div class="plan-grid">
+          <article class="plan-card selected" data-plan="chatbot" data-coupon="0">
+            <h3>Chatbot</h3>
+            <p class="plan-price">$40/mo</p>
+            <ul>
+              <li>Website chat widget</li>
+              <li>Knowledge base uploads</li>
+              <li>Client dashboard</li>
+            </ul>
+            <button type="button" data-plan="chatbot">Start Chatbot Trial</button>
+          </article>
         </div>
       </div>
 
-      <div class="voicebot-coupon-wrap" id="referral-code-wrap">
+      <div class="plan-section">
+        <h2>Voicebot</h2>
+        <div class="plan-grid">
+          <article class="plan-card" data-plan="starter" data-coupon="1">
+            <h3>Starter</h3>
+            <p class="plan-price">$100/mo</p>
+            <ul>
+              <li>AI phone receptionist</li>
+              <li>Basic appointment requests</li>
+              <li>Default personality</li>
+            </ul>
+            <button type="button" data-plan="starter">Start Starter Trial</button>
+          </article>
+          <article class="plan-card" data-plan="pro" data-coupon="1">
+            <h3>Pro</h3>
+            <p class="plan-price">$150/mo</p>
+            <ul>
+              <li>Full conversational AI</li>
+              <li>Lead capture &amp; forwarding</li>
+              <li>Custom personality</li>
+            </ul>
+            <button type="button" data-plan="pro">Start Pro Trial</button>
+          </article>
+          <article class="plan-card" data-plan="premium" data-coupon="1">
+            <h3>Premium</h3>
+            <p class="plan-price">$200/mo</p>
+            <ul>
+              <li>Multi-location support</li>
+              <li>Custom workflows</li>
+              <li>Dedicated support</li>
+            </ul>
+            <button type="button" data-plan="premium">Start Premium Trial</button>
+          </article>
+        </div>
+      </div>
+
+      <div class="plan-section">
+        <h2>Duo (Chatbot + Voicebot)</h2>
+        <div class="plan-grid">
+          <article class="plan-card" data-plan="duo_starter" data-coupon="1">
+            <h3>Duo Starter</h3>
+            <p class="plan-price">$130/mo</p>
+            <ul>
+              <li>Chatbot + Voicebot Starter</li>
+              <li>Both dashboards in one place</li>
+            </ul>
+            <button type="button" data-plan="duo_starter">Start Duo Starter</button>
+          </article>
+          <article class="plan-card" data-plan="duo_pro" data-coupon="1">
+            <h3>Duo Pro</h3>
+            <p class="plan-price">$170/mo</p>
+            <ul>
+              <li>Chatbot + Voicebot Pro</li>
+              <li>Call forwarding &amp; lead capture</li>
+            </ul>
+            <button type="button" data-plan="duo_pro">Start Duo Pro</button>
+          </article>
+          <article class="plan-card" data-plan="duo_premium" data-coupon="1">
+            <h3>Duo Premium</h3>
+            <p class="plan-price">$220/mo</p>
+            <ul>
+              <li>Chatbot + Voicebot Premium</li>
+              <li>Multi-location voice routing</li>
+            </ul>
+            <button type="button" data-plan="duo_premium">Start Duo Premium</button>
+          </article>
+        </div>
+      </div>
+
+      <div class="coupon-wrap hidden" id="coupon-wrap">
+        <div class="form-field">
+          <label for="founders-coupon-code">Founders coupon (optional)</label>
+          <input
+            id="founders-coupon-code"
+            type="text"
+            placeholder="FOUNDERS10"
+            autocomplete="off"
+          />
+          <p class="coupon-note">
+            $10 off permanently on Voicebot and Duo tiers only. Does not apply to Chatbot.
+            Invalid codes are ignored and full price is charged.
+          </p>
+        </div>
+      </div>
+
+      <div class="coupon-wrap" id="referral-code-wrap">
         <div class="form-field">
           <label for="referral-code-input">Referral Code (optional)</label>
           <input
@@ -259,13 +318,18 @@
     const API_URL = window.RoweAppConfig?.API_URL || "https://ai-platform-backend-ulqs.onrender.com";
     const urlParams = new URLSearchParams(window.location.search);
     RoweReferral.captureReferralFromUrl(urlParams);
-    let selectedPlan = urlParams.get("plan") || "chatbot";
+    let selectedPlan = urlParams.get("plan") || urlParams.get("tier") || "chatbot";
+
+    const COUPON_ELIGIBLE = new Set([
+      "starter", "pro", "premium",
+      "duo_starter", "duo_pro", "duo_premium",
+    ]);
 
     const statusEl = document.getElementById("billing-status");
     const deletedBanner = document.getElementById("account-deleted-banner");
     const planCards = document.querySelectorAll(".plan-card");
-    const couponWrap = document.getElementById("voicebot-coupon-wrap");
-    const couponInput = document.getElementById("voicebot-coupon-code");
+    const couponWrap = document.getElementById("coupon-wrap");
+    const couponInput = document.getElementById("founders-coupon-code");
     const referralInput = document.getElementById("referral-code-input");
     const referralNote = document.getElementById("referral-code-note");
 
@@ -298,7 +362,7 @@
       planCards.forEach(card => {
         card.classList.toggle("selected", card.dataset.plan === plan);
       });
-      couponWrap?.classList.toggle("hidden", plan !== "voicebot");
+      couponWrap?.classList.toggle("hidden", !COUPON_ELIGIBLE.has(plan));
     }
 
     setSelectedPlan(selectedPlan);
@@ -334,7 +398,7 @@
         RoweReferral.getStoredReferralCode() ||
         (referralInput?.value || "").trim() ||
         null;
-      const couponCode = planType === "voicebot"
+      const couponCode = COUPON_ELIGIBLE.has(planType)
         ? (couponInput?.value || "").trim()
         : "";
 
@@ -344,6 +408,7 @@
           referral_code: referralCode || null,
           device_fingerprint: deviceFingerprint,
           plan_type: planType,
+          tier: planType,
         };
         if (couponCode) {
           payload.couponCode = couponCode;

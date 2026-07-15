@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Client Dashboard</title>
+  <link rel="stylesheet" href="css/responsive-base.css">
+  <link rel="stylesheet" href="css/client-dashboard-common.css">
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --text: #172033;
+      --muted: #667085;
+      --border: #d9e2ef;
+      --primary: #0f9488;
+      --primary-dark: #0f766e;
+      --teal-light: #99f6e4;
+      --danger: #dc2626;
+      --danger-bg: #fef2f2;
+      --success: #047857;
+      --shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      overflow-x: hidden;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    header {
+      background:
+        radial-gradient(circle at top right, rgba(153, 246, 228, 0.28), transparent 34%),
+        linear-gradient(135deg, #0f766e 0%, #0f9488 48%, #115e59 100%);
+      box-shadow: 0 18px 45px rgba(15, 118, 110, 0.22);
+      color: #ffffff;
+      padding: 32px clamp(16px, 5vw, 56px);
+    }
+
+    .header-brand {
+      align-items: center;
+      display: flex;
+      gap: 28px;
+    }
+
+    .brand-logo-wrap {
+      align-items: center;
+      background: #ffffff;
+      border-radius: 14px;
+      display: flex;
+      flex-shrink: 0;
+      justify-content: center;
+      padding: 22px 45px;
+    }
+
+    .brand-logo {
+      display: block;
+      height: 175px;
+      max-width: min(100%, 575px);
+      object-fit: contain;
+      width: auto;
+    }
+
+    header h1 {
+      margin: 0 0 6px;
+      font-size: clamp(28px, 4vw, 40px);
+    }
+
+    header p {
+      margin: 0;
+      color: #d7fffa;
+    }
+
+    .client-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .client-nav a {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      border-radius: 999px;
+      color: #ffffff;
+      display: inline-flex;
+      font-weight: 700;
+      min-height: 44px;
+      padding: 10px 16px;
+      text-decoration: none;
+    }
+
+    .client-nav a:hover,
+    .client-nav a.active {
+      background: rgba(255, 255, 255, 0.22);
+      color: #ffffff;
+    }
+
+    main {
+      width: min(1180px, calc(100% - 32px));
+      margin: 28px auto 48px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .topbar-actions {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .admin-panel-link {
+      background: #e2e8f0;
+      border-radius: 10px;
+      color: #172033;
+      display: none;
+      font-weight: 700;
+      padding: 10px 14px;
+      text-decoration: none;
+    }
+
+    .admin-panel-link:hover {
+      background: #cbd5e1;
+    }
+
+    .business-name {
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 22px;
+    }
+
+    .card h2 {
+      margin: 0 0 16px;
+      font-size: 21px;
+    }
+
+    .analytics {
+      grid-column: span 12;
+    }
+
+    .history {
+      grid-column: span 7;
+    }
+
+    .appointments {
+      grid-column: span 12;
+    }
+
+    .appointment-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .appointment-item {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+    }
+
+    .appointment-item header {
+      align-items: center;
+      background: transparent;
+      box-shadow: none;
+      color: inherit;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: space-between;
+      padding: 0 0 10px;
+    }
+
+    .appointment-item h3 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .appointment-meta {
+      color: var(--muted);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    .appointment-actions {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .appointment-actions select {
+      min-width: 140px;
+      width: auto;
+    }
+
+    .status-badge {
+      border-radius: 999px;
+      display: inline-flex;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 5px 10px;
+    }
+
+    .status-badge.pending { background: #fffbeb; color: #b45309; }
+    .status-badge.confirmed { background: #ecfdf5; color: #047857; }
+    .status-badge.rejected { background: #fef2f2; color: #dc2626; }
+    .status-badge.done { background: #eef2ff; color: #3730a3; }
+
+    .appointment-settings-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-bottom: 18px;
+    }
+
+    .appointment-settings-grid .full {
+      grid-column: span 2;
+    }
+
+    .settings {
+      grid-column: span 5;
+    }
+
+    .account {
+      grid-column: span 12;
+    }
+
+    .referrals {
+      grid-column: span 12;
+    }
+
+    .google-review {
+      grid-column: span 12;
+    }
+
+    .google-review-content {
+      align-items: center;
+      display: grid;
+      gap: 20px;
+      grid-template-columns: minmax(0, 1fr) 220px;
+    }
+
+    .google-review-copy p {
+      margin: 0 0 12px;
+      line-height: 1.55;
+    }
+
+    .google-review-link {
+      color: var(--primary);
+      font-weight: 700;
+      word-break: break-all;
+    }
+
+    .google-review-qr {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      text-align: center;
+    }
+
+    .google-review-qr img {
+      display: block;
+      height: auto;
+      margin: 0 auto;
+      max-width: 180px;
+      width: 100%;
+    }
+
+    .google-review-qr p {
+      color: var(--muted);
+      font-size: 13px;
+      margin: 10px 0 0;
+    }
+
+    .billing {
+      grid-column: span 12;
+    }
+
+    .billing-actions {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .billing.hidden {
+      display: none;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .knowledge {
+      grid-column: span 12;
+    }
+
+    .test-chat {
+      grid-column: span 12;
+    }
+
+    .install {
+      grid-column: span 12;
+    }
+
+    .install-grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .copy-row {
+      align-items: stretch;
+      display: grid;
+      gap: 10px;
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    .embed-code {
+      font-family: "Courier New", monospace;
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .stat {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      background: #f8fafc;
+    }
+
+    .stat .label {
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    .stat .value {
+      font-size: 26px;
+      font-weight: 700;
+    }
+
+    .referrals-card .stats-grid,
+    #referral-stats-grid {
+      grid-template-columns: 1fr !important;
+    }
+
+    @media (min-width: 560px) {
+      .referrals-card .stats-grid,
+      #referral-stats-grid {
+        grid-template-columns: repeat(2, minmax(160px, 1fr)) !important;
+      }
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .chat-list {
+      display: grid;
+      gap: 12px;
+      max-height: 620px;
+      overflow: auto;
+      padding-right: 4px;
+    }
+
+    .chat-item {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      background: #ffffff;
+    }
+
+    .chat-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 14px;
+      color: var(--muted);
+      font-size: 13px;
+      margin-bottom: 10px;
+    }
+
+    .chat-row {
+      margin: 8px 0;
+      line-height: 1.45;
+    }
+
+    .chat-row strong {
+      display: inline-block;
+      min-width: 74px;
+    }
+
+    .chat-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    label {
+      display: block;
+      font-weight: 700;
+      margin: 14px 0 6px;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 11px 12px;
+      font: inherit;
+      color: var(--text);
+      background: #ffffff;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 96px;
+    }
+
+    .help-text {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 6px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 14px;
+      min-height: 44px;
+      font-weight: 700;
+      cursor: pointer;
+      background: var(--primary);
+      color: #ffffff;
+    }
+
+    .download-guide-link {
+      background: var(--primary);
+      border-radius: 10px;
+      color: #ffffff;
+      display: inline-block;
+      font-weight: 700;
+      padding: 10px 14px;
+      text-decoration: none;
+    }
+
+    .button-link.secondary {
+      background: #e2e8f0;
+      border-radius: 10px;
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      font-weight: 700;
+      min-height: 44px;
+      padding: 10px 14px;
+      text-decoration: none;
+    }
+
+    .button-link.secondary:hover {
+      background: #cbd5e1;
+    }
+
+    button:hover,
+    .download-guide-link:hover {
+      background: var(--primary-dark);
+    }
+
+    button.secondary {
+      background: #e2e8f0;
+      color: #172033;
+    }
+
+    button.secondary:hover {
+      background: #cbd5e1;
+    }
+
+    button.danger {
+      background: var(--danger-bg);
+      color: var(--danger);
+      border: 1px solid #fecaca;
+    }
+
+    button.danger:hover {
+      background: #fee2e2;
+    }
+
+    .status {
+      min-height: 20px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .status.success {
+      color: var(--success);
+    }
+
+    .status.error {
+      color: var(--danger);
+    }
+
+    .modal-backdrop {
+      align-items: center;
+      background: rgba(15, 23, 42, 0.55);
+      display: none;
+      inset: 0;
+      justify-content: center;
+      padding: 20px;
+      position: fixed;
+      z-index: 1000;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      max-width: 480px;
+      padding: 24px;
+      width: 100%;
+    }
+
+    .modal h2 {
+      margin: 0 0 12px;
+    }
+
+    .modal p {
+      color: var(--muted);
+      line-height: 1.55;
+      margin: 0 0 20px;
+    }
+
+    .modal-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .toast-banner {
+      background: #ecfdf5;
+      border: 1px solid #99f6e4;
+      border-radius: 12px;
+      color: var(--success);
+      margin: 0 auto 20px;
+      max-width: 900px;
+      padding: 14px 18px;
+      text-align: center;
+    }
+
+    .account-management {
+      border-color: #fecaca;
+    }
+
+    .empty {
+      color: var(--muted);
+      border: 1px dashed var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      text-align: center;
+    }
+
+    .kb-upload-row {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .kb-upload-row input[type="file"] {
+      flex: 1 1 260px;
+      padding: 8px;
+    }
+
+    .kb-spinner {
+      color: var(--muted);
+      display: none;
+      font-size: 14px;
+    }
+
+    .kb-spinner.visible {
+      display: block;
+    }
+
+    .kb-file-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .kb-file-item {
+      align-items: center;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: flex;
+      gap: 12px;
+      justify-content: space-between;
+      padding: 12px 14px;
+    }
+
+    .kb-file-meta {
+      min-width: 0;
+    }
+
+    .kb-file-name {
+      font-weight: 700;
+      word-break: break-word;
+    }
+
+    .kb-file-details {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    #chatbot-test-container {
+      display: grid;
+      gap: 12px;
+    }
+
+    #chatbot-messages {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      display: grid;
+      gap: 10px;
+      height: 300px;
+      overflow-y: auto;
+      padding: 12px;
+    }
+
+    .chatbot-message {
+      border-radius: 12px;
+      line-height: 1.45;
+      max-width: 85%;
+      padding: 10px 12px;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .chatbot-message.user {
+      background: #ccfbf1;
+      justify-self: end;
+    }
+
+    .chatbot-message.bot {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      justify-self: start;
+    }
+
+    .chatbot-message.loading {
+      background: #eef2ff;
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    .chatbot-input-row {
+      align-items: center;
+      display: grid;
+      gap: 10px;
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+
+    @media (max-width: 900px) {
+      .history,
+      .settings {
+        grid-column: span 12;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 768px) {
+      main {
+        margin: 20px auto 32px;
+        width: calc(100% - 16px);
+      }
+
+      header {
+        padding: 24px 16px;
+      }
+
+      .card {
+        padding: 18px;
+      }
+
+      .toolbar {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .google-review-content {
+        grid-template-columns: 1fr;
+      }
+
+      .topbar-actions {
+        width: 100%;
+      }
+
+      .topbar-actions .secondary,
+      .topbar-actions .admin-panel-link {
+        flex: 1 1 auto;
+        text-align: center;
+      }
+
+      .kb-file-item {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .chatbot-message {
+        max-width: 95%;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .topbar,
+      .toolbar {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .header-brand {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 16px;
+      }
+
+      .brand-logo-wrap {
+        padding: 18px 30px;
+        width: 100%;
+      }
+
+      .brand-logo {
+        height: 130px;
+      }
+
+      .copy-row,
+      .chatbot-input-row {
+        grid-template-columns: 1fr;
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .chat-list {
+        max-height: none;
+      }
+
+      #chatbot-messages {
+        height: min(50vh, 320px);
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-brand">
+      <div class="brand-logo-wrap">
+        <img class="brand-logo" src="images/loki/Logo/rowe-ai-logo.png" alt="Rowe AI">
+      </div>
+      <div>
+        <h1>Client Dashboard</h1>
+        <p>Review chatbot performance, manage conversations, and tune the customer chat experience.</p>
+      </div>
+    </div>
+    <nav class="client-nav" aria-label="Client dashboard sections">
+      <a class="active" href="dashboard-chatbot.html">Dashboard</a>
+      <a href="payment-history.html">Payment History</a>
+      <a href="widget-customization.html">Widget Customization</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="topbar">
+      <div>
+        <div class="business-name" id="business-name">Loading business...</div>
+        <div class="status" id="page-status"></div>
+      </div>
+      <div class="topbar-actions">
+        <a class="admin-panel-link" id="admin-panel-btn" href="admin/businesses.html">Admin Panel</a>
+        <button class="secondary" id="logout-btn" type="button">Log out</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <section class="card analytics">
+        <div class="toolbar">
+          <h2>Analytics</h2>
+          <button class="secondary" id="refresh-btn" type="button">Refresh</button>
+        </div>
+        <div class="stats-grid" id="analytics-cards"></div>
+      </section>
+
+      <section class="card install">
+        <div class="toolbar">
+          <div>
+            <h2>Website Install</h2>
+            <p class="help-text">Add the chat widget to your site, or share a direct link to the full-page chat.</p>
+          </div>
+          <a class="download-guide-link" href="static/docs/chatbot_installation_guide.pdf" download>Download Installation Guide (PDF)</a>
+        </div>
+
+        <div class="install-grid">
+          <div>
+            <label for="chatbot-url">Direct Chat Link</label>
+            <p class="help-text">Full-page chat URL (optional — for sharing or testing without embedding).</p>
+            <div class="copy-row">
+              <input id="chatbot-url" type="text" readonly value="Loading chat link...">
+              <button id="copy-url-btn" type="button">Copy Link</button>
+            </div>
+            <div class="status" id="copy-url-status"></div>
+          </div>
+
+          <div>
+            <label for="embed-code">Embed Code</label>
+            <p class="help-text">Paste this snippet before <code>&lt;/body&gt;</code> on any page (e.g. roweai.ca). Works on external domains.</p>
+            <div class="copy-row">
+              <textarea class="embed-code" id="embed-code" readonly spellcheck="false">Loading embed code...</textarea>
+              <button class="secondary" id="copy-embed-btn" type="button">Copy Embed Code</button>
+            </div>
+            <div class="status" id="copy-embed-status"></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="card history">
+        <div class="toolbar">
+          <h2>Chat History</h2>
+          <span class="status" id="history-status"></span>
+        </div>
+        <div class="chat-list" id="chat-history"></div>
+      </section>
+
+      <section class="card appointments">
+        <div class="toolbar">
+          <div>
+            <h2>Appointment Requests</h2>
+            <p class="help-text">Requests from your chatbot or voicebot appear here. Update each status as you confirm or complete them.</p>
+          </div>
+          <span class="status" id="appointments-status"></span>
+        </div>
+
+        <form id="appointment-settings-form" class="appointment-settings-grid">
+          <div>
+            <label for="appointment-timezone">Business Timezone</label>
+            <select id="appointment-timezone">
+              <option value="America/Toronto">America/Toronto (Eastern)</option>
+              <option value="America/Vancouver">America/Vancouver (Pacific)</option>
+              <option value="America/Edmonton">America/Edmonton (Mountain)</option>
+              <option value="America/Winnipeg">America/Winnipeg (Central)</option>
+              <option value="America/Halifax">America/Halifax (Atlantic)</option>
+              <option value="America/St_Johns">America/St_Johns (Newfoundland)</option>
+              <option value="America/New_York">America/New_York</option>
+              <option value="America/Chicago">America/Chicago</option>
+              <option value="America/Denver">America/Denver</option>
+              <option value="America/Los_Angeles">America/Los_Angeles</option>
+              <option value="UTC">UTC</option>
+            </select>
+          </div>
+          <div>
+            <label for="appointment-notify-method">Notify Me Via</label>
+            <select id="appointment-notify-method">
+              <option value="email">Email</option>
+              <option value="webhook">Webhook</option>
+              <option value="none">None</option>
+            </select>
+          </div>
+          <div id="appointment-email-wrap">
+            <label for="appointment-notify-email">Notification Email</label>
+            <input id="appointment-notify-email" type="email" placeholder="you@company.com">
+          </div>
+          <div id="appointment-webhook-wrap" class="hidden">
+            <label for="appointment-webhook-url">Webhook URL</label>
+            <input id="appointment-webhook-url" type="url" placeholder="https://example.com/webhook">
+          </div>
+          <div class="full">
+            <button id="save-appointment-settings-btn" type="submit">Save Appointment Settings</button>
+            <div class="status" id="appointment-settings-status"></div>
+          </div>
+        </form>
+
+        <div class="appointment-list" id="appointment-requests"></div>
+      </section>
+
+      <section class="card billing">
+        <h2>Billing &amp; Subscription</h2>
+        <p class="help-text">Update your payment method, view invoices, or cancel your subscription in Stripe.</p>
+        <div class="billing-actions">
+          <button id="manage-subscription-btn" type="button">Manage Subscription</button>
+        </div>
+        <div class="status" id="billing-status"></div>
+      </section>
+
+      <section class="card referrals referrals-card">
+        <h2>Referral Rewards</h2>
+        <p class="help-text">
+          Share Rowe AI with another business. When they become a paying customer,
+          you earn <strong>1 free month</strong> added to your subscription.
+        </p>
+        <label for="referral-link">Your referral link</label>
+        <div class="copy-row">
+          <input id="referral-link" type="text" readonly value="Loading referral link...">
+          <button id="copy-referral-btn" type="button">Copy Link</button>
+        </div>
+        <div class="status" id="copy-referral-status"></div>
+        <div class="stats-grid" id="referral-stats-grid">
+          <div class="stat">
+            <div class="label">Successful referrals</div>
+            <div class="value" id="referral-count">0</div>
+          </div>
+          <div class="stat">
+            <div class="label">Free months earned</div>
+            <div class="value" id="free-months-earned">0</div>
+          </div>
+        </div>
+        <div class="status" id="referral-status"></div>
+      </section>
+
+      <section class="card google-review">
+        <h2>We'd Love To Hear Your Review</h2>
+        <div class="google-review-content">
+          <div class="google-review-copy">
+            <p>If you're enjoying Rowe AI, we'd really appreciate a Google review. Your feedback helps us improve and helps other businesses discover our chatbot platform.</p>
+            <p><strong>Please leave us a Google review using the QR code, or use this link:</strong></p>
+            <p>
+              <a class="google-review-link" href="https://share.google/HIvgRJCoeZ1NLXap0" target="_blank" rel="noopener noreferrer">
+                https://share.google/HIvgRJCoeZ1NLXap0
+              </a>
+            </p>
+          </div>
+          <div class="google-review-qr">
+            <img src="images/loki/qr-code/qr-code-google-review.png" alt="Google review QR code">
+            <p>Scan to leave a Google review</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="card account">
+        <h2>Account Security</h2>
+        <p class="help-text">Update your password after signing in with a temporary starter password.</p>
+        <form id="password-form">
+          <label for="current-password">Current Password</label>
+          <input id="current-password" name="current_password" type="password" autocomplete="current-password" required>
+
+          <label for="new-password">New Password</label>
+          <input id="new-password" name="new_password" type="password" autocomplete="new-password" minlength="8" required>
+
+          <label for="confirm-password">Confirm New Password</label>
+          <input id="confirm-password" name="confirm_password" type="password" autocomplete="new-password" minlength="8" required>
+
+          <button id="change-password-btn" type="submit">Change Password</button>
+          <div class="status" id="password-status"></div>
+        </form>
+      </section>
+
+      <section class="card settings">
+        <div class="toolbar">
+          <div>
+            <h2>Chatbot Settings</h2>
+            <p class="help-text">Tune chatbot behavior, or customize widget colors and layout.</p>
+          </div>
+          <a class="button-link secondary" href="widget-customization.html">Widget Customization</a>
+        </div>
+        <form id="settings-form">
+          <label for="welcome-message">Welcome Message</label>
+          <textarea id="welcome-message" name="welcome_message" placeholder="Hello! How can I help you today?"></textarea>
+
+          <label for="tone">Tone</label>
+          <select id="tone" name="tone">
+            <option value="">Select a tone</option>
+            <option value="friendly">Friendly</option>
+            <option value="professional">Professional</option>
+            <option value="casual">Casual</option>
+            <option value="concise">Concise</option>
+            <option value="enthusiastic">Enthusiastic</option>
+          </select>
+
+          <label for="chat-length">Chat Length</label>
+          <input id="chat-length" name="chat_length" type="number" min="50" step="25" placeholder="250">
+          <div class="help-text">Maximum response length or token budget, depending on backend configuration.</div>
+
+          <label for="custom-instructions">Custom Instructions</label>
+          <textarea id="custom-instructions" name="custom_instructions" placeholder="Tell the chatbot how to answer, what to avoid, and when to escalate."></textarea>
+
+          <label for="faqs">FAQs</label>
+          <textarea id="faqs" name="faqs" placeholder="Question? | Answer&#10;Another question? | Another answer"></textarea>
+          <div class="help-text">Use one FAQ per line. Separate question and answer with a pipe character.</div>
+
+          <button id="save-settings-btn" type="submit">Save Settings</button>
+          <div class="status" id="settings-status"></div>
+        </form>
+      </section>
+
+      <section class="card knowledge">
+        <h2>Knowledge Base</h2>
+        <p class="help-text">Upload business documents so your chatbot can answer questions using your files.</p>
+
+        <div class="kb-upload-row">
+          <input
+            type="file"
+            id="kb-file"
+            accept=".pdf,.txt,.doc,.docx,.csv,.md,.json"
+          >
+          <button id="kb-upload-btn" type="button">Upload File</button>
+        </div>
+
+        <div class="kb-spinner" id="kb-spinner">Uploading and indexing file...</div>
+        <div class="status" id="kb-status"></div>
+        <div class="kb-file-list" id="kb-file-list"></div>
+      </section>
+
+      <section class="card test-chat">
+        <h2>Test Your Chatbot</h2>
+        <p class="help-text">Try questions here to preview how your chatbot responds using your settings and uploaded knowledge.</p>
+
+        <div id="chatbot-test-container">
+          <div id="chatbot-messages"></div>
+          <div class="chatbot-input-row">
+            <input id="chatbot-input" type="text" placeholder="Ask your chatbot something..." maxlength="2000">
+            <button id="chatbot-send-btn" type="button">Send</button>
+          </div>
+          <div class="status" id="chatbot-test-status"></div>
+        </div>
+      </section>
+
+      <section class="card account-management">
+        <h2>Account Management</h2>
+        <p class="help-text">
+          Permanently delete your Rowe AI account, cancel your subscription, and remove all chatbot data.
+          This action cannot be undone.
+        </p>
+        <button class="danger" id="delete-account-btn" type="button">
+          Delete Account &amp; Cancel Subscription
+        </button>
+        <div class="status" id="delete-account-status"></div>
+      </section>
+    </div>
+  </main>
+
+  <div class="modal-backdrop" id="delete-account-modal" role="dialog" aria-modal="true" aria-labelledby="delete-modal-title">
+    <div class="modal">
+      <h2 id="delete-modal-title">Are you sure you want to delete your account?</h2>
+      <p>We're sorry to see you go. Rest assured, all of your data will be deleted.</p>
+      <div class="modal-actions">
+        <button class="secondary" id="delete-account-cancel-btn" type="button">Cancel</button>
+        <button class="danger" id="delete-account-confirm-btn" type="button">Yes, Delete My Account</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/app-config.js"></script>
+  <script>
+    if (new URLSearchParams(location.search).get("embed") === "1") {
+      document.documentElement.classList.add("embed-mode");
+      const style = document.createElement("style");
+      style.textContent = "html.embed-mode,html.embed-mode body{overflow:hidden!important;height:auto!important;background:#f4f7fb;} html.embed-mode header,html.embed-mode .client-nav,html.embed-mode #logout-btn{display:none!important;} html.embed-mode main{padding-top:8px!important;}";
+      document.head.appendChild(style);
+    }
+  </script>
+  <script src="js/referral-utils.js"></script>
+  <script src="js/referral-dashboard.js"></script>
+  <script src="js/client-dashboard-support.js"></script>
+  <script src="dashboard-chatbot.js"></script>
+</body>
+</html>

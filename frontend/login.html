@@ -4,10 +4,48 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Login | Rowe AI</title>
-  <meta http-equiv="refresh" content="0; url=login-chatbot.html">
-  <script>window.location.replace("login-chatbot.html");</script>
+  <link rel="stylesheet" href="css/responsive-base.css">
+  <link rel="stylesheet" href="css/auth-pages.css">
 </head>
-<body>
-  <p>Redirecting to <a href="login-chatbot.html">chatbot login</a>...</p>
+<body class="auth-page">
+
+<section class="auth-card login-card">
+  <div class="auth-header login-header">
+    <h2>Sign in</h2>
+    <p>Access your Rowe AI dashboard for the plan you purchased.</p>
+  </div>
+
+  <div class="auth-body login-body">
+    <div class="auth-message success hidden" id="reset-success-message">
+      Your password has been updated. You can log in now.
+    </div>
+    <div class="auth-message error hidden" id="login-error"></div>
+
+    <label for="email">Email</label>
+    <input id="email" type="email" placeholder="you@company.com" autocomplete="email">
+
+    <label for="password">Password</label>
+    <input id="password" type="password" placeholder="Password" autocomplete="current-password">
+
+    <button id="login-btn" type="button">Login</button>
+    <a class="auth-link" href="forgot-password.html?return=login.html">Forgot Password?</a>
+    <a class="auth-link" href="billing.html">Create an account</a>
+    <a class="auth-link" href="admin/login.html">Admin login</a>
+  </div>
+</section>
+
+<script src="js/app-config.js"></script>
+<script src="js/referral-utils.js"></script>
+<script src="js/product-login.js"></script>
+<script>
+  RoweReferral.captureReferralFromUrl();
+  RoweReferral.applyReferralToLinks('a[href="billing.html"]');
+  RoweProductLogin.init({
+    product: "any",
+    dashboardUrl: "dashboard-chatbot.html",
+    loginButtonLabel: "Login",
+  });
+</script>
+
 </body>
 </html>
