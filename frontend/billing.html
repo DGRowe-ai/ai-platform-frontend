@@ -239,9 +239,11 @@
 
       <p class="login-link">
         Already have an account?
-        <a href="login-chatbot.html">Chatbot login</a>
+        <a href="login-chatbot.html">Chatbot Login</a>
         ·
-        <a href="login-voicebot.html">Voicebot login</a>
+        <a href="login-voicebot.html">Voicebot Login</a>
+        ·
+        <a href="login-duo.html">Duo Login</a>
       </p>
     </section>
   </main>
@@ -289,7 +291,7 @@
     }
 
     syncReferralInputFromStorage();
-    RoweReferral.applyReferralToLinks('a[href="login-chatbot.html"], a[href="login-voicebot.html"]');
+    RoweReferral.applyReferralToLinks('a[href="login-chatbot.html"], a[href="login-voicebot.html"], a[href="login-duo.html"]');
 
     function setSelectedPlan(plan) {
       selectedPlan = plan;
