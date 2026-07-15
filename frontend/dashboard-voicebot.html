@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Voicebot Dashboard</title>
+  <link rel="stylesheet" href="css/responsive-base.css">
+  <link rel="stylesheet" href="css/client-dashboard-common.css">
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f4f7fb;
+      --card: #ffffff;
+      --text: #172033;
+      --muted: #667085;
+      --border: #d9e2ef;
+      --primary: #0f9488;
+      --primary-dark: #0f766e;
+      --danger: #dc2626;
+      --danger-bg: #fef2f2;
+      --success: #047857;
+      --shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    header {
+      background:
+        radial-gradient(circle at top right, rgba(153, 246, 228, 0.28), transparent 34%),
+        linear-gradient(135deg, #0f766e 0%, #0f9488 48%, #115e59 100%);
+      box-shadow: 0 18px 45px rgba(15, 118, 110, 0.22);
+      color: #ffffff;
+      padding: 32px clamp(16px, 5vw, 56px);
+    }
+
+    .header-brand {
+      align-items: center;
+      display: flex;
+      gap: 28px;
+    }
+
+    .brand-logo-wrap {
+      align-items: center;
+      background: transparent;
+      border-radius: 0;
+      display: flex;
+      padding: 0;
+    }
+
+    .brand-logo {
+      display: block;
+      height: 165px;
+      max-width: min(100%, 520px);
+      object-fit: contain;
+    }
+
+    header h1 { margin: 0 0 6px; font-size: clamp(28px, 4vw, 40px); }
+    header p { margin: 0; color: #d7fffa; }
+
+    .client-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 24px;
+    }
+
+    .client-nav a {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      border-radius: 999px;
+      color: #ffffff;
+      display: inline-flex;
+      font-weight: 700;
+      min-height: 44px;
+      padding: 10px 16px;
+      text-decoration: none;
+    }
+
+    .client-nav a.active,
+    .client-nav a:hover {
+      background: rgba(255, 255, 255, 0.22);
+    }
+
+    main {
+      width: min(1180px, calc(100% - 32px));
+      margin: 28px auto 48px;
+    }
+
+    .topbar {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .business-name { font-size: 24px; font-weight: 700; }
+
+    .topbar-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 22px;
+    }
+
+    .card h2 { margin: 0 0 16px; font-size: 21px; }
+
+    .analytics, .settings, .knowledge, .history, .cancel-service, .voice-setup-row, .appointments, .google-review {
+      grid-column: span 12;
+    }
+
+    .google-review-content {
+      align-items: center;
+      display: grid;
+      gap: 20px;
+      grid-template-columns: minmax(0, 1fr) 220px;
+    }
+
+    .google-review-copy p {
+      margin: 0 0 12px;
+      line-height: 1.55;
+    }
+
+    .google-review-link {
+      color: var(--primary);
+      font-weight: 700;
+      word-break: break-all;
+    }
+
+    .google-review-qr {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+      text-align: center;
+    }
+
+    .google-review-qr img {
+      display: block;
+      height: auto;
+      margin: 0 auto;
+      max-width: 180px;
+      width: 100%;
+    }
+
+    .google-review-qr p {
+      color: var(--muted);
+      font-size: 13px;
+      margin: 10px 0 0;
+    }
+
+    .appointment-list {
+      display: grid;
+      gap: 14px;
+    }
+
+    .appointment-item {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+    }
+
+    .appointment-item header {
+      align-items: center;
+      background: transparent;
+      box-shadow: none;
+      color: inherit;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: space-between;
+      padding: 0 0 10px;
+    }
+
+    .appointment-item h3 {
+      font-size: 18px;
+      margin: 0;
+    }
+
+    .appointment-meta {
+      color: var(--muted);
+      display: flex;
+      flex-wrap: wrap;
+      font-size: 13px;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .appointment-actions {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .appointment-actions select {
+      min-width: 140px;
+      width: auto;
+    }
+
+    .status-badge {
+      border-radius: 999px;
+      display: inline-flex;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 5px 10px;
+    }
+
+    .status-badge.pending { background: #fffbeb; color: #b45309; }
+    .status-badge.confirmed { background: #ecfdf5; color: #047857; }
+    .status-badge.rejected { background: #fef2f2; color: #dc2626; }
+    .status-badge.done { background: #eef2ff; color: #3730a3; }
+
+    .appointment-settings-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      margin-bottom: 18px;
+    }
+
+    .appointment-settings-grid .full {
+      grid-column: span 2;
+    }
+
+    .appointments-toolbar {
+      align-items: flex-start;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .voice-setup-row {
+      display: grid;
+      gap: 20px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .voice-setup-row .card {
+      margin: 0;
+    }
+
+    .carrier-grid {
+      display: grid;
+      gap: 12px 24px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .suggested-prompt-box {
+      background: #f0fdfa;
+      border: 1px solid #99f6e4;
+      border-radius: 12px;
+      margin: 14px 0 18px;
+      padding: 16px 18px;
+    }
+
+    .suggested-prompt-box h3 {
+      font-size: 16px;
+      margin: 0 0 8px;
+    }
+
+    .suggested-prompt-box p {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+      margin: 0 0 12px;
+    }
+
+    .suggested-prompt-example {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 14px;
+      line-height: 1.55;
+      margin: 0;
+      padding: 14px;
+      white-space: pre-wrap;
+    }
+
+    .history-toolbar {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    #history-status {
+      display: block;
+      margin-bottom: 12px;
+    }
+
+    .history-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .modal-backdrop {
+      align-items: center;
+      background: rgba(15, 23, 42, 0.55);
+      display: none;
+      inset: 0;
+      justify-content: center;
+      padding: 20px;
+      position: fixed;
+      z-index: 1000;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+      max-width: 480px;
+      padding: 24px;
+      width: 100%;
+    }
+
+    .modal h2 {
+      font-size: 20px;
+      margin: 0 0 12px;
+    }
+
+    .modal-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 20px;
+    }
+
+    .stats-grid {
+      display: grid;
+      gap: 14px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .stat {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+    }
+
+    .stat .label { color: var(--muted); font-size: 13px; margin-bottom: 8px; }
+    .stat .value { font-size: 26px; font-weight: 700; }
+
+    label { display: block; font-weight: 700; margin: 14px 0 6px; }
+
+    input, select, textarea {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font: inherit;
+      padding: 11px 12px;
+      width: 100%;
+    }
+
+    textarea { min-height: 120px; resize: vertical; }
+
+    .help-text { color: var(--muted); font-size: 13px; margin-top: 6px; }
+
+    button {
+      background: var(--primary);
+      border: 0;
+      border-radius: 10px;
+      color: #ffffff;
+      cursor: pointer;
+      font-weight: 700;
+      min-height: 44px;
+      padding: 10px 14px;
+    }
+
+    button.secondary {
+      background: #e2e8f0;
+      color: #172033;
+    }
+
+    button.danger {
+      background: var(--danger-bg);
+      border: 1px solid #fecaca;
+      color: var(--danger);
+    }
+
+    .button-link.secondary {
+      align-items: center;
+      background: #e2e8f0;
+      border-radius: 10px;
+      color: var(--text);
+      display: inline-flex;
+      font-weight: 700;
+      min-height: 44px;
+      padding: 10px 14px;
+      text-decoration: none;
+    }
+
+    .status { color: var(--muted); font-size: 14px; min-height: 20px; }
+    .status.success { color: var(--success); }
+    .status.error { color: var(--danger); }
+
+    .call-list {
+      display: grid;
+      gap: 12px;
+      max-height: 620px;
+      overflow: auto;
+    }
+
+    .call-item {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .call-meta {
+      color: var(--muted);
+      display: flex;
+      flex-wrap: wrap;
+      font-size: 13px;
+      gap: 8px 14px;
+      margin-bottom: 10px;
+    }
+
+    .call-transcript {
+      line-height: 1.45;
+      white-space: pre-wrap;
+    }
+
+    .checkbox-row {
+      align-items: center;
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    .checkbox-row input { width: auto; }
+
+    .kb-upload-row {
+      align-items: center;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .kb-file-list { display: grid; gap: 10px; margin-top: 14px; }
+
+    .kb-file-item {
+      align-items: center;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: space-between;
+      padding: 12px;
+    }
+
+    .cancel-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .hidden { display: none !important; }
+
+    .forwarding-number {
+      font-size: 18px;
+      font-weight: 700;
+      margin: 12px 0;
+    }
+
+    .carrier-block {
+      margin-top: 16px;
+    }
+
+    .carrier-block h3 {
+      font-size: 16px;
+      margin: 0 0 8px;
+    }
+
+    .carrier-block ol {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    .setup-footer {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 18px;
+    }
+
+    @media (max-width: 900px) {
+      .stats-grid { grid-template-columns: 1fr; }
+      .header-brand { flex-direction: column; align-items: flex-start; }
+      .voice-setup-row { grid-template-columns: 1fr; }
+      .carrier-grid { grid-template-columns: 1fr; }
+      .brand-logo { height: 140px; }
+      .appointment-settings-grid { grid-template-columns: 1fr; }
+      .appointment-settings-grid .full { grid-column: span 1; }
+      .google-review-content { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-brand">
+      <div class="brand-logo-wrap">
+        <img class="brand-logo" src="images/loki/Logo/rowe-ai-logo.png" alt="Rowe AI">
+      </div>
+      <div>
+        <h1>Voicebot Dashboard</h1>
+        <p>Configure your AI phone receptionist, review call history, and manage your voice service.</p>
+      </div>
+    </div>
+    <nav class="client-nav" aria-label="Voicebot dashboard sections">
+      <a class="active" href="dashboard-voicebot.html">Voice Dashboard</a>
+      <a href="payment-history.html">Payment History</a>
+    </nav>
+  </header>
+
+  <main>
+    <div class="topbar">
+      <div>
+        <div class="business-name" id="business-name">Loading business...</div>
+        <div class="status" id="page-status"></div>
+      </div>
+      <div class="topbar-actions">
+        <button class="secondary" id="logout-btn" type="button">Log out</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <section class="card analytics">
+        <div class="toolbar" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <h2 style="margin:0;">Call Analytics</h2>
+          <button class="secondary" id="refresh-btn" type="button">Refresh</button>
+        </div>
+        <div class="stats-grid" id="analytics-cards"></div>
+      </section>
+
+      <div class="voice-setup-row voice-access-only hidden" id="voice-setup-row">
+        <section class="card phone-setup" id="business-phone-card">
+          <h2>Business Phone Number</h2>
+          <form id="business-phone-form">
+            <label for="business-phone">Your Business Phone Number</label>
+            <input
+              id="business-phone"
+              name="businessPhoneNumber"
+              type="tel"
+              placeholder="519-555-1234"
+              autocomplete="tel"
+            >
+            <p class="help-text">
+              This is your real business phone number. When customers call it, your phone provider forwards the call to your AI receptionist. We use this number to identify your business and load your personalized Voicebot settings (knowledge base, personality, business name, spelling name). Without this number, the Voicebot cannot determine which business the call belongs to.
+            </p>
+            <button id="save-business-phone-btn" type="submit">Save</button>
+            <div class="status" id="business-phone-status"></div>
+          </form>
+        </section>
+
+        <section class="card forwarding-setup" id="call-forwarding-card">
+          <h2>Call Forwarding Setup</h2>
+          <p class="help-text">
+            To activate your AI phone receptionist, forward your existing business phone number to your Rowe AI Voicebot number:
+          </p>
+          <p class="forwarding-number">Forward all calls to: (+1) 416-367-0103</p>
+          <p class="help-text">
+            Customers will continue calling your usual number, but the AI receptionist will answer for you. Below are quick steps for common Canadian carriers:
+          </p>
+
+          <div class="carrier-grid">
+            <div class="carrier-block">
+              <h3>Bell</h3>
+              <ol>
+                <li>Dial *72</li>
+                <li>Enter 416-367-0103</li>
+                <li>Press Call</li>
+              </ol>
+            </div>
+
+            <div class="carrier-block">
+              <h3>Rogers</h3>
+              <ol>
+                <li>Dial *21*4163670103#</li>
+                <li>Press Call</li>
+              </ol>
+            </div>
+
+            <div class="carrier-block">
+              <h3>Telus</h3>
+              <ol>
+                <li>Dial *72</li>
+                <li>Enter 416-367-0103</li>
+                <li>Press Call</li>
+              </ol>
+            </div>
+
+            <div class="carrier-block">
+              <h3>Fido</h3>
+              <ol>
+                <li>Dial *21*4163670103#</li>
+                <li>Press Call</li>
+              </ol>
+            </div>
+
+            <div class="carrier-block">
+              <h3>Koodo</h3>
+              <ol>
+                <li>Dial *21*4163670103#</li>
+                <li>Press Call</li>
+              </ol>
+            </div>
+          </div>
+
+          <p class="setup-footer">To disable forwarding: Dial ##21# and press Call.</p>
+          <p class="setup-footer">Need help? Email support@roweai.ca or call 226-343-9977.</p>
+        </section>
+      </div>
+
+      <section class="card settings">
+        <h2>Voicebot Settings</h2>
+        <p class="help-text">Configure how your AI receptionist speaks and what it knows about your business.</p>
+        <form id="settings-form">
+          <label for="tone">Tone</label>
+          <select id="tone" name="tone">
+            <option value="friendly">Friendly</option>
+            <option value="professional">Professional</option>
+            <option value="casual">Casual</option>
+            <option value="concise">Concise</option>
+            <option value="enthusiastic">Enthusiastic</option>
+          </select>
+
+          <label for="voice-business-name">Business Name (on phone calls)</label>
+          <input id="voice-business-name" name="voiceBusinessName" type="text" placeholder="Rowe AI">
+          <p class="help-text">This is the exact company name callers should hear — e.g. <strong>Rowe AI</strong>, not a shortened version.</p>
+
+          <label for="knowledge">Knowledge &amp; Instructions</label>
+
+          <div class="suggested-prompt-box">
+            <h3>Suggested Prompt Example</h3>
+            <p>Provide customers with a sample prompt showing how to write effective instructions for their voicebot.</p>
+            <p class="suggested-prompt-example"><strong>Example Prompt:</strong>
+"You are the AI receptionist for my business. Greet callers politely and professionally. Answer questions about store hours, location, pricing, and services using the information I provide. If a caller asks to book an appointment, collect their name, date, and time, then confirm you will forward the request to the owner. If you don't know an answer, respond kindly and let the caller know you will pass their question to the business owner."</p>
+          </div>
+
+          <textarea id="knowledge" name="knowledge" placeholder="Example format:
+Company: Rowe AI
+Hours: Mon-Fri 9am-5pm EST
+Service area: Guelph area and worldwide (online)
+Language: English only
+..."></textarea>
+
+          <div class="checkbox-row">
+            <input id="spell-name" name="spell_name" type="checkbox">
+            <label for="spell-name" style="margin:0;">Ask callers to spell out their name when they provide it</label>
+          </div>
+
+          <div id="multi-location-section" class="hidden" style="margin-top:18px;padding-top:18px;border-top:1px solid var(--border);">
+            <div class="checkbox-row">
+              <input id="multi-location-toggle" type="checkbox">
+              <label for="multi-location-toggle" style="margin:0;">Do you have multiple business locations?</label>
+            </div>
+            <div id="multi-location-fields" class="hidden" style="margin-top:14px;">
+              <div id="locations-list"></div>
+              <button id="add-location-btn" class="secondary" type="button" style="margin-top:10px;">Add Location</button>
+            </div>
+          </div>
+
+          <div id="tier-pro-features" class="hidden" style="margin-top:18px;padding-top:18px;border-top:1px solid var(--border);">
+            <div class="checkbox-row">
+              <input id="call-forwarding-enabled" type="checkbox">
+              <label for="call-forwarding-enabled" style="margin:0;">Enable call forwarding</label>
+            </div>
+            <label for="call-forwarding-number">Forwarding phone number</label>
+            <input id="call-forwarding-number" type="tel" placeholder="+1...">
+          </div>
+
+          <div id="tier-premium-flags" class="hidden" style="margin-top:14px;">
+            <div class="checkbox-row">
+              <input id="monthly-optimization" type="checkbox">
+              <label for="monthly-optimization" style="margin:0;">Monthly optimization</label>
+            </div>
+            <div class="checkbox-row">
+              <input id="dedicated-support" type="checkbox">
+              <label for="dedicated-support" style="margin:0;">Dedicated support</label>
+            </div>
+          </div>
+
+          <button id="save-settings-btn" type="submit">Save Settings</button>
+          <div class="status" id="settings-status"></div>
+          <p class="help-text">After editing knowledge or tone, click <strong>Save Settings</strong> before placing a test call. Also save your business phone number above and forward that line to the Voicebot number.</p>
+        </form>
+      </section>
+
+      <section class="card knowledge">
+        <h2>Knowledge Base</h2>
+        <p class="help-text">Upload documents your voicebot can reference during phone calls.</p>
+        <div class="kb-upload-row">
+          <input type="file" id="kb-file" accept=".pdf,.txt,.doc,.docx,.csv,.md,.json">
+          <button id="kb-upload-btn" type="button">Upload File</button>
+        </div>
+        <div class="status" id="kb-status"></div>
+        <div class="kb-file-list" id="kb-file-list"></div>
+      </section>
+
+      <section class="card history">
+        <div class="history-toolbar">
+          <h2 style="margin:0;">Call History</h2>
+          <div class="history-actions">
+            <button class="secondary" id="export-history-btn" type="button">Save Chat History (.txt)</button>
+            <button class="danger" id="delete-history-btn" type="button">Delete Chat History</button>
+          </div>
+        </div>
+        <span class="status" id="history-status"></span>
+        <div class="call-list" id="call-history"></div>
+      </section>
+
+      <section class="card appointments">
+        <div class="appointments-toolbar">
+          <div>
+            <h2 style="margin:0;">Appointment Requests</h2>
+            <p class="help-text">When callers book through your voicebot, requests appear here. Set your notification email to get alerts.</p>
+          </div>
+          <span class="status" id="appointments-status"></span>
+        </div>
+
+        <form id="appointment-settings-form" class="appointment-settings-grid">
+          <div>
+            <label for="appointment-timezone">Business Timezone</label>
+            <select id="appointment-timezone">
+              <option value="America/Toronto">America/Toronto (Eastern)</option>
+              <option value="America/Vancouver">America/Vancouver (Pacific)</option>
+              <option value="America/Edmonton">America/Edmonton (Mountain)</option>
+              <option value="America/Winnipeg">America/Winnipeg (Central)</option>
+              <option value="America/Halifax">America/Halifax (Atlantic)</option>
+              <option value="America/St_Johns">America/St_Johns (Newfoundland)</option>
+              <option value="America/New_York">America/New_York</option>
+              <option value="America/Chicago">America/Chicago</option>
+              <option value="America/Denver">America/Denver</option>
+              <option value="America/Los_Angeles">America/Los_Angeles</option>
+              <option value="UTC">UTC</option>
+            </select>
+          </div>
+          <div>
+            <label for="appointment-notify-method">Notify Me Via</label>
+            <select id="appointment-notify-method">
+              <option value="email">Email</option>
+              <option value="webhook">Webhook</option>
+              <option value="none">None</option>
+            </select>
+          </div>
+          <div id="appointment-email-wrap">
+            <label for="appointment-notify-email">Notification Email</label>
+            <input id="appointment-notify-email" type="email" placeholder="you@company.com" autocomplete="email">
+          </div>
+          <div id="appointment-webhook-wrap" class="hidden">
+            <label for="appointment-webhook-url">Webhook URL</label>
+            <input id="appointment-webhook-url" type="url" placeholder="https://example.com/webhook">
+          </div>
+          <div class="full">
+            <button id="save-appointment-settings-btn" type="submit">Save Appointment Settings</button>
+            <div class="status" id="appointment-settings-status"></div>
+          </div>
+        </form>
+
+        <div class="appointment-list" id="appointment-requests"></div>
+      </section>
+
+      <section class="card referrals referrals-card">
+        <h2>Referral Rewards</h2>
+        <p class="help-text">
+          Share Rowe AI with another business. When they become a paying customer,
+          you earn <strong>1 free month</strong> added to your subscription.
+        </p>
+        <label for="referral-link">Your referral link</label>
+        <div class="copy-row">
+          <input id="referral-link" type="text" readonly value="Loading referral link...">
+          <button id="copy-referral-btn" type="button">Copy Link</button>
+        </div>
+        <div class="status" id="copy-referral-status"></div>
+        <div class="stats-grid" id="referral-stats-grid">
+          <div class="stat">
+            <div class="label">Successful referrals</div>
+            <div class="value" id="referral-count">0</div>
+          </div>
+          <div class="stat">
+            <div class="label">Free months earned</div>
+            <div class="value" id="free-months-earned">0</div>
+          </div>
+        </div>
+        <div class="status" id="referral-status"></div>
+      </section>
+
+      <section class="card google-review">
+        <h2>We'd Love To Hear Your Review</h2>
+        <div class="google-review-content">
+          <div class="google-review-copy">
+            <p>If you're enjoying Rowe AI, we'd really appreciate a Google review. Your feedback helps us improve and helps other businesses discover our chatbot platform.</p>
+            <p><strong>Please leave us a Google review using the QR code, or use this link:</strong></p>
+            <p>
+              <a class="google-review-link" href="https://share.google/HIvgRJCoeZ1NLXap0" target="_blank" rel="noopener noreferrer">
+                https://share.google/HIvgRJCoeZ1NLXap0
+              </a>
+            </p>
+          </div>
+          <div class="google-review-qr">
+            <img src="images/loki/qr-code/qr-code-google-review.png" alt="Google review QR code">
+            <p>Scan to leave a Google review</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="card cancel-service">
+        <h2>Cancel Voicebot Service</h2>
+        <p class="help-text">
+          Cancelling removes your AI phone receptionist. Duo subscribers keep their chatbot subscription.
+        </p>
+        <div class="cancel-actions">
+          <button class="danger" id="cancel-service-btn" type="button">Cancel Service</button>
+          <button class="danger hidden" id="confirm-cancel-btn" type="button">Confirm Cancelation</button>
+        </div>
+        <div class="status" id="cancel-status"></div>
+      </section>
+    </div>
+  </main>
+
+  <div class="modal-backdrop" id="delete-history-modal" role="dialog" aria-modal="true" aria-labelledby="delete-history-modal-title">
+    <div class="modal">
+      <h2 id="delete-history-modal-title">Are you sure you want to delete all chat history?</h2>
+      <div class="modal-actions">
+        <button class="secondary" id="delete-history-cancel-btn" type="button">Cancel</button>
+        <button class="danger" id="delete-history-confirm-btn" type="button">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/app-config.js"></script>
+  <script>
+    if (new URLSearchParams(location.search).get("embed") === "1") {
+      document.documentElement.classList.add("embed-mode");
+      const style = document.createElement("style");
+      style.textContent = "html.embed-mode header,.embed-mode .client-nav{display:none!important;} html.embed-mode body{background:#f4f7fb;}";
+      document.head.appendChild(style);
+    }
+  </script>
+  <script src="js/referral-utils.js"></script>
+  <script src="js/referral-dashboard.js"></script>
+  <script src="js/client-dashboard-support.js"></script>
+  <script src="js/appointment-dashboard.js"></script>
+  <script src="js/multi-location-ui.js"></script>
+  <script src="dashboard-voicebot.js"></script>
+</body>
+</html>

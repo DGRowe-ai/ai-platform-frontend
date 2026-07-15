@@ -1,6 +1,12 @@
 (function initProductLogin(global) {
   const DEFAULT_API_URL = "https://ai-platform-backend-ulqs.onrender.com";
 
+  const DASHBOARD_BY_PRODUCT = {
+    chatbot: "dashboard-chatbot.html",
+    voicebot: "dashboard-voicebot.html",
+    duo: "dashboard-duo.html",
+  };
+
   function parseJwtPayload(token) {
     if (!token || !token.includes(".")) {
       return {};
@@ -44,8 +50,29 @@
     );
   }
 
+  function resolveProductType(data) {
+    if (data.product_type) {
+      return String(data.product_type).toLowerCase();
+    }
+    if (data.plan_type === "duo" || (data.has_chatbot && data.has_voicebot)) {
+      return "duo";
+    }
+    if (data.plan_type === "voicebot" || data.has_voicebot) {
+      return "voicebot";
+    }
+    return "chatbot";
+  }
+
+  function resolveDashboardUrl(data, fallback) {
+    if (data.dashboard_url) {
+      return data.dashboard_url;
+    }
+    return DASHBOARD_BY_PRODUCT[resolveProductType(data)] || fallback || DASHBOARD_BY_PRODUCT.chatbot;
+  }
+
   function storeSession(data, token, tokenPayload) {
     const role = getUserRole(data, tokenPayload);
+    const productType = resolveProductType(data);
 
     localStorage.setItem("token", token);
     localStorage.setItem("access_token", token);
@@ -60,19 +87,14 @@
       localStorage.setItem("businesses", JSON.stringify(data.businesses));
     }
 
-    if (data.plan_type) {
-      localStorage.setItem("plan_type", data.plan_type);
+    localStorage.setItem("plan_type", data.plan_type || productType);
+    localStorage.setItem("product_type", productType);
+    if (data.tier) {
+      localStorage.setItem("tier", data.tier);
     }
-
     localStorage.setItem("has_voicebot", data.has_voicebot ? "1" : "0");
     localStorage.setItem("has_chatbot", data.has_chatbot ? "1" : "0");
-  }
-
-  function hasBothProducts(data) {
-    if (data.plan_type === "duo") {
-      return true;
-    }
-    return Boolean(data.has_chatbot && data.has_voicebot);
+    localStorage.setItem("dashboard_url", resolveDashboardUrl(data));
   }
 
   function init(config) {
@@ -137,23 +159,40 @@
 
         const tokenPayload = parseJwtPayload(token);
         const isAdmin = isAdminUser(data, tokenPayload);
+        const productType = resolveProductType(data);
 
-        if (config.product === "chatbot" && !isAdmin && !data.has_chatbot) {
-          setError(
-            `This account does not include the chatbot dashboard. Use the ${config.alternateProductLabel} instead.`,
-          );
-          return;
-        }
-
-        if (config.product === "voicebot" && !isAdmin && !data.has_voicebot) {
-          setError(
-            `This account does not include the voicebot dashboard. Use the ${config.alternateProductLabel} instead.`,
-          );
-          return;
+        // Unified login: always route by purchased product_type.
+        // Product-specific login pages only allow matching product (admins exempt).
+        if (config.product && config.product !== "any" && !isAdmin) {
+          if (config.product === "chatbot" && productType !== "chatbot" && productType !== "duo") {
+            // chatbot-only page should reject pure voicebot accounts
+            if (productType === "voicebot") {
+              setError("This account uses the voicebot dashboard. Sign in from the main login page.");
+              return;
+            }
+          }
+          if (config.product === "voicebot" && productType !== "voicebot" && productType !== "duo") {
+            if (productType === "chatbot") {
+              setError("This account uses the chatbot dashboard. Sign in from the main login page.");
+              return;
+            }
+          }
+          if (config.product === "chatbot" && !data.has_chatbot && productType !== "duo") {
+            setError("This account does not include the chatbot dashboard.");
+            return;
+          }
+          if (config.product === "voicebot" && !data.has_voicebot && productType !== "duo") {
+            setError("This account does not include the voicebot dashboard.");
+            return;
+          }
         }
 
         storeSession(data, token, tokenPayload);
-        window.location.href = config.dashboardUrl;
+        if (config.forceDashboardUrl && config.dashboardUrl) {
+          window.location.href = config.dashboardUrl;
+        } else {
+          window.location.href = resolveDashboardUrl(data, config.dashboardUrl);
+        }
       } catch (err) {
         console.error("Login error:", err);
         setError("Unable to login. Please try again.");
@@ -184,6 +223,7 @@
 
   global.RoweProductLogin = {
     init,
-    hasBothProducts,
+    resolveProductType,
+    resolveDashboardUrl,
   };
 })(window);

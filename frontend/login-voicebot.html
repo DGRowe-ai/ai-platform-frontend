@@ -28,7 +28,6 @@
     <input id="password" type="password" placeholder="Password" autocomplete="current-password">
 
     <button id="login-btn" type="button">Login to Voicebot Dashboard</button>
-    <a class="auth-link" href="login-chatbot.html">Chatbot login</a>
     <a class="auth-link" href="forgot-password.html?return=login-voicebot.html">Forgot Password?</a>
     <a class="auth-link" href="billing.html">Create an account</a>
     <a class="auth-link" href="admin/login.html">Admin login</a>
@@ -43,8 +42,7 @@
   RoweReferral.applyReferralToLinks('a[href="billing.html"]');
   RoweProductLogin.init({
     product: "voicebot",
-    dashboardUrl: "voicebot-dashboard.html",
-    alternateProductLabel: "chatbot login page",
+    dashboardUrl: "dashboard-voicebot.html",
     loginButtonLabel: "Login to Voicebot Dashboard",
   });
 </script>

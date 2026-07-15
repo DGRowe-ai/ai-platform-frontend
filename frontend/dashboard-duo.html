@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Duo Dashboard | Rowe AI</title>
+  <link rel="stylesheet" href="css/responsive-base.css">
+  <link rel="stylesheet" href="css/client-dashboard-common.css">
+  <style>
+    :root {
+      --bg: #f4f7fb;
+      --primary: #0f9488;
+      --primary-dark: #0f766e;
+      --border: #d9e2ef;
+      --text: #172033;
+      --muted: #667085;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    header {
+      background: linear-gradient(135deg, #0f766e 0%, #0f9488 48%, #115e59 100%);
+      color: #fff;
+      padding: 24px clamp(16px, 4vw, 40px);
+    }
+
+    header h1 { margin: 0 0 6px; font-size: clamp(24px, 4vw, 34px); }
+    header p { margin: 0; color: #d7fffa; }
+
+    .duo-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 16px;
+    }
+
+    .duo-toolbar .meta { color: #d7fffa; font-size: 14px; }
+
+    .duo-toolbar button,
+    .duo-toolbar a.button-link {
+      background: rgba(255,255,255,0.14);
+      border: 1px solid rgba(255,255,255,0.35);
+      border-radius: 999px;
+      color: #fff;
+      min-height: 42px;
+      padding: 8px 16px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .duo-shell {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      min-height: calc(100vh - 140px);
+    }
+
+    .duo-pane {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+      background: var(--bg);
+    }
+
+    .pane-label {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+      padding: 12px 18px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      color: var(--primary-dark);
+    }
+
+    .duo-pane iframe {
+      border: 0;
+      width: 100%;
+      flex: 1;
+      min-height: 80vh;
+      background: var(--bg);
+    }
+
+    .duo-divider {
+      width: 18px;
+      background:
+        radial-gradient(circle at center, #99f6e4 0 6px, transparent 7px),
+        linear-gradient(to bottom, transparent 0, #99f6e4 12%, #0f9488 50%, #99f6e4 88%, transparent 100%);
+      background-repeat: no-repeat;
+      background-position: center, center;
+      background-size: 14px 14px, 3px 100%;
+    }
+
+    .status {
+      margin-top: 10px;
+      min-height: 18px;
+      font-size: 14px;
+    }
+
+    .status.error { color: #dc2626; }
+    .status.success { color: #047857; }
+
+    @media (max-width: 980px) {
+      .duo-shell {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto;
+      }
+      .duo-divider {
+        width: 100%;
+        height: 18px;
+        background:
+          radial-gradient(circle at center, #99f6e4 0 6px, transparent 7px),
+          linear-gradient(to right, transparent 0, #99f6e4 12%, #0f9488 50%, #99f6e4 88%, transparent 100%);
+        background-repeat: no-repeat;
+        background-position: center, center;
+        background-size: 14px 14px, 100% 3px;
+      }
+      .duo-pane iframe { min-height: 70vh; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Duo Dashboard</h1>
+    <p>Chatbot and Voicebot settings for your bundled plan.</p>
+    <div class="duo-toolbar">
+      <div class="meta" id="duo-meta">Loading subscription...</div>
+      <div>
+        <button type="button" id="logout-btn">Log out</button>
+      </div>
+    </div>
+    <div class="status" id="page-status"></div>
+  </header>
+
+  <div class="duo-shell">
+    <section class="duo-pane" aria-label="Chatbot">
+      <div class="pane-label">Chatbot</div>
+      <iframe id="chatbot-frame" title="Chatbot settings" src="dashboard-chatbot.html?embed=1"></iframe>
+    </section>
+    <div class="duo-divider" aria-hidden="true"></div>
+    <section class="duo-pane" aria-label="Voicebot">
+      <div class="pane-label">Voicebot</div>
+      <iframe id="voicebot-frame" title="Voicebot settings" src="dashboard-voicebot.html?embed=1"></iframe>
+    </section>
+  </div>
+
+  <script src="js/app-config.js"></script>
+  <script>
+    const API_URL = window.RoweAppConfig?.API_URL || "https://ai-platform-backend-ulqs.onrender.com";
+    const statusEl = document.getElementById("page-status");
+    const metaEl = document.getElementById("duo-meta");
+
+    function getToken() {
+      return localStorage.getItem("token") || localStorage.getItem("access_token");
+    }
+
+    function setStatus(message, type) {
+      statusEl.textContent = message || "";
+      statusEl.className = "status" + (type ? ` ${type}` : "");
+    }
+
+    async function apiRequest(path) {
+      const response = await fetch(`${API_URL}${path}`, {
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+          "Content-Type": "application/json",
+        },
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(data.detail || "Request failed");
+      }
+      return data;
+    }
+
+    async function boot() {
+      if (!getToken()) {
+        window.location.href = "login.html";
+        return;
+      }
+
+      try {
+        setStatus("Loading duo dashboard...");
+        const subscription = await apiRequest("/client/subscription");
+        const productType = subscription.product_type || subscription.plan_type;
+        localStorage.setItem("product_type", productType);
+        localStorage.setItem("plan_type", productType);
+        localStorage.setItem("tier", subscription.tier || "");
+
+        if (productType !== "duo" && localStorage.getItem("is_platform_admin") !== "1") {
+          window.location.href = subscription.dashboard_url || "dashboard-chatbot.html";
+          return;
+        }
+
+        metaEl.textContent = `Plan: ${subscription.tier || "duo"} · Chatbot + Voicebot`;
+        setStatus("", "");
+      } catch (err) {
+        setStatus(err.message || "Unable to load duo dashboard.", "error");
+      }
+    }
+
+    document.getElementById("logout-btn").addEventListener("click", () => {
+      localStorage.clear();
+      window.location.href = "login.html";
+    });
+
+    boot();
+  </script>
+</body>
+</html>

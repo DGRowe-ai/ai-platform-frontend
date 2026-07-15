@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chatbot Login | Rowe AI</title>
+  <title>Duo Login | Rowe AI</title>
   <link rel="stylesheet" href="css/responsive-base.css">
   <link rel="stylesheet" href="css/auth-pages.css">
 </head>
@@ -11,8 +11,8 @@
 
 <section class="auth-card login-card">
   <div class="auth-header login-header">
-    <h2>Chatbot Login</h2>
-    <p>Sign in to manage your website chatbot dashboard.</p>
+    <h2>Duo Login</h2>
+    <p>Sign in to manage your combined Chatbot + Voicebot dashboard.</p>
   </div>
 
   <div class="auth-body login-body">
@@ -27,8 +27,8 @@
     <label for="password">Password</label>
     <input id="password" type="password" placeholder="Password" autocomplete="current-password">
 
-    <button id="login-btn" type="button">Login to Chatbot Dashboard</button>
-    <a class="auth-link" href="forgot-password.html?return=login-chatbot.html">Forgot Password?</a>
+    <button id="login-btn" type="button">Login to Duo Dashboard</button>
+    <a class="auth-link" href="forgot-password.html?return=login-duo.html">Forgot Password?</a>
     <a class="auth-link" href="billing.html">Create an account</a>
     <a class="auth-link" href="admin/login.html">Admin login</a>
   </div>
@@ -41,9 +41,10 @@
   RoweReferral.captureReferralFromUrl();
   RoweReferral.applyReferralToLinks('a[href="billing.html"]');
   RoweProductLogin.init({
-    product: "chatbot",
-    dashboardUrl: "dashboard-chatbot.html",
-    loginButtonLabel: "Login to Chatbot Dashboard",
+    product: "any",
+    dashboardUrl: "dashboard-duo.html",
+    forceDashboardUrl: true,
+    loginButtonLabel: "Login to Duo Dashboard",
   });
 </script>
 
