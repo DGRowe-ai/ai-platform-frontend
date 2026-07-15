@@ -1098,7 +1098,7 @@
     if (new URLSearchParams(location.search).get("embed") === "1") {
       document.documentElement.classList.add("embed-mode");
       const style = document.createElement("style");
-      style.textContent = "html.embed-mode header,.embed-mode .client-nav{display:none!important;} html.embed-mode body{background:#f4f7fb;}";
+      style.textContent = "html.embed-mode,html.embed-mode body{overflow:hidden!important;height:auto!important;background:#f4f7fb;} html.embed-mode header,html.embed-mode .client-nav,html.embed-mode #logout-btn{display:none!important;} html.embed-mode main{padding-top:8px!important;}";
       document.head.appendChild(style);
     }
   </script>
