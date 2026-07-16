@@ -188,7 +188,10 @@
         }
 
         storeSession(data, token, tokenPayload);
-        if (config.forceDashboardUrl && config.dashboardUrl) {
+        const useConfiguredDashboard =
+          Boolean(config.dashboardUrl) &&
+          ((config.product && config.product !== "any") || config.forceDashboardUrl);
+        if (useConfiguredDashboard) {
           window.location.href = config.dashboardUrl;
         } else {
           window.location.href = resolveDashboardUrl(data, config.dashboardUrl);
