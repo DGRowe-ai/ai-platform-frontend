@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Voicebot Dashboard</title>
   <link rel="stylesheet" href="css/responsive-base.css">
-  <link rel="stylesheet" href="css/client-dashboard-common.css">
+  <link rel="stylesheet" href="css/client-dashboard-common.css?v=20260716-mobile-1">
   <style>
     :root {
       color-scheme: light;
@@ -112,8 +112,9 @@
 
     .grid {
       display: grid;
-      grid-template-columns: repeat(12, 1fr);
       gap: 20px;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      width: 100%;
     }
 
     .card {
@@ -121,6 +122,9 @@
       border: 1px solid var(--border);
       border-radius: 16px;
       box-shadow: var(--shadow);
+      max-width: 100%;
+      min-width: 0;
+      overflow-wrap: anywhere;
       padding: 22px;
     }
 
@@ -378,12 +382,13 @@
     .referrals-card .stats-grid,
     #referral-stats-grid {
       grid-template-columns: 1fr !important;
+      width: 100%;
     }
 
-    @media (min-width: 560px) {
+    @media (min-width: 640px) {
       .referrals-card .stats-grid,
       #referral-stats-grid {
-        grid-template-columns: repeat(2, minmax(160px, 1fr)) !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
       }
     }
 
@@ -543,6 +548,10 @@
       .appointment-settings-grid { grid-template-columns: 1fr; }
       .appointment-settings-grid .full { grid-column: span 1; }
       .google-review-content { grid-template-columns: 1fr; }
+      .referrals-card .stats-grid,
+      #referral-stats-grid { grid-template-columns: 1fr !important; }
+      main { width: calc(100% - 16px); }
+      .card { padding: 18px; }
     }
   </style>
 </head>
