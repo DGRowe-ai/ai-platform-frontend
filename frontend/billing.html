@@ -143,7 +143,11 @@
       text-align: left;
     }
 
-    .coupon-wrap .form-field { margin-bottom: 0; }
+    .coupon-wrap .form-field input:disabled {
+      background: #f1f5f9;
+      color: #64748b;
+      cursor: not-allowed;
+    }
 
     .coupon-note {
       color: var(--muted);
@@ -259,14 +263,15 @@
         </div>
       </div>
 
-      <div class="coupon-wrap hidden" id="coupon-wrap">
+      <div class="coupon-wrap" id="coupon-wrap">
         <div class="form-field">
           <label for="founders-coupon-code">Founders coupon (optional)</label>
           <input
             id="founders-coupon-code"
             type="text"
-            placeholder="FOUNDERS10"
+            placeholder="Enter coupon code"
             autocomplete="off"
+            spellcheck="false"
           />
           <p class="coupon-note">
             $10 off permanently on Voicebot and Duo tiers only. Does not apply to Chatbot.
@@ -328,7 +333,6 @@
     const statusEl = document.getElementById("billing-status");
     const deletedBanner = document.getElementById("account-deleted-banner");
     const planCards = document.querySelectorAll(".plan-card");
-    const couponWrap = document.getElementById("coupon-wrap");
     const couponInput = document.getElementById("founders-coupon-code");
     const referralInput = document.getElementById("referral-code-input");
     const referralNote = document.getElementById("referral-code-note");
@@ -362,7 +366,15 @@
       planCards.forEach(card => {
         card.classList.toggle("selected", card.dataset.plan === plan);
       });
-      couponWrap?.classList.toggle("hidden", !COUPON_ELIGIBLE.has(plan));
+      if (couponInput) {
+        couponInput.disabled = !COUPON_ELIGIBLE.has(plan);
+        couponInput.placeholder = COUPON_ELIGIBLE.has(plan)
+          ? "Enter coupon code"
+          : "Not available for Chatbot";
+        if (!COUPON_ELIGIBLE.has(plan)) {
+          couponInput.value = "";
+        }
+      }
     }
 
     setSelectedPlan(selectedPlan);
