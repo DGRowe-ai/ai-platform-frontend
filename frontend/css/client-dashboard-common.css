@@ -92,6 +92,8 @@
   font-size: 13px;
   line-height: 1.5;
   margin: 0;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .client-support-text a {
@@ -105,6 +107,95 @@
 .client-support:focus-within .client-support-text a {
   color: var(--primary-dark, #0f766e);
   text-decoration: underline;
+}
+
+/* Prevent dashboard cards/grids from overflowing the viewport on mobile */
+.grid,
+.topbar,
+.card,
+.toolbar,
+.copy-row,
+.stats-grid,
+.referrals-card,
+#referral-stats-grid {
+  max-width: 100%;
+  min-width: 0;
+}
+
+.grid > *,
+.card > *,
+.stat,
+.copy-row > * {
+  min-width: 0;
+}
+
+.card p,
+.card .help-text,
+.card label,
+.stat .label,
+.business-name,
+.chat-row,
+.appointment-item,
+.google-review-copy {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.copy-row input,
+.copy-row textarea {
+  min-width: 0;
+  width: 100%;
+}
+
+.referrals-card .copy-row {
+  align-items: stretch;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  width: 100%;
+}
+
+.referrals-card .stats-grid,
+#referral-stats-grid {
+  display: grid !important;
+  gap: 14px;
+  grid-template-columns: 1fr !important;
+  margin-top: 16px;
+  width: 100% !important;
+}
+
+.referrals-card .stat {
+  background: #f8fafc;
+  border: 1px solid var(--border, #d9e2ef);
+  border-radius: 14px;
+  box-sizing: border-box;
+  min-width: 0;
+  overflow: visible;
+  padding: 16px;
+  width: 100%;
+}
+
+.referrals-card .stat .label {
+  color: var(--muted, #667085);
+  font-size: 13px;
+  line-height: 1.4;
+  margin-bottom: 8px;
+  overflow: visible;
+  overflow-wrap: break-word;
+  white-space: normal;
+  word-break: normal;
+}
+
+.referrals-card .stat .value {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+@media (min-width: 640px) {
+  .referrals-card .stats-grid,
+  #referral-stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
 }
 
 @media (max-width: 768px) {
@@ -123,57 +214,7 @@
   .client-support[data-tooltip]::after {
     left: 24px;
   }
-}
 
-.referrals-card .copy-row {
-  align-items: stretch;
-  display: grid;
-  gap: 10px;
-  grid-template-columns: minmax(0, 1fr) auto;
-}
-
-.referrals-card .stats-grid,
-#referral-stats-grid {
-  display: grid !important;
-  gap: 14px;
-  grid-template-columns: 1fr !important;
-  margin-top: 16px;
-  width: 100%;
-}
-
-.referrals-card .stat {
-  background: #f8fafc;
-  border: 1px solid var(--border, #d9e2ef);
-  border-radius: 14px;
-  min-width: 0;
-  overflow: visible;
-  padding: 16px;
-}
-
-.referrals-card .stat .label {
-  color: var(--muted, #667085);
-  font-size: 13px;
-  line-height: 1.4;
-  margin-bottom: 8px;
-  overflow: visible;
-  white-space: normal;
-  overflow-wrap: break-word;
-  word-break: normal;
-}
-
-.referrals-card .stat .value {
-  font-size: 24px;
-  font-weight: 700;
-}
-
-@media (min-width: 560px) {
-  .referrals-card .stats-grid,
-  #referral-stats-grid {
-    grid-template-columns: repeat(2, minmax(160px, 1fr)) !important;
-  }
-}
-
-@media (max-width: 768px) {
   .referrals-card .copy-row {
     grid-template-columns: 1fr;
   }
@@ -181,5 +222,17 @@
   .referrals-card .stats-grid,
   #referral-stats-grid {
     grid-template-columns: 1fr !important;
+  }
+
+  .toolbar {
+    align-items: stretch;
+    flex-wrap: wrap;
+  }
+
+  .toolbar a,
+  .toolbar .button-link,
+  .download-guide-link {
+    max-width: 100%;
+    overflow-wrap: anywhere;
   }
 }
